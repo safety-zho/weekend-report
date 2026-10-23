@@ -18,7 +18,7 @@
   --bg:#ECEFF4; --surface:#FFFFFF; --sunk:#F4F6FA; --ink:#15213A; --muted:#5A6781; --line:#D3D9E4;
   --navy:#1F3864; --on-navy:#FFFFFF; --link:#1F3864; --slate:#4D6390; --orange:#C2561A; --on-fill:#FFFFFF;
   --warn-bg:#FFF3DC; --warn-ink:#7A4300; --warn-line:#D9912B; --info-bg:#E7EDF8; --info-ink:#203B6B;
-  --danger:#B42318; --focus:#3B6FD8; --scrim:rgba(14,20,31,.55);
+  --danger:#B42318; --focus:#3B6FD8; --scrim:rgba(14,20,31,.55); --sat:#1D5FD1; --sun:#C62828;
   --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
 }
 @media (prefers-color-scheme: dark){
@@ -26,7 +26,7 @@
     --bg:#0E141F; --surface:#172030; --sunk:#111926; --ink:#E5EAF2; --muted:#98A4B8; --line:#2A3649;
     --navy:#3A5FA3; --on-navy:#FFFFFF; --link:#9DB9F0; --slate:#5F78AA; --orange:#CF6528; --on-fill:#FFFFFF;
     --warn-bg:#33240C; --warn-ink:#FFCB7A; --warn-line:#B9822E; --info-bg:#18263F; --info-ink:#B9CDF2;
-    --danger:#F07467; --focus:#7FA6F0; --scrim:rgba(0,0,0,.6);
+    --danger:#F07467; --focus:#7FA6F0; --scrim:rgba(0,0,0,.6); --sat:#8DB4FF; --sun:#FF8A80;
     color-scheme:dark;
   }
 }
@@ -34,7 +34,7 @@
   --bg:#0E141F; --surface:#172030; --sunk:#111926; --ink:#E5EAF2; --muted:#98A4B8; --line:#2A3649;
   --navy:#3A5FA3; --on-navy:#FFFFFF; --link:#9DB9F0; --slate:#5F78AA; --orange:#CF6528; --on-fill:#FFFFFF;
   --warn-bg:#33240C; --warn-ink:#FFCB7A; --warn-line:#B9822E; --info-bg:#18263F; --info-ink:#B9CDF2;
-  --danger:#F07467; --focus:#7FA6F0; --scrim:rgba(0,0,0,.6);
+  --danger:#F07467; --focus:#7FA6F0; --scrim:rgba(0,0,0,.6); --sat:#8DB4FF; --sun:#FF8A80;
   color-scheme:dark;
 }
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -58,6 +58,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, label:focus-v
 .top-txt{flex:1; min-width:0}
 .top h1{margin:0; font-size:19px; font-weight:700; letter-spacing:-.01em; text-wrap:balance}
 .top-sub{font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums}
+.top-acts{display:flex; gap:6px; flex:none}
 .ghost{background:transparent; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:14px; font-weight:500; color:var(--ink); white-space:nowrap}
 
 /* panels */
@@ -90,12 +91,29 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .fac{display:flex; align-items:center; gap:8px; font-weight:600}
 .fac input{flex:1}
 .who{display:grid; gap:6px}
+.lbl-row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px}
+.lbl-row .lbl{margin:0}
+.pick-link{border:0; background:transparent; color:var(--link); font-size:14px; font-weight:600; padding:4px 2px; min-height:32px; display:inline-flex; align-items:center; gap:4px}
+.pick-link svg{width:15px; height:15px}
+.date-row{display:flex; align-items:center; gap:10px}
+.date-row input{flex:1; min-width:0}
+.dow{flex:none; min-width:72px; text-align:center; font-weight:700; font-size:16px; padding:11px 10px; border-radius:8px; background:var(--sunk); border:1px solid var(--line); color:var(--muted)}
+.dow.sat, .sat{color:var(--sat)} .dow.sun, .sun{color:var(--sun)}
+.quick{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap}
+.quick button{padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:var(--surface); font-size:14px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--ink)}
+.quick button[aria-pressed="true"]{border-color:var(--navy); box-shadow:inset 0 0 0 1px var(--navy)}
+.quick b{font-weight:700}
 .who .grid2{gap:8px}
 
 /* segmented control */
 .seg{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; padding:4px; background:var(--sunk); border:1px solid var(--line); border-radius:10px}
 .seg button{border:0; background:transparent; border-radius:7px; padding:10px 4px; font-size:15px; font-weight:500; color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--navy); color:var(--on-navy)}
+.fac-seg{grid-template-columns:repeat(4,1fr)}
+.fac-seg.bad{border-color:var(--danger); box-shadow:0 0 0 1px var(--danger)}
+#facOther{margin-top:8px}
+.pgroup{list-style:none; margin:10px 2px 0; font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.04em}
+.pgroup:first-child{margin-top:0}
 
 /* chips: a square tick mirrors the ■/☐ boxes on the paper form */
 .chips{display:flex; flex-wrap:wrap; gap:8px}
@@ -142,6 +160,79 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .ph-add svg{width:22px; height:22px}
 .ph-add.busy{opacity:.6; pointer-events:none}
 
+/* saved lists (people / companies) */
+.plist{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+.plist li{display:flex; align-items:stretch; gap:8px}
+.pitem{flex:1; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:12px; text-align:left; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--surface)}
+.pitem .n{min-width:0; font-weight:600; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pitem .p{flex:none; font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums}
+.pdel{flex:none; padding:0 12px; border-radius:10px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:13px; white-space:nowrap}
+.pdel.arm{background:var(--danger); border-color:var(--danger); color:#fff}
+.pempty{padding:28px 8px; text-align:center; color:var(--muted); font-size:14px}
+.psearch{margin-bottom:12px}
+.padd{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.padd.co{grid-template-columns:1fr 1fr 76px}
+.padd > *{min-width:0}
+.padd .full{grid-column:1 / -1}
+.pshare{margin-top:20px; border-top:1px solid var(--line); padding-top:10px}
+.pshare summary{cursor:pointer; font-size:14px; font-weight:600; color:var(--link); padding:8px 0}
+.pshare-body{display:grid; gap:8px; margin-top:6px}
+.pshare-body p{margin:0; font-size:13px; color:var(--muted)}
+.pshare-body textarea{overflow:auto; min-height:110px}
+
+/* 보관함 */
+.hsum{font-size:14px; color:var(--ink); margin:0 2px 14px; line-height:1.6}
+.hsum span{font-size:13px; color:var(--muted)}
+.hmonth{margin:18px 2px 8px; font-size:13px; font-weight:600; color:var(--muted); letter-spacing:.04em}
+.hmonth:first-child{margin-top:0}
+.hitem{background:var(--surface); border:1px solid var(--line); border-radius:12px; margin-bottom:8px; overflow:hidden}
+.hmain{width:100%; display:flex; gap:12px; align-items:flex-start; padding:12px; border:0; background:transparent; text-align:left}
+.hthumb{flex:none; width:92px; height:60px; object-fit:cover; object-position:top; border-radius:6px; border:1px solid var(--line); background:#fff}
+.hinfo{flex:1; min-width:0; display:grid; gap:2px}
+.ht{font-weight:700; font-size:15px}
+.hs, .hd{font-size:13px; color:var(--muted)}
+.hw{font-size:13px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.hacts{border-top:1px solid var(--line); padding:10px 12px 12px; display:grid; gap:8px}
+.hbtns{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px}
+.hbtns button{padding:10px 6px; border-radius:8px; border:1px solid var(--line); background:var(--sunk); font-size:14px; font-weight:600; color:var(--link)}
+.hbtns button:disabled{opacity:.6}
+.hbtns .hdel{color:var(--danger)}
+.hconfirm{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:14px; background:var(--sunk); border-radius:8px; padding:10px}
+.hconfirm span{flex:1 1 100%}
+.hconfirm button{padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:var(--surface); font-size:14px}
+.hconfirm .yes{background:var(--navy); border-color:var(--navy); color:var(--on-navy)}
+.hconfirm .yes.danger{background:var(--danger); border-color:var(--danger); color:#fff}
+.fmt-row{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px}
+.fmt-row .ghost{padding:12px 6px; text-align:center; font-weight:600; color:var(--link)}
+.fmt-row .ghost:disabled{opacity:.6}
+#sheet{z-index:25}
+.htabs{grid-template-columns:1fr 1fr; margin-bottom:14px}
+.wk{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 12px 6px; margin-bottom:14px}
+.wk-h{display:flex; align-items:center; gap:8px; margin-bottom:6px}
+.wk-t{flex:1; min-width:0; text-align:center; display:grid}
+.wk-t b{font-size:15px}
+.wk-t span{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
+.wk-nav{flex:none; width:38px; height:38px; border-radius:8px; border:1px solid var(--line); background:var(--sunk); font-size:20px; line-height:1; color:var(--link)}
+.wk-tb{width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums}
+.wk-tb th, .wk-tb td{padding:9px 6px; border-top:1px solid var(--line); text-align:center}
+.wk-tb thead th{border-top:0; font-size:12px; font-weight:600; color:var(--muted)}
+.wk-tb tbody th{text-align:left; font-weight:700}
+.wk-tb tbody th button{border:0; background:transparent; padding:0; font:inherit; font-weight:700; color:var(--link)}
+.wk-ok{color:var(--link); font-weight:600}
+.wk-no{display:inline-block; padding:2px 8px; border-radius:999px; background:var(--warn-bg); color:var(--warn-ink); font-size:12px; font-weight:600}
+.fchips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
+.fchips button{padding:7px 12px; border-radius:999px; border:1px solid var(--line); background:var(--surface); font-size:14px; font-weight:500; font-variant-numeric:tabular-nums}
+.fchips button[aria-pressed="true"]{background:var(--navy); border-color:var(--navy); color:var(--on-navy)}
+.hsum a, .hd a{color:var(--link); font-weight:600}
+.hstatic{cursor:default}
+.hbtns a{display:grid; place-items:center; padding:10px 6px; border-radius:8px; border:1px solid var(--line); background:var(--sunk); font-size:14px; font-weight:600; color:var(--link); text-decoration:none}
+.hsync{color:var(--muted)}
+.hsync.ok{color:var(--link)}
+.pshare-body .row-btn{display:flex; gap:8px; flex-wrap:wrap}
+.pshare-body .row-btn button{flex:1 1 auto; padding:10px 12px; border-radius:8px; border:1px solid var(--line); background:var(--surface); font-size:14px; font-weight:500}
+.chk{display:flex; align-items:center; gap:10px; font-size:14px}
+.chk input{width:20px; height:20px; accent-color:var(--navy); flex:none}
+
 /* bottom bar */
 .bar{position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--surface); border-top:1px solid var(--line);
   padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
@@ -156,14 +247,16 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .sheet-h{display:flex; align-items:center; gap:12px; padding:12px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom:1px solid var(--line)}
 .sheet-h h2{flex:1; margin:0; font-size:17px; font-weight:700}
 .sheet-b{flex:1; overflow:auto; padding:16px max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); -webkit-overflow-scrolling:touch}
-.sheet-b img{display:block; width:100%; max-width:100%; border-radius:6px; border:1px solid var(--line); background:#fff}
-.sheet-b.zoom img{width:1100px; max-width:none}
+#sheetBody img{display:block; width:100%; max-width:100%; border-radius:6px; border:1px solid var(--line); background:#fff}
+#sheetBody.zoom img{width:1100px; max-width:none}
 .sheet-meta{margin-top:10px; font-size:13px; color:var(--muted); display:grid; gap:4px}
 .sheet-f{padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); border-top:1px solid var(--line); background:var(--surface); display:grid; gap:8px}
 .sheet-f .hint{font-size:13px; color:var(--muted); text-align:center}
 
 .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); z-index:30; max-width:min(92vw, 520px); background:var(--ink); color:var(--bg); padding:11px 16px; border-radius:10px; font-size:14px; box-shadow:0 6px 24px rgba(0,0,0,.18)}
 
+.toast.top{bottom:auto; top:calc(72px + env(safe-area-inset-top, 0px))}
+.phint{margin:0 2px 10px; font-size:13px; color:var(--muted)}
 @media (max-width:360px){ .grid2{grid-template-columns:1fr} .ph-grid{grid-template-columns:repeat(2, minmax(0,1fr))} }
 @media (prefers-reduced-motion: reduce){ .chev{transition:none} }
 </style>
@@ -175,11 +268,12 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <h1>주말공사 작업 보고</h1>
       <div class="top-sub" id="topSub"></div>
     </div>
-    <button type="button" class="ghost" id="btnReset" aria-expanded="false" aria-controls="resetPanel">새로 작성</button>
+    <div class="top-acts"><button type="button" class="ghost" id="btnHist">보관함</button>
+    <button type="button" class="ghost" id="btnReset" aria-expanded="false" aria-controls="resetPanel">새로 작성</button></div>
   </header>
 
   <div class="panel" id="resetPanel" hidden>
-    <p>점검자·PC 담당자 정보는 그대로 남아요.</p>
+    <p>관리자·PC 담당자 정보는 그대로 남아요.</p>
     <div class="acts">
       <button type="button" id="resetNext">같은 작업으로 다음 점검 쓰기<small>작업 목록은 두고 사진·특이사항만 비워요</small></button>
       <button type="button" id="resetAll">작업 모두 비우기<small>새 주말공사 보고를 처음부터 써요</small></button>
@@ -199,28 +293,30 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
     <h2 class="sec-h" id="secBasic">기본 정보</h2>
     <div class="card">
       <div>
-        <label class="lbl" for="factory">공장</label>
-        <div class="fac"><span>PC [</span><input type="text" id="factory" placeholder="성남" autocomplete="off"><span>]공장</span></div>
+        <span class="lbl" id="facLbl">공장</span>
+        <div class="seg fac-seg" role="group" aria-labelledby="facLbl" id="facSeg" tabindex="-1"></div>
+        <div class="fac" id="facOther" hidden><span>PC [</span><input type="text" id="factory" placeholder="공장 이름" aria-label="공장 이름 직접 입력" autocomplete="off"><span>]공장</span></div>
       </div>
       <div>
         <label class="lbl" for="date">점검일</label>
-        <input type="date" id="date">
+        <div class="date-row"><input type="date" id="date"><span class="dow" id="dow" aria-live="polite"></span></div>
+        <div class="quick" id="quickDates" aria-label="이번 주말 빠른 선택"></div>
       </div>
       <div>
         <span class="lbl" id="phaseLbl">점검구분</span>
         <div class="seg" role="group" aria-labelledby="phaseLbl" id="phase"></div>
       </div>
       <div class="who">
-        <span class="lbl">점검자</span>
+        <div class="lbl-row"><span class="lbl">관리자</span><button type="button" class="pick-link" data-pick="people" data-target="insp"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록에서 선택</button></div>
         <div class="grid2">
-          <input type="text" id="inspName" placeholder="이름" aria-label="점검자 이름" autocomplete="off">
-          <input type="tel" id="inspPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="점검자 연락처" autocomplete="off">
+          <input type="text" id="inspName" placeholder="이름" aria-label="관리자 이름" autocomplete="off" list="peopleList">
+          <input type="tel" id="inspPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="관리자 연락처" autocomplete="off">
         </div>
       </div>
       <div class="who">
-        <span class="lbl">PC 담당자</span>
+        <div class="lbl-row"><span class="lbl">PC 담당자</span><button type="button" class="pick-link" data-pick="people" data-target="pc"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록에서 선택</button></div>
         <div class="grid2">
-          <input type="text" id="pcName" placeholder="이름" aria-label="PC 담당자 이름" autocomplete="off">
+          <input type="text" id="pcName" placeholder="이름" aria-label="PC 담당자 이름" autocomplete="off" list="peopleList">
           <input type="tel" id="pcPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="PC 담당자 연락처" autocomplete="off">
         </div>
       </div>
@@ -233,6 +329,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
     <div style="margin-top:12px"><button type="button" class="add" id="btnAdd">+ 작업 추가</button></div>
   </section>
   <datalist id="coList"></datalist>
+  <datalist id="peopleList"></datalist>
 </div>
 
 <div class="bar">
@@ -253,9 +350,83 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
     <div class="sheet-meta" id="sheetMeta"></div>
   </div>
   <div class="sheet-f">
-    <button type="button" class="primary" id="btnSave">공유하기 (카카오톡·문자 등)</button>
-    <button type="button" class="ghost" id="btnDl" style="padding:12px">이미지 파일로 저장</button>
-    <div class="hint" id="saveHint">저장이 안 되면 이미지를 길게 눌러 저장하세요.</div>
+    <button type="button" class="primary" id="btnSave">이미지 저장 · 공유</button>
+    <div class="fmt-row" id="fmtRow">
+      <button type="button" class="ghost" id="btnDl" hidden>이미지 저장</button>
+      <button type="button" class="ghost" id="btnPpt">PPT 받기</button>
+      <button type="button" class="ghost" id="btnPdf">PDF 받기</button>
+    </div>
+    <div class="hint" id="saveHint">저장 버튼이 안 되면 이미지를 길게 눌러 저장하세요.</div>
+  </div>
+</div>
+
+<div class="sheet" id="hist" hidden role="dialog" aria-modal="true" aria-labelledby="histTitle">
+  <div class="sheet-h">
+    <h2 id="histTitle">보관함</h2>
+    <button type="button" class="ghost" id="histClose">닫기</button>
+  </div>
+  <div class="sheet-b">
+    <div class="seg htabs" id="histTabs" role="group" aria-label="보관함 보기" hidden>
+      <button type="button" data-tab="local" aria-pressed="true">이 폰</button>
+      <button type="button" data-tab="team" aria-pressed="false">팀 전체</button>
+    </div>
+    <div id="histLocal">
+      <div class="hsum" id="histSum"></div>
+      <input type="text" id="histSearch" class="psearch" placeholder="공사명·업체명·관리자 검색" aria-label="보관함 검색" autocomplete="off" hidden>
+      <div id="histList"></div>
+      <div class="pempty" id="histEmpty" hidden></div>
+    </div>
+    <div id="histTeam" hidden>
+      <div class="hsum" id="teamSum"></div>
+      <section class="wk" id="wkBox" hidden aria-label="주말 제출 현황"></section>
+      <div class="fchips" id="teamFilter" role="group" aria-label="공장별 보기" hidden></div>
+      <div id="teamList"></div>
+    </div>
+    <details class="pshare" id="syncBox" hidden>
+      <summary>팀 드라이브 연결</summary>
+      <div class="pshare-body">
+        <p id="syncState"></p>
+        <div><label class="lbl" for="syncUrl">Apps Script 웹 앱 주소</label>
+          <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" inputmode="url"></div>
+        <div><label class="lbl" for="syncKey">팀 코드</label>
+          <input type="text" id="syncKey" placeholder="Code.gs의 TEAM_CODE" autocomplete="off"></div>
+        <label class="chk"><input type="checkbox" id="syncAuto"> 보고서를 만들면 자동으로 올리기</label>
+        <div class="row-btn"><button type="button" id="syncTest">저장하고 연결 확인</button></div>
+        <div class="row-btn"><button type="button" id="syncLink">다른 폰 연결 링크 복사</button><button type="button" id="syncOff">이 폰 연결 끊기</button></div>
+        <textarea id="syncLinkText" rows="3" readonly hidden aria-label="연결 링크"></textarea>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="sheet" id="pick" hidden role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+  <div class="sheet-h">
+    <h2 id="pickTitle">자주 쓰는 연락처</h2>
+    <button type="button" class="ghost" id="pickClose">닫기</button>
+  </div>
+  <div class="sheet-b">
+    <input type="text" id="pickSearch" class="psearch" placeholder="검색" aria-label="목록 검색" autocomplete="off" hidden>
+    <p class="phint" id="pickHint">이름을 누르면 바로 입력돼요.</p>
+    <ul class="plist" id="pickList"></ul>
+    <div class="pempty" id="pickEmpty" hidden></div>
+    <details class="pshare" id="pShare">
+      <summary>다른 폰과 목록 나누기</summary>
+      <div class="pshare-body">
+        <p>목록을 복사해 카카오톡으로 보내고, 받은 폰에서 아래 칸에 붙여넣으면 똑같이 들어가요. 사람·업체 목록이 함께 옮겨져요.</p>
+        <button type="button" class="ghost" id="pCopy">내 목록 복사하기</button>
+        <textarea id="pText" rows="4" placeholder="받은 목록을 여기에 붙여넣기"></textarea>
+        <button type="button" class="ghost" id="pImport">붙여넣은 목록 가져오기</button>
+      </div>
+    </details>
+  </div>
+  <div class="sheet-f">
+    <form class="padd" id="pickAdd" novalidate>
+      <input type="text" id="pickName" placeholder="이름" aria-label="이름" autocomplete="off">
+      <input type="tel" id="pickPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="전화번호" autocomplete="off">
+      <input type="text" id="pickPeople" placeholder="인원" inputmode="numeric" aria-label="인원" autocomplete="off" hidden>
+      <button type="submit" class="primary full" id="pickAddBtn">목록에 추가</button>
+    </form>
+    <div class="hint">같은 이름으로 다시 추가하면 번호가 바뀌어요. 보고서를 만들 때 쓴 이름·업체도 자동으로 저장돼요.</div>
   </div>
 </div>
 
@@ -273,7 +444,7 @@ const TYPES = [
   {k:'밀폐', ui:'밀폐', h:'밀폐\n작업'}, {k:'중장비', ui:'중장비', h:'중장비\n작업'}
 ];
 const MEASURES = [
-  {k:'허가', ui:'작업허가', h:'작업\n허가'}, {k:'보호구', ui:'보호구', h:'보호구'}, {k:'LOTO', ui:'LOTO', h:'LOTO'},
+  {k:'허가', ui:'작업허가', h:'작업\n허가'}, {k:'보호구', ui:'보호구', h:'보호구'}, {k:'LOTO', ui:'LOTOTO', h:'LOTOTO'},
   {k:'추락방지', ui:'추락방지', h:'추락\n방지'}, {k:'화기관리', ui:'화기관리', h:'화기\n관리'}, {k:'통제', ui:'통제(정리)', h:'통제\n(정리)'}
 ];
 const PHASES = [
@@ -282,8 +453,10 @@ const PHASES = [
   {k:'after',  ui:'작업 후', full:'작업 후 점검', file:'작업후'}
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
+const DAYS_FULL = DAYS.map(d => d + '요일');
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
-const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1';
+const FACTORIES = ['성남', '원주', '대구'];   // 공장 버튼 (공장이 늘면 여기에 추가)
+const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1', LS_PEOPLE = 'wkreport.people.v1';
 
 /* ---------- small helpers ---------- */
 const $ = (s, r=document) => r.querySelector(s);
@@ -305,6 +478,16 @@ function dateLabel(iso){
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); if (!m) return '';
   const d = new Date(+m[1], +m[2]-1, +m[3]);
   return `${+m[1]}년 ${+m[2]}월 ${+m[3]}일 (${DAYS[d.getDay()]})`;
+}
+function parseISO(iso){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? new Date(+m[1], +m[2]-1, +m[3]) : null;
+}
+function dowOf(iso){ const d = parseISO(iso); return d ? d.getDay() : -1; }
+function weekendDates(){
+  const d = new Date(); const day = d.getDay();
+  const sat = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (day === 0 ? -1 : 6 - day));
+  const sun = new Date(sat.getFullYear(), sat.getMonth(), sat.getDate() + 1);
+  return [sat, sun];
 }
 function fmtPhone(v){
   const d = String(v || '').replace(/\D/g, '').slice(0, 11);
@@ -331,25 +514,30 @@ const idb = (() => {
     if (dbp) return dbp;
     dbp = new Promise((res, rej) => {
       try {
-        const r = indexedDB.open('wkreport-photos', 1);
-        r.onupgradeneeded = () => r.result.createObjectStore('p');
+        const r = indexedDB.open('wkreport-photos', 2);
+        r.onupgradeneeded = () => {
+          const db = r.result;
+          if (!db.objectStoreNames.contains('p')) db.createObjectStore('p');   // 작성 중인 사진
+          if (!db.objectStoreNames.contains('h')) db.createObjectStore('h');   // 보관함
+        };
         r.onsuccess = () => res(r.result);
         r.onerror = () => rej(r.error);
       } catch(e){ rej(e); }
     });
     return dbp;
   }
-  async function run(mode, fn){
+  async function run(store, mode, fn){
     const db = await open();
     return new Promise((res, rej) => {
-      const tx = db.transaction('p', mode); const req = fn(tx.objectStore('p'));
+      const tx = db.transaction(store, mode); const req = fn(tx.objectStore(store));
       tx.oncomplete = () => res(req && req.result); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
     });
   }
   return {
-    put: (k, v) => run('readwrite', s => s.put(v, k)).catch(() => {}),
-    get: k => run('readonly', s => s.get(k)).catch(() => null),
-    del: k => run('readwrite', s => s.delete(k)).catch(() => {})
+    put: (st, k, v) => run(st, 'readwrite', s => s.put(v, k)),
+    get: (st, k) => run(st, 'readonly', s => s.get(k)).catch(() => null),
+    del: (st, k) => run(st, 'readwrite', s => s.delete(k)).catch(() => {}),
+    all: (st) => run(st, 'readonly', s => s.getAll()).then(r => r || []).catch(() => [])
   };
 })();
 const photos = new Map();   // id -> {blob, url}
@@ -357,13 +545,13 @@ const photos = new Map();   // id -> {blob, url}
 function addPhotoBlob(blob){
   const id = 'p' + uid();
   photos.set(id, {blob, url: URL.createObjectURL(blob)});
-  idb.put(id, blob);
+  idb.put('p', id, blob).catch(() => {});
   return id;
 }
 function dropPhoto(id){
   const p = photos.get(id);
   if (p) URL.revokeObjectURL(p.url);
-  photos.delete(id); idb.del(id);
+  photos.delete(id); idb.del('p', id);
 }
 function loadImg(url){
   return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
@@ -386,12 +574,13 @@ async function shrinkPhoto(file){
 }
 
 /* ---------- state ---------- */
+const newDraftId = () => 'd' + uid();
 function newWork(over){
   return Object.assign({id: uid(), title:'', company:'', people:'', phone:'', desc:'', types:[], measures:[], photos:[], note:'', open:true}, over || {});
 }
 function exampleState(){
   return {
-    example: false, factory: '', date: defaultDate(), phase: 'before',
+    example: false, draftId: newDraftId(), factory: '', date: defaultDate(), phase: 'before',
     inspName: '', inspPhone: '', pcName: '', pcPhone: '',
     works: [newWork()]
   };
@@ -404,10 +593,14 @@ function normalize(s){
     photos: Array.isArray(w.photos) ? w.photos : []
   })));
   if (!PHASES.some(p => p.k === st.phase)) st.phase = 'before';
+  if (!st.draftId) st.draftId = newDraftId();
   return st;
 }
 let state = normalize(ls.get(LS_DRAFT)) || exampleState();
-let companies = ls.get(LS_CO) || {};
+let companies = ls.get(LS_CO) || {};   // 업체명 -> {phone, people, used}
+let people = ls.get(LS_PEOPLE) || {};     // 이름 -> {phone, used, fac:{공장: 마지막 사용}}
+const LS_FACDEF = 'wkreport.factoryDefaults.v1';
+let facDefaults = ls.get(LS_FACDEF) || {};  // 공장 -> {pcName, pcPhone}
 let saveT = 0;
 function save(){ clearTimeout(saveT); saveT = setTimeout(() => ls.set(LS_DRAFT, state), 300); }
 const findWork = id => state.works.find(w => w.id === id);
@@ -437,9 +630,10 @@ const isEmptyWork = w => !w.title.trim() && !w.company.trim() && !w.desc.trim() 
 /* ---------- rendering: base form ---------- */
 const el = {
   topSub: $('#topSub'), works: $('#works'), workCount: $('#workCount'), btnAdd: $('#btnAdd'), barStat: $('#barStat'),
-  phase: $('#phase'), coList: $('#coList'), exBanner: $('#exBanner'), resetPanel: $('#resetPanel'), btnReset: $('#btnReset'),
+  facSeg: $('#facSeg'), facOther: $('#facOther'),
+  phase: $('#phase'), coList: $('#coList'), peopleList: $('#peopleList'), dow: $('#dow'), quickDates: $('#quickDates'), exBanner: $('#exBanner'), resetPanel: $('#resetPanel'), btnReset: $('#btnReset'),
   toast: $('#toast'), sheet: $('#sheet'), preview: $('#preview'), sheetMeta: $('#sheetMeta'), sheetBody: $('#sheetBody'),
-  btnSave: $('#btnSave'), saveHint: $('#saveHint'), btnMake: $('#btnMake'), btnZoom: $('#btnZoom')
+  btnSave: $('#btnSave'), btnDl: $('#btnDl'), saveHint: $('#saveHint'), btnMake: $('#btnMake'), btnZoom: $('#btnZoom')
 };
 const BASIC = ['factory', 'date', 'inspName', 'inspPhone', 'pcName', 'pcPhone'];
 
@@ -447,15 +641,61 @@ function renderBasic(){
   BASIC.forEach(k => { $('#' + k).value = state[k] || ''; });
   el.phase.innerHTML = PHASES.map(p => `<button type="button" data-ph="${p.k}" aria-pressed="${state.phase === p.k}">${p.ui}</button>`).join('');
   el.exBanner.hidden = !state.example;
-  updateTop();
+  renderFac(); renderDate(); updateTop(); renderCompanies();
+}
+let facOtherOpen = false;
+function renderFac(){
+  const other = facOtherOpen || (!!state.factory && !FACTORIES.includes(state.factory));
+  el.facSeg.innerHTML = [...FACTORIES, '기타'].map(f =>
+    `<button type="button" data-fac="${esc(f)}" aria-pressed="${f === '기타' ? other : state.factory === f}">${esc(f)}</button>`).join('');
+  el.facOther.hidden = !other;
+}
+function setFactory(f){
+  const prev = state.factory;
+  state.factory = f; $('#factory').value = f; el.facSeg.classList.remove('bad');
+  applyFacDefaults(prev, f);
+  updateTop(); renderCompanies(); save();
+}
+// PC 담당자는 공장마다 다르니, 공장을 바꾸면 그 공장 담당자로 바꿉니다
+function applyFacDefaults(prev, next){
+  if (prev === next) return;
+  const pd = facDefaults[prev], nd = facDefaults[next];
+  const setPc = (n, ph) => { state.pcName = n; state.pcPhone = ph; $('#pcName').value = n; $('#pcPhone').value = ph; };
+  if (nd && nd.pcName){
+    if (state.pcName !== nd.pcName){ setPc(nd.pcName, nd.pcPhone || ''); toast(`${next}공장 PC 담당자 ${nd.pcName}(으)로 바꿨어요.`); }
+  } else if (pd && state.pcName && state.pcName === pd.pcName){
+    setPc('', '');
+  }
+}
+function renderDate(){
+  const dw = dowOf(state.date);
+  el.dow.textContent = dw >= 0 ? DAYS_FULL[dw] : '요일';
+  el.dow.className = 'dow' + (dw === 6 ? ' sat' : dw === 0 ? ' sun' : '');
+  el.quickDates.innerHTML = weekendDates().map(d => {
+    const iso = fmtDate(d), dw2 = d.getDay();
+    return `<button type="button" data-date="${iso}" aria-pressed="${state.date === iso}"><b class="${dw2 === 6 ? 'sat' : 'sun'}">${DAYS[dw2]}</b> ${d.getMonth() + 1}/${d.getDate()}</button>`;
+  }).join('');
 }
 function updateTop(){
   const parts = [`PC [${state.factory || '  '}]공장`, dateLabel(state.date), phaseOf(state.phase).full].filter(Boolean);
   el.topSub.textContent = parts.join(' · ');
 }
-function renderCompanies(){
-  el.coList.innerHTML = Object.keys(companies).sort().map(n => `<option value="${esc(n)}"></option>`).join('');
+const sortedNames = map => Object.keys(map).sort((a, b) => ((map[b].used || 0) - (map[a].used || 0)) || a.localeCompare(b, 'ko'));
+// 지금 고른 공장에서 쓴 것 먼저, 나머지는 그 뒤에
+function sortedFor(map, fac){
+  const all = sortedNames(map);
+  if (!fac) return {here: [], other: all};
+  const here = all.filter(n => map[n].fac && map[n].fac[fac]).sort((a, b) => map[b].fac[fac] - map[a].fac[fac]);
+  return {here, other: all.filter(n => !here.includes(n))};
 }
+function tagFac(e, fac, t){ if (fac) e.fac = Object.assign({}, e.fac, {[fac]: t || Date.now()}); return e; }
+function renderCompanies(){
+  const opt = n => `<option value="${esc(n)}"></option>`;
+  const co = sortedFor(companies, state.factory), pe = sortedFor(people, state.factory);
+  el.coList.innerHTML = [...co.here, ...co.other].map(opt).join('');
+  el.peopleList.innerHTML = [...pe.here, ...pe.other].map(opt).join('');
+}
+function saveLists(){ ls.set(LS_CO, companies); ls.set(LS_PEOPLE, people); renderCompanies(); }
 
 /* ---------- rendering: work cards ---------- */
 function summaryOf(w){
@@ -503,9 +743,9 @@ function cardHTML(w, i){
     <div><label class="lbl" for="w-${id}-title">공사명</label>
       <input type="text" id="w-${id}-title" data-f="title" value="${esc(w.title)}" placeholder="예: 나동 사일로 4번탱크 내부 청소" autocomplete="off"></div>
     <div class="grid-co">
-      <div><label class="lbl" for="w-${id}-company">업체명</label>
+      <div><div class="lbl-row"><label class="lbl" for="w-${id}-company">업체명</label><button type="button" class="pick-link" data-act="pickco"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록</button></div>
         <input type="text" id="w-${id}-company" data-f="company" value="${esc(w.company)}" list="coList" placeholder="업체명" autocomplete="off"></div>
-      <div><label class="lbl" for="w-${id}-people">인원(명)</label>
+      <div><div class="lbl-row"><label class="lbl" for="w-${id}-people">인원(명)</label></div>
         <input type="text" id="w-${id}-people" data-f="people" value="${esc(w.people)}" inputmode="numeric" placeholder="0" autocomplete="off"></div>
     </div>
     <div><label class="lbl" for="w-${id}-phone">업체 공사 담당자 연락처</label>
@@ -567,6 +807,7 @@ function autoGrow(t){ t.style.height = 'auto'; t.style.height = (t.scrollHeight 
 let toastT = 0;
 function toast(msg, ms = 2600){
   el.toast.textContent = msg; el.toast.hidden = false;
+  el.toast.classList.toggle('top', !!document.querySelector('.sheet:not([hidden]) .sheet-f'));
   clearTimeout(toastT); toastT = setTimeout(() => { el.toast.hidden = true; }, ms);
 }
 
@@ -576,9 +817,33 @@ BASIC.forEach(k => {
   input.addEventListener('input', () => {
     state[k] = input.value; input.classList.remove('bad');
     if (k === 'factory' || k === 'date') updateTop();
+    if (k === 'date') renderDate();
     save();
   });
+  if (k === 'inspName' || k === 'pcName') input.addEventListener('change', () => {
+    const hit = people[input.value.trim()]; if (!hit || !hit.phone) return;
+    const pk = k === 'inspName' ? 'inspPhone' : 'pcPhone';
+    state[pk] = hit.phone; $('#' + pk).value = hit.phone; save();
+  });
   if (k.endsWith('Phone')) input.addEventListener('change', () => { input.value = state[k] = fmtPhone(input.value); save(); });
+});
+el.facSeg.addEventListener('click', e => {
+  const b = e.target.closest('[data-fac]'); if (!b) return;
+  const f = b.dataset.fac;
+  if (f === '기타'){
+    facOtherOpen = true;
+    if (FACTORIES.includes(state.factory)) setFactory('');
+    renderFac(); setTimeout(() => $('#factory').focus(), 50); return;
+  }
+  facOtherOpen = false; setFactory(f); renderFac();
+});
+let facBefore = '';
+$('#factory').addEventListener('focus', () => { facBefore = state.factory; });
+$('#factory').addEventListener('change', () => { applyFacDefaults(facBefore, state.factory.trim()); facBefore = state.factory; renderCompanies(); el.facSeg.classList.remove('bad'); });
+el.quickDates.addEventListener('click', e => {
+  const b = e.target.closest('[data-date]'); if (!b) return;
+  state.date = b.dataset.date; $('#date').value = state.date; $('#date').classList.remove('bad');
+  renderDate(); updateTop(); save();
 });
 el.phase.addEventListener('click', e => {
   const b = e.target.closest('[data-ph]'); if (!b) return;
@@ -592,6 +857,7 @@ el.works.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t) return;
   const card = t.closest('.work'); const w = card && findWork(card.dataset.id); if (!w) return;
   const act = t.dataset.act;
+  if (act === 'pickco'){ openPick('co', w.id); return; }
   if (act === 'toggle'){
     w.open = !w.open; t.setAttribute('aria-expanded', String(w.open));
     card.querySelector('.w-body').hidden = !w.open;
@@ -644,7 +910,7 @@ el.works.addEventListener('change', async e => {
   if (f === 'company'){
     const c = companies[w.company.trim()];
     if (c){
-      if (!w.phone && c.phone){ w.phone = c.phone; const p = card.querySelector('[data-f="phone"]'); if (p) p.value = c.phone; }
+      if (c.phone){ w.phone = c.phone; const p = card.querySelector('[data-f="phone"]'); if (p) p.value = c.phone; }
       if (!w.people && c.people){ w.people = c.people; const p = card.querySelector('[data-f="people"]'); if (p) p.value = c.people; }
       card.querySelector('.w-sum').textContent = summaryOf(w); save();
     }
@@ -686,7 +952,7 @@ function clearWorks(keepList){
     state.works = [newWork()];
     state.date = defaultDate(); state.phase = 'before';
   }
-  state.example = false;
+  state.example = false; state.draftId = newDraftId();
   renderBasic(); renderWorks(); save();
   el.resetPanel.hidden = true; el.btnReset.setAttribute('aria-expanded', 'false');
   window.scrollTo({top: 0, behavior: 'smooth'});
@@ -700,10 +966,126 @@ $('#resetAll').addEventListener('click', () => { clearWorks(false); toast('새 �
 $('#exClear').addEventListener('click', () => { clearWorks(false); });
 $('#exKeep').addEventListener('click', () => { state.example = false; el.exBanner.hidden = true; save(); });
 
+/* ---------- saved lists: picker sheet ---------- */
+const pk = {
+  sheet: $('#pick'), title: $('#pickTitle'), list: $('#pickList'), empty: $('#pickEmpty'), search: $('#pickSearch'),
+  form: $('#pickAdd'), name: $('#pickName'), phone: $('#pickPhone'), people: $('#pickPeople'), share: $('#pShare'), text: $('#pText')
+};
+let pickCtx = null; // {kind:'people'|'co', target:'insp'|'pc'|workId}
+const listOf = kind => kind === 'co' ? companies : people;
+function openPick(kind, target){
+  pickCtx = {kind, target};
+  const co = kind === 'co';
+  pk.title.textContent = co ? '자주 쓰는 업체' : '자주 쓰는 연락처';
+  pk.name.placeholder = co ? '업체명' : '이름';
+  pk.name.setAttribute('aria-label', co ? '업체명' : '이름');
+  pk.phone.setAttribute('aria-label', co ? '업체 담당자 연락처' : '전화번호');
+  pk.people.hidden = !co; pk.form.classList.toggle('co', co);
+  pk.search.value = ''; pk.share.open = false; pk.text.value = '';
+  pk.name.value = pk.phone.value = pk.people.value = ''; pk.name.classList.remove('bad');
+  renderPick();
+  pk.sheet.hidden = false; syncScrollLock();
+}
+function closePick(){ pk.sheet.hidden = true; pickCtx = null; syncScrollLock(); }
+function renderPick(){
+  if (!pickCtx) return;
+  const map = listOf(pickCtx.kind), names = sortedNames(map), fac = state.factory;
+  pk.search.hidden = names.length < 7;
+  const q = pk.search.value.trim(), qd = q.replace(/\D/g, '');
+  const match = n => !q || n.includes(q) || (qd && (map[n].phone || '').replace(/\D/g, '').includes(qd));
+  const grp = sortedFor(map, fac), here = grp.here.filter(match), other = grp.other.filter(match);
+  const shown = [...here, ...other];
+  const item = n => {
+    const e = map[n], sub = [e.phone, pickCtx.kind === 'co' && e.people ? e.people + '명' : ''].filter(Boolean).join(' · ');
+    return `<li><button type="button" class="pitem" data-n="${esc(n)}"><span class="n">${esc(n)}</span><span class="p">${esc(sub)}</span></button>` +
+      `<button type="button" class="pdel" data-del="${esc(n)}" aria-label="${esc(n)} 삭제">삭제</button></li>`;
+  };
+  const what = pickCtx.kind === 'co' ? '업체' : '사람';
+  pk.list.innerHTML = (here.length && other.length)
+    ? `<li class="pgroup">${esc(fac)}공장에서 쓴 ${what}</li>${here.map(item).join('')}<li class="pgroup">다른 공장</li>${other.map(item).join('')}`
+    : shown.map(item).join('');
+  pk.empty.hidden = shown.length > 0;
+  document.getElementById('pickHint').hidden = !shown.length;
+  pk.empty.textContent = names.length ? '검색 결과가 없어요.'
+    : (pickCtx.kind === 'co' ? '아직 저장된 업체가 없어요. 아래에서 업체명과 담당자 번호를 추가하세요.' : '아직 저장된 연락처가 없어요. 아래에서 이름과 번호를 추가하세요.');
+}
+function applyPick(name){
+  const {kind, target} = pickCtx, e = listOf(kind)[name]; if (!e) return;
+  e.used = Date.now(); tagFac(e, state.factory); saveLists();
+  if (kind === 'people'){
+    state[target + 'Name'] = name; state[target + 'Phone'] = e.phone || '';
+    $('#' + target + 'Name').value = name; $('#' + target + 'Phone').value = e.phone || '';
+    $('#' + target + 'Name').classList.remove('bad');
+  } else {
+    const w = findWork(target);
+    if (w){ w.company = name; if (e.phone) w.phone = e.phone; if (e.people && !w.people) w.people = e.people; w.open = true; rerenderCard(w); }
+  }
+  save(); closePick();
+}
+document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => openPick(b.dataset.pick, b.dataset.target)));
+$('#pickClose').addEventListener('click', closePick);
+pk.search.addEventListener('input', renderPick);
+pk.phone.addEventListener('change', () => { pk.phone.value = fmtPhone(pk.phone.value); });
+pk.list.addEventListener('click', e => {
+  const del = e.target.closest('[data-del]');
+  if (del){
+    if (!del.classList.contains('arm')){
+      pk.list.querySelectorAll('.pdel.arm').forEach(b => { b.classList.remove('arm'); b.textContent = '삭제'; });
+      del.classList.add('arm'); del.textContent = '삭제 확인'; return;
+    }
+    delete listOf(pickCtx.kind)[del.dataset.del]; saveLists(); renderPick(); return;
+  }
+  const it = e.target.closest('[data-n]'); if (it) applyPick(it.dataset.n);
+});
+pk.form.addEventListener('submit', e => {
+  e.preventDefault(); if (!pickCtx) return;
+  const name = pk.name.value.trim();
+  if (!name){ pk.name.classList.add('bad'); pk.name.focus(); return; }
+  const map = listOf(pickCtx.kind), existed = !!map[name], prev = map[name] || {};
+  const entry = {phone: fmtPhone(pk.phone.value) || prev.phone || '', used: Date.now()};
+  if (pickCtx.kind === 'co') entry.people = pk.people.value.replace(/\D/g, '') || prev.people || '';
+  if (prev.fac) entry.fac = prev.fac;
+  map[name] = tagFac(entry, state.factory); saveLists();
+  pk.name.value = pk.phone.value = pk.people.value = ''; pk.name.classList.remove('bad');
+  renderPick(); toast(existed ? `${name} 정보를 바꿨어요.` : `${name}, 목록에 추가했어요.`);
+});
+pk.name.addEventListener('input', () => pk.name.classList.remove('bad'));
+function exportText(){
+  const out = ['[주말공사 목록]'];
+  const facs = e => Object.keys(e.fac || {}).join(',');
+  sortedNames(people).forEach(n => out.push(`사람|${n}|${people[n].phone || ''}|${facs(people[n])}`));
+  sortedNames(companies).forEach(n => out.push(`업체|${n}|${companies[n].phone || ''}|${companies[n].people || ''}|${facs(companies[n])}`));
+  return out.join('\n');
+}
+$('#pCopy').addEventListener('click', () => {
+  if (!Object.keys(people).length && !Object.keys(companies).length){ toast('복사할 목록이 아직 없어요.'); return; }
+  const txt = exportText();
+  const fallback = () => { pk.text.value = txt; pk.text.focus(); pk.text.select(); toast('아래 칸의 글을 길게 눌러 복사해 주세요.', 3600); };
+  try { navigator.clipboard.writeText(txt).then(() => toast('복사했어요. 카카오톡에 붙여넣어 보내세요.'), fallback); }
+  catch(e){ fallback(); }
+});
+$('#pImport').addEventListener('click', () => {
+  let np = 0, nc = 0;
+  pk.text.value.split(/\r?\n/).forEach(line => {
+    const f = line.split('|').map(x => x.trim());
+    const addFac = (e, list) => { (list || '').split(',').map(x => x.trim()).filter(Boolean).forEach(fc => { if (!(e.fac && e.fac[fc])) tagFac(e, fc, 1); }); return e; };
+    if (f[0] === '사람' && f[1]){
+      const o = people[f[1]] || {}; people[f[1]] = addFac(Object.assign({}, o, {phone: fmtPhone(f[2]) || o.phone || ''}), f[3]); np++;
+    } else if (f[0] === '업체' && f[1]){
+      const o = companies[f[1]] || {};
+      companies[f[1]] = addFac(Object.assign({}, o, {phone: fmtPhone(f[2]) || o.phone || '', people: (f[3] || '').replace(/\D/g, '') || o.people || ''}), f[4]); nc++;
+    }
+  });
+  if (!np && !nc){ toast('가져올 목록을 찾지 못했어요. 복사한 글 전체를 붙여넣어 주세요.', 3600); return; }
+  saveLists(); renderPick(); pk.text.value = ''; pk.share.open = false;
+  toast(`연락처 ${np}명, 업체 ${nc}곳을 가져왔어요.`);
+});
+
 /* ---------- validation ---------- */
 function validate(){
+  if (!state.factory.trim()) return {msg: '공장을 골라 주세요.', id: el.facOther.hidden ? 'facSeg' : 'factory'};
   if (!state.date) return {msg: '점검일을 입력해 주세요.', id: 'date'};
-  if (!state.inspName.trim()) return {msg: '점검자 이름을 입력해 주세요.', id: 'inspName'};
+  if (!state.inspName.trim()) return {msg: '관리자 이름을 입력해 주세요.', id: 'inspName'};
   const filled = state.works.filter(w => !isEmptyWork(w));
   if (!filled.length) return {msg: '작업을 하나 이상 입력해 주세요.', id: `w-${state.works[0].id}-title`, work: state.works[0]};
   for (const w of filled){
@@ -721,7 +1103,8 @@ function focusBad(err){
 /* ---------- report image (canvas) ---------- */
 const C = { // report palette: always a white paper document
   navy:'#1F3864', slate:'#4D6390', orange:'#C2561A', ink:'#16213A', muted:'#5B6780', line:'#B9C3D3',
-  label:'#E3E8F1', tintT:'#E4EAF5', tintM:'#FBE7DA', box:'#3A4660', empty:'#EEF1F6', paper:'#FFFFFF'
+  label:'#E3E8F1', tintT:'#E4EAF5', tintM:'#FBE7DA', box:'#3A4660', empty:'#EEF1F6', paper:'#FFFFFF',
+  noteBg:'#FFF4D1', noteLine:'#E2A11B', noteLab:'#8A5300', noteInk:'#1F3864'
 };
 function setF(g, weight, size){ g.font = `${weight} ${size}px ${FONT}`; }
 function wrap(g, text, maxW){
@@ -764,88 +1147,99 @@ function cover(g, img, x, y, w, h){
   g.drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, x, y, w, h);
 }
 
-async function renderReport(st){
-  const works = st.works.filter(w => !isEmptyWork(w));
-  // 1) fonts: make sure every glyph we draw is loaded before measuring
-  const sample = [st.factory, st.inspName, st.pcName, ...works.flatMap(w => [w.title, w.company, w.desc, w.note]),
-    'PC[]공장주말외주업체작업보고점검일구분자전중후연락처명인원공사내용체크주요안전조치일반고소화기밀폐중장비허가보호구LOTO추락방지관리통제정리담당사진없음특이사항년월일요토☎■0123456789-()·/:…'].join('');
+/* ---------- report document (a frozen copy of the form, photos included) ---------- */
+function makeDoc(st){
+  return {
+    draftId: st.draftId, factory: st.factory, date: st.date, phase: st.phase,
+    inspName: st.inspName, inspPhone: st.inspPhone, pcName: st.pcName, pcPhone: st.pcPhone,
+    works: st.works.filter(w => !isEmptyWork(w)).map(w => ({
+      title: w.title, company: w.company, people: w.people, phone: w.phone, desc: w.desc,
+      types: [...w.types], measures: [...w.measures], note: w.note,
+      photos: w.photos.map(id => photos.get(id)).filter(Boolean).map(p => p.blob)
+    }))
+  };
+}
+const docTitle = d => `PC [ ${d.factory || '   '} ]공장 주말 외주업체 작업 보고`;
+const docDateLine = d => [dateLabel(d.date), phaseOf(d.phase).full].filter(Boolean).join(' · ');
+function docFileBase(d){
+  const dw = dowOf(d.date);
+  return `${d.factory || ''}공장_주말작업보고_${d.date}${dw >= 0 ? `(${DAYS[dw]})` : ''}_${phaseOf(d.phase).file}`;
+}
+function stamp(t){ const n = t ? new Date(t) : new Date(); return `${fmtDate(n)} ${pad2(n.getHours())}:${pad2(n.getMinutes())}`; }
+
+/* ---------- canvas layout engine: one tall image, or A4 pages for PDF ---------- */
+const RW = 2100, RM = 60, RIW = RW - 2 * RM;
+const Y_INFO = RM + 92, INFO_H = 80, Y_TABLE = Y_INFO + INFO_H + 26, HEAD1 = 54, HEAD2 = 76;
+const BG = 30, BW = (RIW - BG * 2) / 3, BH_HEAD = 56, CELL = BW / 2;
+const PAD = 14, LH = 34;
+
+async function loadFonts(doc){
+  const sample = [doc.factory, doc.inspName, doc.pcName, ...doc.works.flatMap(w => [w.title, w.company, w.desc, w.note]),
+    'PC[]공장주말외주업체작업보고사진점검일구분자전중후연락처명인원공사내용체크주요안전조치일반고소화기밀폐중장비허가보호구LOTO추락방지관리통제정리담당없음특이사항년월일요토☎■0123456789-()·/:…계속'].join('');
   try {
     await Promise.race([
-      Promise.all(['400', '600', '700'].map(wt => document.fonts.load(`${wt} 24px "${FONT_FACE}"`, sample))),
+      Promise.all(['400', '500', '600', '700'].map(wt => document.fonts.load(`${wt} 24px "${FONT_FACE}"`, sample))),
       sleep(5000)
     ]);
   } catch(e){}
-  // 2) decode photos
-  const imgs = new Map();
-  await Promise.all(works.flatMap(w => w.photos).map(async id => {
-    const p = photos.get(id); if (!p) return;
-    try { imgs.set(id, await loadImg(p.url)); } catch(e){}
+}
+async function prepare(doc){
+  await loadFonts(doc);
+  const urls = [];
+  const works = await Promise.all(doc.works.map(async w => {
+    const imgs = (await Promise.all((w.photos || []).map(async b => {
+      const u = URL.createObjectURL(b); urls.push(u);
+      try { return await loadImg(u); } catch(e){ return null; }
+    }))).filter(Boolean);
+    return Object.assign({}, w, {imgs});
   }));
-
-  // 3) layout
-  const W = 2100, M = 60, IW = W - 2 * M;
   const m = document.createElement('canvas').getContext('2d');
   const colsDef = [
-    {k:'no', w:70, h:'No'}, {k:'title', w:290, h:'공사명'}, {k:'co', w:260, h:'업체명 (인원)\n연락처'}, {k:'desc', w:300, h:'공사내용'},
+    {k:'no', w:70, h:'No'}, {k:'title', w:290, h:'공사명'}, {k:'co', w:260, h:'업체명 (인원)\n연락처'}, {k:'desc', w:290, h:'공사내용'},
     ...TYPES.map(t => ({k:'t', key:t.k, w:80, h:t.h})), ...MEASURES.map(x => ({k:'m', key:x.k, w:80, h:x.h})),
-    {k:'pc', w:180, h:'PC\n담당자'}
+    {k:'pc', w:190, h:'PC\n담당자'}
   ];
-  let cx = M; const cols = colsDef.map(c => { const o = Object.assign({x: cx}, c); cx += c.w; return o; });
+  let cx = RM; const cols = colsDef.map(c => { const o = Object.assign({x: cx}, c); cx += c.w; return o; });
   const col = k => cols.find(c => c.k === k);
-  const PAD = 14, LH = 34;
-
   const rows = works.map(w => {
     setF(m, 600, 25);
     const tl = wrap(m, w.title, col('title').w - PAD * 2);
-    const coName = (w.company || '') + (w.people ? ` (${w.people}명)` : '');
-    const cl = wrap(m, coName, col('co').w - PAD * 2);
+    const cl = wrap(m, (w.company || '') + (w.people ? ` (${w.people}명)` : ''), col('co').w - PAD * 2);
     setF(m, 400, 24);
     const dl = w.desc ? wrap(m, w.desc, col('desc').w - PAD * 2) : [];
-    const coH = cl.length * LH + (w.phone ? 30 : 0);
-    const h = Math.max(96, Math.max(tl.length * LH, coH, dl.length * 32) + 36);
+    const h = Math.max(96, Math.max(tl.length * LH, cl.length * LH + (w.phone ? 30 : 0), dl.length * 32) + 36);
     return {w, tl, cl, dl, h};
   });
-
   const blocks = [];
   works.forEach((w, i) => {
-    const ph = w.photos.filter(id => imgs.has(id));
-    if (!ph.length && !w.note.trim()) return;
-    const chunks = []; for (let j = 0; j < ph.length; j += 2) chunks.push(ph.slice(j, j + 2));
+    if (!w.imgs.length && !w.note.trim()) return;
+    const chunks = []; for (let j = 0; j < w.imgs.length; j += 2) chunks.push(w.imgs.slice(j, j + 2));
     if (!chunks.length) chunks.push([]);
-    chunks.forEach((c, j) => blocks.push({no: i + 1, title: w.title, part: chunks.length > 1 ? j + 1 : 0, photos: c, note: j === 0 ? w.note : null}));
+    chunks.forEach((c, j) => blocks.push({no: i + 1, title: w.title, part: chunks.length > 1 ? j + 1 : 0, imgs: c, note: j === 0 ? w.note : null}));
   });
-  const BG = 30, BW = (IW - BG * 2) / 3, BH_HEAD = 56, CELL = BW / 2;
-  setF(m, 400, 22);
+  setF(m, 600, 23);
   blocks.forEach(b => {
-    b.noteLines = b.note === null ? null : (b.note.trim() ? wrap(m, b.note, BW - 28) : []);
-    b.noteH = b.noteLines === null ? 0 : 12 + 20 + 28 + Math.max(1, b.noteLines.length) * 30;
+    b.noteLines = b.note === null ? null : (b.note.trim() ? wrap(m, b.note.trim(), BW - 28) : []);
+    b.noteH = b.noteLines === null ? 0 : (b.noteLines.length ? 12 + 48 + b.noteLines.length * 31 : 12 + 46);
     b.h = BH_HEAD + CELL + b.noteH;
   });
-  const bRows = []; for (let i = 0; i < blocks.length; i += 3) bRows.push(blocks.slice(i, i + 3));
-
-  const Y_TITLE = M, Y_INFO = M + 92, INFO_H = 80, Y_TABLE = Y_INFO + INFO_H + 26, HEAD1 = 54, HEAD2 = 76;
+  const bRows = [];
+  for (let i = 0; i < blocks.length; i += 3){ const r = blocks.slice(i, i + 3); bRows.push({blocks: r, h: Math.max(...r.map(b => b.h))}); }
   const bodyH = rows.reduce((s, r) => s + r.h, 0);
-  const pcH = 0;
-  let H = Y_TABLE + HEAD1 + HEAD2 + bodyH + pcH;
-  if (bRows.length) H += 44 + bRows.reduce((s, r) => s + Math.max(...r.map(b => b.h)), 0) + (bRows.length - 1) * BG;
-  H += 64; // footer
-  // keep the canvas inside mobile limits
-  const LIMIT = 15e6, scale = Math.min(1, Math.sqrt(LIMIT / (W * H)));
-  const cv = document.createElement('canvas'); cv.width = Math.round(W * scale); cv.height = Math.round(H * scale);
-  const g = cv.getContext('2d'); g.scale(scale, scale);
-  g.fillStyle = C.paper; g.fillRect(0, 0, W, H);
+  return {doc, cols, col, rows, bRows, bodyH, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
+}
 
-  // title
+function drawTop(g, R){
+  const st = R.doc, cols = R.cols;
   g.fillStyle = C.navy; setF(g, 700, 48); g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-  g.fillText(`PC [ ${st.factory || '   '} ]공장 주말 외주업체 작업 보고`, M, Y_TITLE + 50);
-  g.fillStyle = C.navy; g.fillRect(M, Y_TITLE + 72, IW, 3);
-
+  g.fillText(docTitle(st), RM, RM + 50);
+  g.fillStyle = C.navy; g.fillRect(RM, RM + 72, RIW, 3);
   // info row
   const info = [
     {w:150, lab:true, t:'점검일'}, {w:300, t:dateLabel(st.date)}, {w:190, lab:true, t:'점검구분 (■)'}, {w:900, phase:true},
-    {w:140, lab:true, t:'점검자'}, {w:300, who:true}
+    {w:140, lab:true, t:'관리자'}, {w:300, who:true}
   ];
-  let ix = M;
+  let ix = RM;
   info.forEach(c => {
     g.fillStyle = c.lab ? C.label : '#fff'; g.fillRect(ix, Y_INFO, c.w, INFO_H);
     g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(ix, Y_INFO, c.w, INFO_H);
@@ -854,7 +1248,7 @@ async function renderReport(st){
     else if (c.phase){
       setF(g, 500, 25);
       const items = PHASES.map(p => ({p, tw: g.measureText(p.full).width}));
-      const total = items.reduce((s, it) => s + 24 + 12 + it.tw, 0) + 56 * (items.length - 1);
+      const total = items.reduce((s, it) => s + 36 + it.tw, 0) + 56 * (items.length - 1);
       let px = ix + (c.w - total) / 2;
       items.forEach(it => {
         const on = st.phase === it.p.k;
@@ -872,7 +1266,6 @@ async function renderReport(st){
     } else { g.fillStyle = C.ink; setF(g, 600, 25); lines(g, [c.t], ix + c.w / 2, mid, 30); }
     ix += c.w;
   });
-
   // table header
   const yH = Y_TABLE;
   const tCols = cols.filter(c => c.k === 't'), mCols = cols.filter(c => c.k === 'm');
@@ -891,15 +1284,14 @@ async function renderReport(st){
   group(tCols, '작업구분 ( 체크 ■ )'); group(mCols, '주요 안전조치 ( 체크 ■ )');
   [...tCols, ...mCols].forEach(c => {
     g.fillStyle = c.k === 't' ? C.slate : C.orange; g.fillRect(c.x, yH + HEAD1, c.w, HEAD2);
-    g.fillStyle = '#fff'; setF(g, 600, c.h.length > 4 && !c.h.includes('\n') ? 19 : 21);
+    g.fillStyle = '#fff'; setF(g, 600, c.h.includes('\n') ? 21 : c.h.length >= 6 ? 17 : c.h.length > 4 ? 19 : 21);
     lines(g, c.h.split('\n'), c.x + c.w / 2, yH + HEAD1 + HEAD2 / 2, 26);
     g.strokeRect(c.x, yH + HEAD1, c.w, HEAD2);
   });
-
   // table body
   let y = yH + HEAD1 + HEAD2;
   const yBody0 = y;
-  rows.forEach((r, i) => {
+  R.rows.forEach((r, i) => {
     const mid = y + r.h / 2;
     cols.forEach(c => {
       if (c.k === 'pc') return;
@@ -924,130 +1316,753 @@ async function renderReport(st){
     y += r.h;
   });
   // PC 담당자: one merged cell, as on the paper form
-  const pc = col('pc');
-  g.fillStyle = '#fff'; g.fillRect(pc.x, yBody0, pc.w, bodyH);
-  g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(pc.x, yBody0, pc.w, bodyH);
-  {
-    const midPc = yBody0 + bodyH / 2;
-    setF(g, 400, 21); const phl = st.pcPhone ? wrap(g, st.pcPhone, pc.w - 16) : [];
-    setF(g, 600, 25); const nl = wrap(g, st.pcName, pc.w - 16);
-    const total = nl.length * 32 + phl.length * 28, top = midPc - total / 2;
-    g.fillStyle = C.ink; lines(g, nl, pc.x + pc.w / 2, top + nl.length * 16, 32);
-    g.fillStyle = C.muted; setF(g, 400, 21); lines(g, phl, pc.x + pc.w / 2, top + nl.length * 32 + phl.length * 14, 28);
-  }
-
-  // photo blocks
-  if (bRows.length){
-    y += 44;
-    bRows.forEach(br => {
-      const rowH = Math.max(...br.map(b => b.h));
-      br.forEach((b, j) => {
-        const x = M + j * (BW + BG);
-        g.fillStyle = C.navy; g.fillRect(x, y, BW, BH_HEAD);
-        g.fillStyle = '#fff'; setF(g, 600, 24);
-        const head = `[${b.no}] ${b.title}${b.part ? ` (${b.part})` : ''}`;
-        lines(g, [ellipsize(g, head, BW - 28)], x + BW / 2, y + BH_HEAD / 2, 30);
-        for (let k = 0; k < 2; k++){
-          const px = x + k * CELL, py = y + BH_HEAD, id = b.photos[k];
-          if (id && imgs.has(id)) cover(g, imgs.get(id), px, py, CELL, CELL);
-          else { g.fillStyle = C.empty; g.fillRect(px, py, CELL, CELL); g.fillStyle = '#98A3B6'; setF(g, 500, 22); lines(g, ['사진 없음'], px + CELL / 2, py + CELL / 2, 28); }
-        }
-        g.strokeStyle = C.line; g.lineWidth = 1.5;
-        g.strokeRect(x, y + BH_HEAD, BW, CELL);
-        g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
-        if (b.noteLines !== null){
-          const ny = y + BH_HEAD + CELL + 12, nh = b.noteH - 12;
-          g.fillStyle = '#fff'; g.fillRect(x, ny, BW, nh);
-          g.strokeStyle = C.line; g.strokeRect(x, ny, BW, nh);
-          g.fillStyle = C.muted; setF(g, 600, 19); g.textAlign = 'left'; g.textBaseline = 'middle';
-          g.fillText('점검 내용 / 특이사항', x + 14, ny + 22);
-          g.fillStyle = C.ink; setF(g, 400, 22);
-          (b.noteLines.length ? b.noteLines : ['']).forEach((s, i) => g.fillText(s, x + 14, ny + 22 + 30 + i * 30));
-        }
-      });
-      y += rowH + BG;
-    });
-    y -= BG;
-  }
-
-  // footer
-  g.fillStyle = '#98A3B6'; setF(g, 400, 19); g.textAlign = 'right'; g.textBaseline = 'middle';
-  const now = new Date();
-  g.fillText(`작성 ${st.inspName} · ${fmtDate(now)} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`, W - M, H - 32);
-
-  const blob = await new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('encode')), 'image/jpeg', 0.9));
-  return {blob, width: cv.width, height: cv.height};
+  const pc = R.col('pc');
+  g.fillStyle = '#fff'; g.fillRect(pc.x, yBody0, pc.w, R.bodyH);
+  g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(pc.x, yBody0, pc.w, R.bodyH);
+  const midPc = yBody0 + R.bodyH / 2;
+  let phSize = 21; setF(g, 400, phSize);
+  if (st.pcPhone && g.measureText('☎ ' + st.pcPhone).width > pc.w - 16){ phSize = 18; setF(g, 400, phSize); }
+  const phl = st.pcPhone ? wrap(g, '☎ ' + st.pcPhone, pc.w - 16) : [];
+  setF(g, 600, 25); const nl = st.pcName ? wrap(g, st.pcName, pc.w - 16) : [];
+  const total = nl.length * 32 + phl.length * 28, top = midPc - total / 2;
+  g.fillStyle = C.ink; lines(g, nl, pc.x + pc.w / 2, top + nl.length * 16, 32);
+  g.fillStyle = C.muted; setF(g, 400, phSize); lines(g, phl, pc.x + pc.w / 2, top + nl.length * 32 + phl.length * 14, 28);
+  return y;
 }
 
-/* ---------- preview & save ---------- */
-let current = null; // {blob, url, name, file}
+function drawBlockRow(g, row, y){
+  row.blocks.forEach((b, j) => {
+    const x = RM + j * (BW + BG);
+    g.fillStyle = C.navy; g.fillRect(x, y, BW, BH_HEAD);
+    g.fillStyle = '#fff'; setF(g, 600, 24);
+    lines(g, [ellipsize(g, `[${b.no}] ${b.title}${b.part ? ` (${b.part})` : ''}`, BW - 28)], x + BW / 2, y + BH_HEAD / 2, 30);
+    for (let k = 0; k < 2; k++){
+      const px = x + k * CELL, py = y + BH_HEAD, img = b.imgs[k];
+      if (img) cover(g, img, px, py, CELL, CELL);
+      else { g.fillStyle = C.empty; g.fillRect(px, py, CELL, CELL); g.fillStyle = '#98A3B6'; setF(g, 500, 22); lines(g, ['사진 없음'], px + CELL / 2, py + CELL / 2, 28); }
+    }
+    g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, y + BH_HEAD, BW, CELL);
+    g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
+    if (b.noteLines !== null){
+      const ny = y + BH_HEAD + CELL + 12, nh = b.noteH - 12, has = b.noteLines.length > 0;
+      g.fillStyle = has ? C.noteBg : '#fff'; g.fillRect(x, ny, BW, nh);
+      g.strokeStyle = has ? C.noteLine : C.line; g.lineWidth = has ? 2.5 : 1.5;
+      g.strokeRect(x + (has ? 1 : 0), ny + (has ? 1 : 0), BW - (has ? 2 : 0), nh - (has ? 2 : 0));
+      g.textAlign = 'left'; g.textBaseline = 'middle';
+      if (has){
+        g.fillStyle = C.noteLab; setF(g, 700, 19); g.fillText('■ 점검 내용 / 특이사항', x + 14, ny + 23);
+        g.fillStyle = C.noteInk; setF(g, 600, 23);
+        b.noteLines.forEach((s, i) => g.fillText(s, x + 14, ny + 54 + i * 31));
+      } else {
+        g.fillStyle = C.muted; setF(g, 500, 19); g.fillText('점검 내용 / 특이사항 :', x + 14, ny + nh / 2);
+      }
+    }
+  });
+  return row.h;
+}
+function drawFooter(g, R, H, extra){
+  g.fillStyle = '#98A3B6'; setF(g, 400, 19); g.textAlign = 'right'; g.textBaseline = 'middle';
+  g.fillText([extra, `작성 ${R.doc.inspName || ''} · ${stamp()}`].filter(Boolean).join('   ·   '), RW - RM, H - 32);
+}
+function canvasBlob(cv, q){ return new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('encode')), 'image/jpeg', q || 0.9)); }
+
+async function renderImage(doc){
+  const R = await prepare(doc);
+  try {
+    let H = R.topH;
+    if (R.bRows.length) H += 44 + R.bRows.reduce((s, r) => s + r.h, 0) + (R.bRows.length - 1) * BG;
+    H += 64;
+    const scale = Math.min(1, Math.sqrt(15e6 / (RW * H)));   // stay inside phone canvas limits
+    const cv = document.createElement('canvas'); cv.width = Math.round(RW * scale); cv.height = Math.round(H * scale);
+    const g = cv.getContext('2d'); g.scale(scale, scale);
+    g.fillStyle = C.paper; g.fillRect(0, 0, RW, H);
+    let y = drawTop(g, R);
+    if (R.bRows.length){ y += 44; R.bRows.forEach(r => { y += drawBlockRow(g, r, y) + BG; }); }
+    drawFooter(g, R, H);
+    const blob = await canvasBlob(cv, 0.9);
+    const tw = 520, th = Math.round(cv.height * tw / cv.width);
+    const tc = document.createElement('canvas'); tc.width = tw; tc.height = Math.min(th, 900);
+    const tg = tc.getContext('2d'); tg.fillStyle = '#fff'; tg.fillRect(0, 0, tw, tc.height);
+    tg.drawImage(cv, 0, 0, tw, th);
+    const thumb = await canvasBlob(tc, 0.8);
+    return {blob, thumb, width: cv.width, height: cv.height};
+  } finally { R.release(); }
+}
+
+// A4 landscape pages (297 x 210) at the same 2100px width
+async function renderPages(doc){
+  const R = await prepare(doc);
+  try {
+    const PH = Math.round(RW * 210 / 297), BOTTOM = PH - 76;
+    const pages = [];
+    const newPage = () => { const cv = document.createElement('canvas'); cv.width = RW; cv.height = PH; const g = cv.getContext('2d'); g.fillStyle = C.paper; g.fillRect(0, 0, RW, PH); pages.push(cv); return g; };
+    let g = newPage(), y;
+    if (R.topH <= BOTTOM) y = drawTop(g, R);
+    else {   // very long table: draw it full size, then shrink onto the page
+      const tc = document.createElement('canvas'); tc.width = RW; tc.height = R.topH + 10;
+      const tg = tc.getContext('2d'); tg.fillStyle = C.paper; tg.fillRect(0, 0, RW, tc.height); drawTop(tg, R);
+      const s = BOTTOM / tc.height; g.drawImage(tc, (RW - RW * s) / 2, 0, RW * s, tc.height * s); y = BOTTOM;
+    }
+    let first = true;
+    R.bRows.forEach(r => {
+      let gap = first ? 44 : BG;
+      if (y + gap + r.h > BOTTOM){
+        g = newPage();
+        g.fillStyle = C.navy; setF(g, 700, 34); g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+        g.fillText(docTitle(R.doc).replace('작업 보고', '작업 사진'), RM, RM + 36);
+        g.fillStyle = C.muted; setF(g, 500, 22); g.textAlign = 'right'; g.fillText(docDateLine(R.doc), RW - RM, RM + 34);
+        g.fillStyle = C.navy; g.fillRect(RM, RM + 54, RIW, 3);
+        y = RM + 54 + 30; gap = 0;
+      }
+      y += gap;
+      y += drawBlockRow(g, r, y);
+      first = false;
+    });
+    pages.forEach((cv, i) => drawFooter(cv.getContext('2d'), R, PH, `${i + 1} / ${pages.length}`));
+    return pages;
+  } finally { R.release(); }
+}
+
+/* ---------- external libraries (loaded only when a PPT/PDF is asked for) ---------- */
+const LIB = {
+  ppt: {url: 'https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js', name: 'PptxGenJS'},
+  pdf: {url: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js', name: 'PDFLib'}
+};
+const libLoads = {};
+function loadLib(key){
+  const L = LIB[key];
+  if (window[L.name]) return Promise.resolve(window[L.name]);
+  if (!libLoads[key]) libLoads[key] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = L.url; s.async = true;
+    s.onload = () => window[L.name] ? res(window[L.name]) : rej(new Error('load'));
+    s.onerror = () => { delete libLoads[key]; rej(new Error('load')); };
+    (document.head || document.documentElement).appendChild(s);
+  });
+  return libLoads[key];
+}
+
+/* ---------- PDF ---------- */
+async function buildPdf(doc){
+  const [PDFLib, pages] = await Promise.all([loadLib('pdf'), renderPages(doc)]);
+  const pdf = await PDFLib.PDFDocument.create();
+  try { pdf.setTitle(docTitle(doc)); pdf.setAuthor(doc.inspName || ''); } catch(e){}
+  for (const cv of pages){
+    const buf = await (await canvasBlob(cv, 0.88)).arrayBuffer();
+    const img = await pdf.embedJpg(buf);
+    const p = pdf.addPage([841.89, 595.28]);
+    p.drawImage(img, {x: 0, y: 0, width: 841.89, height: 595.28});
+  }
+  return new Blob([await pdf.save()], {type: 'application/pdf'});
+}
+
+/* ---------- PPT: editable slides in the paper form's layout ---------- */
+const PF = '맑은 고딕';
+function estLines(text, widthIn, pt){
+  const em = pt / 72, avail = Math.max(0.2, widthIn);
+  let n = 0;
+  String(text || '').split('\n').forEach(para => {
+    let w = 0, ln = 1;
+    for (const ch of para){
+      const cw = /[ᄀ-ᇿ㄰-㆏가-힯一-鿿■☐☎]/.test(ch) ? em * 0.95 : ch === ' ' ? em * 0.3 : em * 0.56;
+      if (w + cw > avail){ ln++; w = cw; } else w += cw;
+    }
+    n += ln;
+  });
+  return Math.max(1, n);
+}
+async function cropForPpt(img, aspect){
+  const w = 1000, h = Math.round(w / aspect);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); cover(g, img, 0, 0, w, h);
+  return c.toDataURL('image/jpeg', 0.85).replace(/^data:/, '');
+}
+async function buildPpt(doc){
+  const PptxGenJS = await loadLib('ppt');
+  const urls = [];
+  try {
+    const pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_WIDE'; pptx.title = docTitle(doc); pptx.author = doc.inspName || '';
+    pptx.theme = {headFontFace: PF, bodyFontFace: PF};
+    const SW = 13.333, M = 0.4, IW = SW - 2 * M, BOTTOM = 7.12;
+    const K = IW / 1980;
+    const colPx = [70, 290, 260, 290, ...TYPES.map(() => 80), ...MEASURES.map(() => 80), 190];
+    const colW = colPx.map(w => +(w * K).toFixed(3));
+    const CM = [0.03, 0.05, 0.03, 0.05];
+    const WB = {type: 'solid', pt: 1, color: 'FFFFFF'}, GB = {type: 'solid', pt: 0.75, color: 'B9C3D3'};
+    const hd = (text, o) => ({text, options: Object.assign({fill: {color: '1F3864'}, color: 'FFFFFF', bold: true, fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, margin: CM, border: WB}, o || {})});
+    const bd = (text, o) => ({text, options: Object.assign({fill: {color: 'FFFFFF'}, color: '16213A', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, margin: CM, border: GB}, o || {})});
+    const slideNo = s => { s.slideNumber = {x: SW - 0.9, y: 7.12, w: 0.6, h: 0.25, fontSize: 9, color: '98A3B6', fontFace: PF, align: 'right'}; };
+    const title = (s, text, right) => {
+      s.addText(text, {x: M, y: 0.22, w: IW, h: 0.55, fontSize: 22, bold: true, color: '1F3864', fontFace: PF, margin: 0, valign: 'bottom'});
+      if (right) s.addText(right, {x: M, y: 0.22, w: IW, h: 0.55, fontSize: 11, color: '5B6780', fontFace: PF, margin: 0, align: 'right', valign: 'bottom'});
+      s.addShape(pptx.ShapeType.line, {x: M, y: 0.84, w: IW, h: 0, line: {color: '1F3864', width: 2}});
+    };
+
+    // rows of the main table, with estimated heights
+    const rows = doc.works.map((w, i) => {
+      const coName = (w.company || '') + (w.people ? ` (${w.people}명)` : '');
+      const lines = Math.max(estLines(w.title, colW[1] - 0.12, 10), estLines(coName, colW[2] - 0.12, 10) + (w.phone ? 1 : 0), estLines(w.desc, colW[3] - 0.12, 9.5));
+      const coCell = w.phone
+        ? [{text: coName, options: {bold: true, breakLine: true}}, {text: '☎ ' + w.phone, options: {fontSize: 8.5, color: '5B6780'}}]
+        : coName;
+      const cells = [
+        bd(String(i + 1), {bold: true}), bd(w.title, {bold: true}), bd(coCell), bd(w.desc || '', {align: 'left', fontSize: 9.5}),
+        ...TYPES.map(t => { const on = w.types.includes(t.k); return bd(on ? '■' : '☐', {fontSize: 14, fill: {color: on ? 'E4EAF5' : 'FFFFFF'}}); }),
+        ...MEASURES.map(x => { const on = w.measures.includes(x.k); return bd(on ? '■' : '☐', {fontSize: 14, fill: {color: on ? 'FBE7DA' : 'FFFFFF'}}); })
+      ];
+      return {cells, h: Math.max(0.46, lines * 0.19 + 0.12)};
+    });
+    const headRows = () => [
+      [hd('No', {rowspan: 2}), hd('공사명', {rowspan: 2}), hd('업체명 (인원)\n연락처', {rowspan: 2}), hd('공사내용', {rowspan: 2}),
+        hd('작업구분 ( 체크 ■ )', {colspan: TYPES.length}), hd('주요 안전조치 ( 체크 ■ )', {colspan: MEASURES.length}), hd('PC\n담당자', {rowspan: 2})],
+      [...TYPES.map(t => hd(t.h, {fill: {color: '4D6390'}, fontSize: 9})),
+        ...MEASURES.map(x => hd(x.k === 'LOTO' ? 'LOTO\nTO' : x.h, {fill: {color: 'C2561A'}, fontSize: 9}))]
+    ];
+    const HEAD_H = [0.3, 0.46];
+    const pcCell = n => bd(doc.pcPhone
+      ? [{text: doc.pcName || '', options: {bold: true, breakLine: true}}, {text: '☎ ' + doc.pcPhone, options: {fontSize: 8.5, color: '5B6780'}}]
+      : (doc.pcName || ''), {rowspan: n});
+
+    // split the table across slides only when it would not fit
+    const chunks = []; let cur = [], curH = 0, avail = BOTTOM - 1.52 - 0.76;
+    rows.forEach(r => {
+      if (cur.length && curH + r.h > avail){ chunks.push(cur); cur = []; curH = 0; avail = BOTTOM - 1.05 - 0.76; }
+      cur.push(r); curH += r.h;
+    });
+    if (cur.length) chunks.push(cur);
+    let slide, yAfter = 0;
+    chunks.forEach((ch, ci) => {
+      slide = pptx.addSlide(); slideNo(slide);
+      let y0;
+      if (ci === 0){
+        title(slide, docTitle(doc));
+        const phaseRuns = [];
+        PHASES.forEach((p, i) => {
+          const on = doc.phase === p.k;
+          phaseRuns.push({text: (on ? '■ ' : '☐ ') + p.full + (i < PHASES.length - 1 ? '      ' : ''), options: {bold: on, color: on ? '16213A' : '7A869C'}});
+        });
+        const lab = t => ({text: t, options: {fill: {color: 'E3E8F1'}, color: '1F3864', bold: true, fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, border: GB, margin: CM}});
+        const val = (t, o) => ({text: t, options: Object.assign({fill: {color: 'FFFFFF'}, color: '16213A', fontSize: 10.5, align: 'center', valign: 'middle', fontFace: PF, border: GB, margin: CM}, o || {})});
+        const who = doc.inspPhone
+          ? [{text: doc.inspName || '', options: {bold: true, breakLine: true}}, {text: '☎ ' + doc.inspPhone, options: {fontSize: 8.5, color: '5B6780'}}]
+          : (doc.inspName || '');
+        slide.addTable([[lab('점검일'), val(dateLabel(doc.date), {bold: true}), lab('점검구분 (■)'), val(phaseRuns), lab('관리자'), val(who)]],
+          {x: M, y: 0.98, w: IW, colW: [150, 300, 190, 900, 140, 300].map(w => +(w * K).toFixed(3)), rowH: [0.44], fontFace: PF});
+        y0 = 1.52;
+      } else {
+        title(slide, docTitle(doc) + ' (계속)', docDateLine(doc));
+        y0 = 1.05;
+      }
+      const tableRows = headRows();
+      ch.forEach((r, i) => tableRows.push(i === 0 ? [...r.cells, pcCell(ch.length)] : r.cells));
+      const rowH = [...HEAD_H, ...ch.map(r => r.h)];
+      slide.addTable(tableRows, {x: M, y: y0, w: IW, colW, rowH, fontFace: PF});
+      yAfter = y0 + rowH.reduce((s, h) => s + h, 0);
+    });
+
+    // photo blocks, three to a row, like the paper form
+    const PBG = 0.2, PBW = (IW - PBG * 2) / 3, PHEAD = 0.34, PCW = PBW / 2, PCH = 1.62, NGAP = 0.06;
+    const blocks = [];
+    for (const [i, w] of doc.works.entries()){
+      const imgs = [];
+      for (const b of (w.photos || [])){
+        const u = URL.createObjectURL(b); urls.push(u);
+        try { imgs.push(await loadImg(u)); } catch(e){}
+      }
+      if (!imgs.length && !w.note.trim()) continue;
+      const parts = []; for (let j = 0; j < imgs.length; j += 2) parts.push(imgs.slice(j, j + 2));
+      if (!parts.length) parts.push([]);
+      parts.forEach((p, j) => {
+        const note = j === 0 ? w.note.trim() : null;
+        const noteH = note === null ? 0 : note ? Math.max(0.56, 0.3 + estLines(note, PBW - 0.2, 10.5) * 0.2) : 0.32;
+        blocks.push({no: i + 1, title: w.title, part: parts.length > 1 ? j + 1 : 0, imgs: p, note, noteH, h: PHEAD + PCH + (note === null ? 0 : NGAP + noteH)});
+      });
+    }
+    const bRows = []; for (let i = 0; i < blocks.length; i += 3){ const r = blocks.slice(i, i + 3); bRows.push({blocks: r, h: Math.max(...r.map(b => b.h))}); }
+    let y = yAfter + 0.25;
+    for (const r of bRows){
+      if (y + r.h > BOTTOM){
+        slide = pptx.addSlide(); slideNo(slide);
+        title(slide, docTitle(doc).replace('작업 보고', '작업 사진'), docDateLine(doc));
+        y = 1.05;
+      }
+      for (const [j, b] of r.blocks.entries()){
+        const x = M + j * (PBW + PBG);
+        const head = `[${b.no}] ${b.title}${b.part ? ` (${b.part})` : ''}`;
+        const fs = estLines(head, PBW - 0.15, 11) > 1 ? (estLines(head, PBW - 0.15, 9) > 1 ? 8 : 9) : 11;
+        slide.addText(head, {x, y, w: PBW, h: PHEAD, fill: {color: '1F3864'}, color: 'FFFFFF', bold: true, fontSize: fs, align: 'center', valign: 'middle', fontFace: PF, margin: 3});
+        for (let k = 0; k < 2; k++){
+          const px = x + k * PCW, py = y + PHEAD;
+          if (b.imgs[k]) slide.addImage({data: await cropForPpt(b.imgs[k], PCW / PCH), x: px, y: py, w: PCW, h: PCH});
+          else slide.addText('사진 없음', {x: px, y: py, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, color: '98A3B6', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
+        }
+        if (b.note !== null){
+          const ny = y + PHEAD + PCH + NGAP;
+          if (b.note){
+            slide.addText([
+              {text: '■ 점검 내용 / 특이사항', options: {bold: true, fontSize: 9, color: '8A5300', breakLine: true}},
+              {text: b.note, options: {bold: true, fontSize: 10.5, color: '1F3864'}}
+            ], {x, y: ny, w: PBW, h: b.noteH, fill: {color: 'FFF4D1'}, line: {color: 'E2A11B', width: 1.5}, valign: 'top', fontFace: PF, margin: 5});
+          } else {
+            slide.addText('점검 내용 / 특이사항 :', {x, y: ny, w: PBW, h: b.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: 'middle', fontFace: PF, margin: 5});
+          }
+        }
+      }
+      y += r.h + PBG;
+    }
+    return await pptx.write({outputType: 'blob'});
+  } finally { urls.forEach(u => URL.revokeObjectURL(u)); }
+}
+
+/* ---------- 보관함 (history on this device) ---------- */
+const hs = {
+  sheet: $('#hist'), list: $('#histList'), empty: $('#histEmpty'), sum: $('#histSum'), search: $('#histSearch')
+};
+let histUrls = [], histRecs = [];
+async function saveHistory(doc, out){
+  const id = `${doc.draftId}-${doc.factory || '공장'}-${doc.phase}`;   // 공장을 바꾸면 다른 보고서로 남깁니다
+  const prev = await idb.get('h', id);
+  const now = Date.now();
+  const rec = {
+    id, draftId: doc.draftId, phase: doc.phase, createdAt: (prev && prev.createdAt) || now, updatedAt: now,
+    date: doc.date, factory: doc.factory, inspName: doc.inspName,
+    titles: doc.works.map(w => w.title), companies: [...new Set(doc.works.map(w => w.company).filter(Boolean))],
+    photoCount: doc.works.reduce((s, w) => s + w.photos.length, 0),
+    name: docFileBase(doc), image: out.blob, thumb: out.thumb, doc
+  };
+  await idb.put('h', id, rec);
+  return rec;
+}
+function fmtMB(b){ return b >= 1048576 ? (b / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB'; }
+async function openHist(){
+  hs.search.value = '';
+  hs.sheet.hidden = false; syncScrollLock();
+  syncUi(); showTab(syncOn() ? 'team' : 'local');
+  hs.list.innerHTML = '<div class="pempty">불러오는 중…</div>';
+  histRecs = (await idb.all('h')).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.updatedAt - a.updatedAt);
+  renderHist(); refreshSum();
+}
+async function refreshSum(){
+  let usage = 0;
+  try { const est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null; usage = (est && est.usage) || 0; } catch(e){}
+  hs.sum.innerHTML = `보고서 <b>${histRecs.length}건</b>` + (usage ? ` · 이 기기에서 약 ${fmtMB(usage)} 사용` : '') +
+    '<br><span>' + (syncOn() ? '이 폰에 보관된 보고서예요. 팀 전체 탭에서 모든 관리자의 보고를 볼 수 있어요.'
+      : CAN_SYNC ? '이 폰(브라우저)에만 보관돼요. 아래 \'팀 드라이브 연결\'을 하면 여러 관리자의 보고가 구글 드라이브 한곳에 모여요.'
+      : '이 폰(브라우저)에만 보관돼요. 브라우저 데이터를 지우면 함께 지워져요.') + '</span>';
+}
+function closeHist(){ hs.sheet.hidden = true; histUrls.forEach(u => URL.revokeObjectURL(u)); histUrls = []; syncScrollLock(); }
+function renderHist(){
+  histUrls.forEach(u => URL.revokeObjectURL(u)); histUrls = [];
+  hs.search.hidden = histRecs.length < 6;
+  const q = hs.search.value.trim();
+  const shown = q ? histRecs.filter(r => [r.factory, r.inspName, ...(r.titles || []), ...(r.companies || [])].join(' ').includes(q)) : histRecs;
+  hs.empty.hidden = shown.length > 0;
+  hs.empty.textContent = histRecs.length ? '검색 결과가 없어요.' : '아직 보관된 보고서가 없어요. 보고서 이미지를 만들면 여기에 자동으로 쌓여요.';
+  let month = '', html = '';
+  shown.forEach(r => {
+    const d = parseISO(r.date), mk = d ? `${d.getFullYear()}년 ${d.getMonth() + 1}월` : '날짜 없음';
+    if (mk !== month){ html += `<h3 class="hmonth">${mk}</h3>`; month = mk; }
+    const u = r.thumb ? URL.createObjectURL(r.thumb) : ''; if (u) histUrls.push(u);
+    const dw = dowOf(r.date);
+    const head = d ? `${d.getMonth() + 1}월 ${d.getDate()}일${dw >= 0 ? ` (${DAYS[dw]})` : ''}` : '';
+    html += `<article class="hitem" data-id="${esc(r.id)}">
+  <button type="button" class="hmain" data-act="hopen" aria-expanded="false">
+    ${u ? `<img class="hthumb" src="${u}" alt="">` : '<span class="hthumb"></span>'}
+    <span class="hinfo"><span class="ht">${esc(head)} · ${esc(phaseOf(r.phase).ui)}</span>
+      <span class="hs">${esc(r.factory || '')}공장 · 작업 ${(r.titles || []).length}건 · 사진 ${r.photoCount || 0}장${r.inspName ? ` · 관리자 ${esc(r.inspName)}` : ''}</span>
+      <span class="hw">${esc((r.titles || []).join(', '))}</span>
+      <span class="hd">${esc(stamp(r.updatedAt))} 저장 · ${fmtMB(r.image ? r.image.size : 0)}${syncLabel(r)}</span></span>
+  </button>
+  <div class="hacts" hidden>
+    <div class="hbtns">
+      <button type="button" data-act="himg">이미지</button><button type="button" data-act="hppt">PPT</button><button type="button" data-act="hpdf">PDF</button>
+    </div>
+    <div class="hbtns">
+      <button type="button" data-act="hload">불러와서 고치기</button><button type="button" data-act="hdel" class="hdel">삭제</button>
+    </div>
+    <div class="hbtns"${syncOn() ? '' : ' hidden'}>
+      <button type="button" data-act="hsync">${r.syncedAt && r.syncedAt === r.updatedAt ? '팀 드라이브에 다시 올리기' : '팀 드라이브에 올리기'}</button>
+    </div>
+    <div class="hconfirm" hidden></div>
+  </div>
+</article>`;
+  });
+  hs.list.innerHTML = html;
+}
+hs.search.addEventListener('input', renderHist);
+$('#histClose').addEventListener('click', closeHist);
+$('#btnHist').addEventListener('click', openHist);
+hs.list.addEventListener('click', async e => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const item = t.closest('.hitem'); const rec = histRecs.find(r => r.id === item.dataset.id); if (!rec) return;
+  const act = t.dataset.act, conf = item.querySelector('.hconfirm');
+  if (act === 'hopen'){
+    const open = t.getAttribute('aria-expanded') !== 'true';
+    t.setAttribute('aria-expanded', String(open)); item.querySelector('.hacts').hidden = !open; conf.hidden = true;
+  } else if (act === 'himg'){
+    setCurrent({blob: rec.image, name: rec.name, doc: rec.doc});
+    openPreview(`<div>${esc(rec.name)}.jpg · ${fmtMB(rec.image.size)}</div><div>보관함 · ${esc(stamp(rec.updatedAt))}에 저장한 보고서</div>`);
+  } else if (act === 'hppt' || act === 'hpdf'){
+    await exportFmt(act === 'hppt' ? 'ppt' : 'pdf', rec.doc, t, rec.name);
+  } else if (act === 'hload'){
+    conf.innerHTML = '<span>지금 쓰고 있는 내용이 이 보고서로 바뀌어요.</span><button type="button" data-act="hload-yes" class="yes">불러오기</button><button type="button" data-act="hno">취소</button>';
+    conf.hidden = false;
+  } else if (act === 'hdel'){
+    conf.innerHTML = '<span>이 보고서를 보관함에서 지울까요?</span><button type="button" data-act="hdel-yes" class="yes danger">삭제</button><button type="button" data-act="hno">취소</button>';
+    conf.hidden = false;
+  } else if (act === 'hsync'){
+    if (t.disabled) return;
+    const lab = t.textContent; t.disabled = true;
+    try { await uploadRecord(rec, step => { t.textContent = step; }); toast('팀 드라이브에 올렸어요.'); renderHist(); }
+    catch(err){ toast(syncErrText(err), 4200); t.disabled = false; t.textContent = lab; }
+  } else if (act === 'hno'){ conf.hidden = true; }
+  else if (act === 'hdel-yes'){
+    await idb.del('h', rec.id);
+    histRecs = histRecs.filter(r => r !== rec); renderHist(); refreshSum(); toast('보관함에서 지웠어요.');
+  } else if (act === 'hload-yes'){
+    loadDoc(rec); closeHist(); window.scrollTo({top: 0});
+    toast('불러왔어요. 고친 뒤 이미지를 다시 만들면 보관함 기록도 바뀌어요.', 3600);
+  }
+});
+function loadDoc(rec){
+  state.works.forEach(w => w.photos.forEach(dropPhoto));
+  const d = rec.doc;
+  state = Object.assign(exampleState(), {
+    example: false, draftId: d.draftId || rec.draftId || newDraftId(), factory: d.factory || '', date: d.date || defaultDate(), phase: d.phase || 'before',
+    inspName: d.inspName || '', inspPhone: d.inspPhone || '', pcName: d.pcName || '', pcPhone: d.pcPhone || '',
+    works: d.works.map(w => newWork({
+      title: w.title || '', company: w.company || '', people: w.people || '', phone: w.phone || '', desc: w.desc || '',
+      types: [...(w.types || [])], measures: [...(w.measures || [])], note: w.note || '',
+      photos: (w.photos || []).map(b => addPhotoBlob(b)), open: false
+    }))
+  });
+  if (!state.works.length) state.works.push(newWork());
+  state.works[0].open = true;
+  renderBasic(); renderWorks(); save();
+}
+
+/* ---------- 팀 드라이브 (Google Apps Script 웹 앱) ---------- */
+const CAN_SYNC = true;    // GitHub 버전: 팀 드라이브 연동 켬
+const LS_SYNC = 'wkreport.sync.v1';
+let sync = Object.assign({url: '', key: '', auto: true}, ls.get(LS_SYNC) || {});
+const syncOn = () => CAN_SYNC && !!(sync.url && sync.key);
+const sy = {
+  box: $('#syncBox'), state: $('#syncState'), url: $('#syncUrl'), key: $('#syncKey'), auto: $('#syncAuto'), linkText: $('#syncLinkText'),
+  tabs: $('#histTabs'), local: $('#histLocal'), team: $('#histTeam'), teamSum: $('#teamSum'), teamList: $('#teamList')
+};
+const SYNC_ERR = {
+  code: '팀 코드가 맞지 않아요. Code.gs의 TEAM_CODE와 같은지 확인해 주세요.',
+  action: '웹 앱 코드가 최신이 아니에요. Code.gs를 새 버전으로 다시 배포해 주세요.',
+  url: '주소는 https://script.google.com/macros/s/…/exec 형태여야 해요.',
+  badjson: '웹 앱이 응답하지 않아요. 배포할 때 액세스 권한을 \'모든 사용자\'로 했는지 확인해 주세요.'
+};
+function syncErrText(e){
+  const m = (e && e.message) || '';
+  if (SYNC_ERR[m]) return SYNC_ERR[m];
+  if (/fetch|network|load failed/i.test(m)) return '인터넷 연결이나 웹 앱 주소를 확인해 주세요.';
+  return '올리지 못했어요 (' + m + '). 잠시 후 다시 시도해 주세요.';
+}
+function syncLabel(r){
+  if (!CAN_SYNC) return '';
+  if (r.syncedAt && r.syncedAt === r.updatedAt) return ' · <span class="hsync ok">팀 드라이브 ✓</span>';
+  return syncOn() ? ' · <span class="hsync">팀 드라이브에 안 올라감</span>' : '';
+}
+function blobToB64(b){
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
+}
+async function syncCall(params, body){
+  if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(sync.url)) throw new Error('url');
+  let res;
+  if (body) res = await fetch(sync.url, {method: 'POST', body: JSON.stringify(Object.assign({key: sync.key}, body))});
+  else {
+    const u = new URL(sync.url);
+    Object.entries(Object.assign({key: sync.key}, params || {})).forEach(([k, v]) => u.searchParams.set(k, v));
+    res = await fetch(u.toString());
+  }
+  let j; try { j = await res.json(); } catch(e){ throw new Error('badjson'); }
+  if (!j || !j.ok) throw new Error((j && j.error) || 'fail');
+  return j;
+}
+async function uploadRecord(rec, onStep){
+  if (!syncOn()) throw new Error('url');
+  const step = t => onStep && onStep(t);
+  step('PDF·PPT 만드는 중…');
+  const [pdf, ppt] = await Promise.all([buildPdf(rec.doc), buildPpt(rec.doc)]);
+  step('팀 드라이브에 올리는 중…');
+  const d = rec.doc, dw = dowOf(d.date);
+  const body = {
+    action: 'upsert', id: rec.id,
+    meta: {
+      date: d.date, dow: dw >= 0 ? DAYS[dw] : '', phase: phaseOf(d.phase).full, factory: d.factory,
+      inspName: d.inspName, inspPhone: d.inspPhone, pcName: d.pcName, workCount: d.works.length,
+      titles: d.works.map(w => w.title), companies: [...new Set(d.works.map(w => w.company).filter(Boolean))],
+      photoCount: d.works.reduce((s, w) => s + w.photos.length, 0), warnCount: d.works.reduce((s, w) => s + analyze(w).miss.size, 0)
+    },
+    files: {
+      image: {name: rec.name + '.jpg', type: 'image/jpeg', b64: await blobToB64(rec.image)},
+      pdf: {name: rec.name + '.pdf', type: 'application/pdf', b64: await blobToB64(pdf)},
+      ppt: {name: rec.name + '.pptx', type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', b64: await blobToB64(ppt)}
+    }
+  };
+  const j = await syncCall(null, body);
+  rec.syncedAt = rec.updatedAt; rec.driveFiles = j.files;
+  await idb.put('h', rec.id, rec);
+  return j;
+}
+async function autoUpload(rec){
+  const set = t => { const n = $('#histNote'); if (n) n.textContent = t; };
+  try {
+    await uploadRecord(rec, t => set('보관함에 저장했어요. ' + t));
+    set('보관함과 팀 드라이브에 저장했어요.');
+  } catch(e){
+    set('보관함에 저장했어요. 팀 드라이브에는 올리지 못했어요. ' + syncErrText(e) + ' 보관함에서 다시 올릴 수 있어요.');
+  }
+}
+function syncUi(){
+  sy.box.hidden = !CAN_SYNC;
+  sy.tabs.hidden = !syncOn();
+  if (!CAN_SYNC) return;
+  sy.url.value = sync.url; sy.key.value = sync.key; sy.auto.checked = sync.auto !== false;
+  sy.state.textContent = syncOn()
+    ? '연결되어 있어요. 보고서를 만들면 이미지·PDF·PPT가 팀 드라이브에 올라가고 구글 시트에 기록돼요.'
+    : '연결되지 않았어요. 설치 안내대로 만든 웹 앱 주소와 팀 코드를 넣어 주세요. 관리자에게 받은 연결 링크가 있으면 그 링크를 열기만 하면 돼요.';
+  sy.linkText.hidden = true;
+}
+function showTab(tab){
+  sy.tabs.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
+  sy.local.hidden = tab !== 'local'; sy.team.hidden = tab !== 'team';
+  if (tab === 'team') loadTeam();
+}
+sy.tabs.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
+let teamData = null, teamFac = 'all', wkOffset = 0;
+// 기준 주말: 토·일이면 이번 주말, 월~수는 지난 주말, 목·금은 다가오는 주말
+function weekendFor(offset){
+  const d = new Date(), day = d.getDay();
+  const back = day === 6 ? 0 : day === 0 ? 1 : day <= 3 ? day + 1 : -(6 - day);
+  const sat = new Date(d.getFullYear(), d.getMonth(), d.getDate() - back + 7 * offset);
+  return [sat, new Date(sat.getFullYear(), sat.getMonth(), sat.getDate() + 1)];
+}
+function renderWeekend(){
+  const box = $('#wkBox'); if (!teamData){ box.hidden = true; return; }
+  const [sat, sun] = weekendFor(wkOffset), days = [fmtDate(sat), fmtDate(sun)];
+  const wk = teamData.rows.filter(r => days.includes(r.date));
+  const facs = [...FACTORIES, ...[...new Set(wk.map(r => r.factory).filter(f => f && !FACTORIES.includes(f)))]];
+  const cols = [PHASES[0], ...(wk.some(r => r.phase === PHASES[1].full) ? [PHASES[1]] : []), PHASES[2]];
+  const cell = (f, ph) => {
+    const rs = wk.filter(r => r.factory === f && r.phase === ph.full);
+    return rs.length ? `<td><span class="wk-ok">✓ ${rs.reduce((s, r) => s + (r.workCount || 0), 0)}건</span></td>` : '<td><span class="wk-no">미제출</span></td>';
+  };
+  const label = wkOffset === 0 ? '이번 주말' : wkOffset === -1 ? '지난 주말' : wkOffset < 0 ? `${-wkOffset}주 전 주말` : `${wkOffset}주 뒤 주말`;
+  box.innerHTML = `<div class="wk-h"><button type="button" class="wk-nav" data-wk="-1" aria-label="이전 주말">‹</button>
+    <div class="wk-t"><b>${label} 제출 현황</b><span>${sat.getMonth() + 1}월 ${sat.getDate()}일 (토) ~ ${sun.getMonth() + 1}월 ${sun.getDate()}일 (일)</span></div>
+    <button type="button" class="wk-nav" data-wk="1" aria-label="다음 주말">›</button></div>
+    <table class="wk-tb"><thead><tr><th scope="col">공장</th>${cols.map(p => `<th scope="col">${p.ui}</th>`).join('')}</tr></thead>
+    <tbody>${facs.map(f => `<tr><th scope="row"><button type="button" data-wkfac="${esc(f)}">${esc(f)}</button></th>${cols.map(p => cell(f, p)).join('')}</tr>`).join('')}</tbody></table>`;
+  box.hidden = false;
+}
+$('#wkBox').addEventListener('click', e => {
+  const nav = e.target.closest('[data-wk]');
+  if (nav){ wkOffset += Number(nav.dataset.wk); renderWeekend(); return; }
+  const f = e.target.closest('[data-wkfac]');
+  if (f){ teamFac = f.dataset.wkfac; renderTeam(); }
+});
+$('#teamFilter').addEventListener('click', e => { const b = e.target.closest('[data-tf]'); if (b){ teamFac = b.dataset.tf; renderTeam(); } });
+function renderTeam(){
+  if (!teamData) return;
+  const rows = teamData.rows;
+  const facs = [...new Set([...FACTORIES, ...rows.map(r => r.factory).filter(Boolean)])];
+  const count = f => rows.filter(r => r.factory === f).length;
+  const fb = $('#teamFilter');
+  fb.innerHTML = [`<button type="button" data-tf="all" aria-pressed="${teamFac === 'all'}">전체 ${rows.length}</button>`,
+    ...facs.map(f => `<button type="button" data-tf="${esc(f)}" aria-pressed="${teamFac === f}">${esc(f)} ${count(f)}</button>`)].join('');
+  fb.hidden = false;
+  const shown = teamFac === 'all' ? rows : rows.filter(r => r.factory === teamFac);
+  let month = '', html = '';
+  shown.forEach(r => {
+    const d = parseISO(r.date), mk = d ? `${d.getFullYear()}년 ${d.getMonth() + 1}월` : '날짜 없음';
+    if (mk !== month){ html += `<h3 class="hmonth">${mk}</h3>`; month = mk; }
+    const head = d ? `${d.getMonth() + 1}월 ${d.getDate()}일${r.dow ? ` (${esc(r.dow)})` : ''}` : esc(r.date);
+    const fl = [['image', '이미지'], ['pdf', 'PDF'], ['ppt', 'PPT']].filter(([k]) => /^https:\/\//.test(r[k] || ''))
+      .map(([k, lab]) => `<a href="${esc(r[k])}" target="_blank" rel="noopener">${lab}</a>`).join('');
+    html += `<article class="hitem"><div class="hmain hstatic"><span class="hinfo">
+  <span class="ht">${esc(r.factory)} · ${head} · ${esc(r.phase)}</span>
+  <span class="hs">작업 ${r.workCount}건 · 사진 ${r.photoCount}장${r.inspName ? ` · 관리자 ${esc(r.inspName)}` : ''}</span>
+  <span class="hw">${esc(r.titles)}</span>
+  <span class="hd">${esc(r.updated)} 올림${r.warnCount ? ` · 안전조치 확인 필요 ${r.warnCount}건` : ''}</span></span></div>
+  ${fl ? `<div class="hacts"><div class="hbtns">${fl}</div></div>` : ''}</article>`;
+  });
+  sy.teamList.innerHTML = html || `<div class="pempty">${teamFac === 'all' ? '아직 팀 드라이브에 올라간 보고서가 없어요.' : esc(teamFac) + '공장 보고가 아직 없어요.'}</div>`;
+}
+async function loadTeam(){
+  sy.teamSum.textContent = '팀 보고를 불러오는 중…'; sy.teamList.innerHTML = ''; $('#wkBox').hidden = true; $('#teamFilter').hidden = true;
+  try {
+    const j = await syncCall({action: 'list', limit: 300});
+    teamData = j;
+    const links = [j.sheetUrl ? `<a href="${esc(j.sheetUrl)}" target="_blank" rel="noopener">구글 시트</a>` : '',
+      j.folderUrl ? `<a href="${esc(j.folderUrl)}" target="_blank" rel="noopener">드라이브 폴더</a>` : ''].filter(Boolean).join(' · ');
+    sy.teamSum.innerHTML = `팀 보고 <b>${j.rows.length}건</b>${links ? ' · ' + links : ''}<br><span>파일이 안 열리면 드라이브 '주말공사 보고' 폴더 공유를 요청하세요.</span>`;
+    renderWeekend(); renderTeam();
+  } catch(e){ sy.teamSum.textContent = syncErrText(e); }
+}
+function connectLink(){
+  const enc = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify({u: sync.url, k: sync.key})))));
+  return location.href.split('#')[0] + '#connect=' + enc;
+}
+$('#syncTest').addEventListener('click', async e => {
+  const btn = e.currentTarget; if (btn.disabled) return;
+  sync = {url: sy.url.value.trim(), key: sy.key.value.trim(), auto: sy.auto.checked};
+  ls.set(LS_SYNC, sync);
+  if (!sync.url || !sync.key){ sy.state.textContent = '웹 앱 주소와 팀 코드를 모두 넣어 주세요.'; return; }
+  btn.disabled = true; sy.state.textContent = '연결을 확인하는 중…';
+  try {
+    await syncCall({action: 'ping'});
+    syncUi(); sy.state.textContent = '연결됐어요. 이제 보고서를 만들면 팀 드라이브에 자동으로 올라가요.';
+    renderHist(); refreshSum(); toast('팀 드라이브에 연결했어요.');
+  } catch(err){ sy.state.textContent = syncErrText(err); sy.tabs.hidden = true; }
+  finally { btn.disabled = false; }
+});
+sy.auto.addEventListener('change', () => { sync.auto = sy.auto.checked; ls.set(LS_SYNC, sync); });
+$('#syncLink').addEventListener('click', () => {
+  if (!syncOn()){ toast('먼저 연결을 확인해 주세요.'); return; }
+  const link = connectLink();
+  const fallback = () => { sy.linkText.value = link; sy.linkText.hidden = false; sy.linkText.focus(); sy.linkText.select(); toast('아래 링크를 길게 눌러 복사해 주세요.', 3600); };
+  try { navigator.clipboard.writeText(link).then(() => toast('연결 링크를 복사했어요. 팀 코드가 들어 있으니 관리자들에게만 보내 주세요.', 4200), fallback); }
+  catch(err){ fallback(); }
+});
+$('#syncOff').addEventListener('click', () => {
+  sync = {url: '', key: '', auto: true}; ls.set(LS_SYNC, sync);
+  syncUi(); showTab('local'); renderHist(); refreshSum();
+  toast('이 폰의 연결을 끊었어요. 드라이브에 올라간 자료는 그대로예요.');
+});
+function readConnectHash(){
+  if (!CAN_SYNC) return;
+  const m = /^#connect=(.+)$/.exec(location.hash || ''); if (!m) return;
+  try {
+    const o = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    if (o && o.u && o.k){ sync = {url: o.u, key: o.k, auto: true}; ls.set(LS_SYNC, sync); toast('팀 드라이브에 연결했어요. 보고서를 만들면 자동으로 올라가요.', 4200); }
+  } catch(e){ toast('연결 링크를 읽지 못했어요. 받은 링크 전체를 다시 열어 주세요.', 3600); }
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+}
+
+/* ---------- preview sheet ---------- */
+let current = null; // {blob, url, name, file, doc}
+function setCurrent(c){
+  if (current && current.url) URL.revokeObjectURL(current.url);
+  current = Object.assign({}, c, {url: URL.createObjectURL(c.blob)});
+  try { current.file = new File([c.blob], c.name + '.jpg', {type: 'image/jpeg'}); } catch(e){ current.file = null; }
+  el.preview.src = current.url;
+  syncSaveUi();
+}
+function openPreview(metaHTML){
+  el.sheetMeta.innerHTML = metaHTML;
+  el.sheetBody.classList.remove('zoom'); el.btnZoom.setAttribute('aria-pressed', 'false'); el.btnZoom.textContent = '크게 보기';
+  el.sheet.hidden = false; syncScrollLock(); el.sheetBody.scrollTop = 0;
+}
+function closeSheet(){ el.sheet.hidden = true; syncScrollLock(); }
+function syncScrollLock(){ document.body.style.overflow = document.querySelector('.sheet:not([hidden])') ? 'hidden' : ''; }
+$('#btnClose').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!el.sheet.hidden) closeSheet(); else if (!hs.sheet.hidden) closeHist(); else if (!pk.sheet.hidden) closePick();
+});
+el.btnZoom.addEventListener('click', () => {
+  const z = !el.sheetBody.classList.contains('zoom');
+  el.sheetBody.classList.toggle('zoom', z); el.btnZoom.setAttribute('aria-pressed', String(z));
+  el.btnZoom.textContent = z ? '화면에 맞추기' : '크게 보기';
+});
+async function exportFmt(kind, doc, btn, base){
+  if (!doc || btn.disabled) return;
+  const label = btn.textContent; btn.disabled = true; btn.textContent = '만드는 중…';
+  try {
+    const blob = kind === 'ppt' ? await buildPpt(doc) : await buildPdf(doc);
+    await deliver(blob, `${base}.${kind === 'ppt' ? 'pptx' : 'pdf'}`);
+  } catch(e){
+    console.error(e);
+    toast(e && e.message === 'load' ? '파일 만드는 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.' : '파일을 만들지 못했어요. 다시 눌러 주세요.', 3600);
+  } finally { btn.disabled = false; btn.textContent = label; }
+}
+el.btnSave.addEventListener('click', () => shareImage());
+$('#btnDl').addEventListener('click', () => { if (current) deliver(current.blob, current.name + '.jpg', {download: true}); });
+$('#btnPpt').addEventListener('click', e => current && exportFmt('ppt', current.doc, e.currentTarget, current.name));
+$('#btnPdf').addEventListener('click', e => current && exportFmt('pdf', current.doc, e.currentTarget, current.name));
+
+/* PLATFORM-START (GitHub Pages / any browser) */
+function canShareFile(f){ try { return !!(f && navigator.canShare && navigator.canShare({files: [f]})); } catch(e){ return false; } }
+const isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 function syncSaveUi(){
-  const f = current && current.file;
-  let share = false;
-  try { share = !!(f && navigator.canShare && navigator.canShare({files: [f]})); } catch(e){}
-  el.btnSave.hidden = !share;
+  const share = canShareFile(current && current.file);
+  el.btnSave.hidden = !share; el.btnSave.textContent = '공유하기 (카카오톡·문자 등)';
+  el.btnDl.hidden = false; $('#fmtRow').hidden = false;
   el.saveHint.textContent = share
     ? '공유 창에서 카카오톡을 고르거나, "이미지 저장"으로 사진첩에 넣을 수 있어요.'
     : '저장이 안 되면 이미지를 길게 눌러 저장하세요.';
 }
+async function deliver(blob, name, opts){
+  let f = null; try { f = new File([blob], name, {type: blob.type || ''}); } catch(e){}
+  if (!(opts && opts.download) && isPhone && canShareFile(f)){
+    try { await navigator.share({files: [f]}); return true; }
+    catch(e){ if (e && e.name === 'AbortError') return false; }
+  }
+  const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000);
+  return true;
+}
+async function shareImage(){
+  if (!current || !current.file) return;
+  try { await navigator.share({files: [current.file]}); }
+  catch(e){ if (e && e.name === 'AbortError') return; toast('공유하지 못했어요. 이미지 저장을 눌러 주세요.'); }
+}
+/* PLATFORM-END */
+syncSaveUi();
 
-function rememberCompanies(){
+function rememberLists(){
+  const now = Date.now(), fac = state.factory.trim();
   state.works.forEach(w => {
     const n = w.company.trim(); if (!n) return;
-    companies[n] = {phone: w.phone || (companies[n] && companies[n].phone) || '', people: w.people || (companies[n] && companies[n].people) || ''};
+    const o = companies[n] || {};
+    companies[n] = tagFac({phone: w.phone || o.phone || '', people: w.people || o.people || '', used: now, fac: o.fac}, fac, now);
   });
-  ls.set(LS_CO, companies); renderCompanies();
+  [['inspName', 'inspPhone'], ['pcName', 'pcPhone']].forEach(([nk, phk]) => {
+    const n = (state[nk] || '').trim(); if (!n) return;
+    const o = people[n] || {};
+    people[n] = tagFac({phone: state[phk] || o.phone || '', used: now, fac: o.fac}, fac, now);
+  });
+  if (fac && state.pcName.trim()){ facDefaults[fac] = {pcName: state.pcName.trim(), pcPhone: state.pcPhone || ''}; ls.set(LS_FACDEF, facDefaults); }
+  saveLists();
 }
 el.btnMake.addEventListener('click', async () => {
   const err = validate(); if (err){ toast(err.msg); focusBad(err); return; }
   el.btnMake.disabled = true; el.btnMake.textContent = '이미지 만드는 중…';
   try {
-    const out = await renderReport(state);
-    if (current) URL.revokeObjectURL(current.url);
-    const ph = phaseOf(state.phase);
-    current = {blob: out.blob, url: URL.createObjectURL(out.blob), name: `${state.factory || ''}공장_주말작업보고_${state.date}_${ph.file}.jpg`};
-    el.preview.src = current.url;
-    try { current.file = new File([out.blob], current.name, {type: 'image/jpeg'}); } catch(e){}
-    syncSaveUi();
+    const doc = makeDoc(state);
+    const out = await renderImage(doc);
+    setCurrent({blob: out.blob, name: docFileBase(doc), doc});
     const nWarn = state.works.reduce((s, w) => s + analyze(w).miss.size, 0);
-    el.sheetMeta.innerHTML = `<div>${esc(current.name)} · ${(out.blob.size / 1048576).toFixed(1)}MB</div>` +
+    const meta = `<div>${esc(current.name)}.jpg · ${fmtMB(out.blob.size)}</div>` +
       (nWarn ? `<div style="color:var(--warn-ink)">안전조치 확인 필요 ${nWarn}건이 남아 있어요. 닫고 다시 확인할 수 있어요.</div>` : '');
-    el.sheetBody.classList.remove('zoom'); el.btnZoom.setAttribute('aria-pressed', 'false'); el.btnZoom.textContent = '크게 보기';
-    el.sheet.hidden = false; document.body.style.overflow = 'hidden';
-    el.sheetBody.scrollTop = 0;
-    rememberCompanies();
+    openPreview(meta + '<div id="histNote">보관함에 저장하는 중…</div>');
+    rememberLists();
+    try {
+      const rec = await saveHistory(doc, out);
+      const n = $('#histNote'); if (n) n.textContent = '보관함에 저장했어요. 위쪽 보관함에서 언제든 다시 받을 수 있어요.';
+      if (syncOn() && sync.auto !== false) autoUpload(rec);
+    }
+    catch(e){ const n = $('#histNote'); if (n) n.textContent = '보관함에 저장하지 못했어요. 폰 저장공간을 확인해 주세요.'; }
   } catch(e){
     console.error(e); toast('이미지를 만들지 못했어요. 다시 눌러 주세요.');
   } finally {
     el.btnMake.disabled = false; el.btnMake.textContent = '보고서 이미지 만들기';
   }
 });
-function closeSheet(){ el.sheet.hidden = true; document.body.style.overflow = ''; }
-$('#btnClose').addEventListener('click', closeSheet);
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !el.sheet.hidden) closeSheet(); });
-el.btnZoom.addEventListener('click', () => {
-  const z = !el.sheetBody.classList.contains('zoom');
-  el.sheetBody.classList.toggle('zoom', z); el.btnZoom.setAttribute('aria-pressed', String(z));
-  el.btnZoom.textContent = z ? '화면에 맞추기' : '크게 보기';
-});
-el.btnSave.addEventListener('click', async () => {
-  if (!current || !current.file) return;
-  try { await navigator.share({files: [current.file]}); }
-  catch(e){ if (e && e.name === 'AbortError') return; toast('공유하지 못했어요. 이미지 파일로 저장을 눌러 주세요.'); }
-});
-$('#btnDl').addEventListener('click', () => {
-  if (!current) return;
-  const a = document.createElement('a'); a.href = current.url; a.download = current.name;
-  document.body.appendChild(a); a.click(); a.remove();
-});
 
 /* ---------- boot ---------- */
 async function boot(){
+  readConnectHash();
   renderBasic(); renderCompanies();
   // restore photos saved on this device
   const ids = state.works.flatMap(w => w.photos);
   await Promise.all(ids.map(async id => {
-    const blob = await idb.get(id);
+    const blob = await idb.get('p', id);
     if (blob) photos.set(id, {blob, url: URL.createObjectURL(blob)});
   }));
   state.works.forEach(w => { w.photos = w.photos.filter(id => photos.has(id)); });
