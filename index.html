@@ -591,7 +591,7 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.27-11';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.10.27-12';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '원주', '대구'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1', LS_PEOPLE = 'wkreport.people.v1';
@@ -1901,7 +1901,7 @@ const hs = {
 };
 let histUrls = [], histRecs = [];
 async function saveHistory(doc, out){
-  const id = `${doc.draftId}-${doc.factory || '공장'}-${doc.phase}`;   // 공장을 바꾸면 다른 보고서로 남깁니다
+  const id = `${doc.draftId}-${doc.factory || '공장'}-${doc.date || '날짜'}-${doc.phase}`;   // 공장·점검일·점검구분이 다르면 다른 보고서로 남깁니다 (같으면 고친 내용으로 바꿈)
   const prev = await idb.get('h', id);
   const now = Date.now();
   const rec = {
