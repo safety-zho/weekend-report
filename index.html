@@ -429,7 +429,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
           <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
           <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
           <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요 (보고서에는 안 들어가요).</li>
-          <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 '[1] 공사명-1', '[1] 공사명-2' 두 칸으로 나란히 들어가요. 특이사항은 두 칸 아래에 번호를 이어서 나눠 들어가요.</li>
+          <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 '[1] 공사명-1', '[1] 공사명-2' 두 칸으로 나란히 들어가요. 특이사항은 두 칸 아래에 같은 내용으로 들어가요.</li>
           <li><b>점검 내용 / 특이사항</b>: 항목마다 ①, ②, ③으로 나뉘어 들어가요. 엔터를 누르면 다음 항목이 생기고, 보고서에서 노란 칸으로 강조돼요.</li>
         </ol>
       </section>
@@ -591,7 +591,7 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.27-9';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.10.27-11';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '원주', '대구'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1', LS_PEOPLE = 'wkreport.people.v1';
@@ -1388,20 +1388,6 @@ function docFileBase(d){
 }
 function stamp(t){ const n = t ? new Date(t) : new Date(); return `${fmtDate(n)} ${pad2(n.getHours())}:${pad2(n.getMinutes())}`; }
 
-// 특이사항 항목을 사진 칸 수만큼 나눔: 앞 칸부터 채우고, 줄 수가 비슷해지도록
-function splitNotes(items, n){
-  const cols = Array.from({length: n}, () => []);
-  if (n === 1){ items.forEach(it => cols[0].push(...it)); return cols; }
-  const total = items.reduce((s2, it) => s2 + it.length, 0), target = Math.ceil(total / n);
-  let c = 0;
-  items.forEach((it, k) => {
-    const left = items.length - k;   // 남은 항목 수
-    if (c < n - 1 && cols[c].length && (cols[c].length + it.length > target || left < n - c)) c++;
-    cols[c].push(...it);
-  });
-  return cols;
-}
-
 /* ---------- canvas layout engine: one tall image, or A4 pages for PDF ---------- */
 const RW = 2100, RM = 60, RIW = RW - 2 * RM;
 const Y_INFO = RM + 92, INFO_H = 80, Y_TABLE = Y_INFO + INFO_H + 26, HEAD1 = 54, HEAD2 = 76;
@@ -1449,7 +1435,7 @@ async function prepare(doc){
     const h = Math.max(96, Math.max(tl.length * LH, cl.length * LH + (w.phone ? 30 : 0), dH) + 36);
     return {w, tl, cl, items, dH, h};
   });
-  // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸을 나란히. 특이사항은 칸마다 번호를 이어서 나눠 넣음
+  // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸을 나란히. 특이사항은 칸마다 같은 내용
   const groups = [];
   works.forEach((w, i) => {
     if (!w.imgs.length && !w.note.trim()) return;
@@ -1463,7 +1449,8 @@ async function prepare(doc){
       const pre = circ(k) + ' ', ind = m.measureText(pre).width;
       return wrap(m, t, BW - 28 - ind).map((ln, q) => ({pre: q === 0 ? pre : '', ind, t: ln}));
     });
-    gp.noteCols = splitNotes(items, gp.span);
+    const all = items.flat();
+    gp.noteCols = Array.from({length: gp.span}, () => all);   // 같은 공사는 칸마다 같은 특이사항
     const maxL = Math.max(0, ...gp.noteCols.map(c => c.length));
     gp.noteH = maxL ? 12 + 48 + maxL * 31 : 12 + 46;
     gp.h = BH_HEAD + CELL + gp.noteH;
@@ -1473,7 +1460,12 @@ async function prepare(doc){
     if (!cur || cur.used + gp.span > 3){ cur = {groups: [], used: 0}; bRows.push(cur); }
     gp.slot = cur.used; cur.used += gp.span; cur.groups.push(gp);
   });
-  bRows.forEach(r => { r.h = Math.max(...r.groups.map(gp => gp.h)); });
+  // 한 줄에 있는 특이사항 칸은 높이를 맞춤 (아래 선이 가지런하게)
+  bRows.forEach(r => {
+    const nh = Math.max(...r.groups.map(gp => gp.noteH));
+    r.groups.forEach(gp => { gp.noteH = nh; gp.h = BH_HEAD + CELL + nh; });
+    r.h = BH_HEAD + CELL + nh;
+  });
   const bodyH = rows.reduce((s, r) => s + r.h, 0);
   return {doc, cols, col, rows, bRows, bodyH, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
 }
@@ -1839,7 +1831,7 @@ async function buildPpt(doc){
       slide.addTable(tableRows, {x: M, y: y0, w: IW, colW, rowH, fontFace: PF});
       yAfter = y0 + rowH.reduce((s, h) => s + h, 0);
     });
-    // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸, 특이사항은 칸마다 이어서
+    // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸, 특이사항은 칸마다 같은 내용
     const PBG = 0.2, PBW = (IW - PBG * 2) / 3, PHEAD = 0.34, PCW = PBW / 2, PCH = 1.62, NGAP = 0.06;
     const groups = [];
     for (const [i, w] of doc.works.entries()){
@@ -1853,8 +1845,8 @@ async function buildPpt(doc){
       if (!chunks.length) chunks.push([]);
       const span = Math.min(chunks.length, 3);
       const items = noteItems(w.note).map((t, k) => { const text = `${circ(k)} ${t}`; return Array.from({length: estLines(text, PBW - 0.2, 10.5)}, (_, q) => q === 0 ? text : null); });
-      const cols = splitNotes(items, span).map(c => c.filter(Boolean));
-      const lineCount = c => c.reduce((s2, t) => s2 + estLines(t, PBW - 0.2, 10.5), 0);
+      const all = items.flat().filter(Boolean), cols = Array.from({length: span}, () => all);
+      const lineCount = c => c.reduce((s2, t) => s2 + estLines(t, PBW - 0.42, 10.5), 0);
       const maxL = Math.max(0, ...cols.map(lineCount));
       const noteH = maxL ? Math.max(0.56, 0.3 + maxL * 0.2) : 0.32;
       groups.push({no: i + 1, title: w.title, chunks, span, cols, noteH, h: PHEAD + PCH + NGAP + noteH});
@@ -1864,6 +1856,7 @@ async function buildPpt(doc){
       if (!prow || prow.used + gp.span > 3){ prow = {groups: [], used: 0, h: 0}; bRows.push(prow); }
       gp.slot = prow.used; prow.used += gp.span; prow.groups.push(gp); prow.h = Math.max(prow.h, gp.h);
     });
+    bRows.forEach(r => { const nh = Math.max(...r.groups.map(gp => gp.noteH)); r.groups.forEach(gp => { gp.noteH = nh; }); r.h = PHEAD + PCH + NGAP + nh; });
     let y = yAfter + 0.25;
     for (const r of bRows){
       if (y + r.h > BOTTOM){
@@ -1887,7 +1880,9 @@ async function buildPpt(doc){
           if (col.length){
             slide.addText([
               {text: '■ 점검 내용 / 특이사항', options: {bold: true, fontSize: 9, color: '8A5300', breakLine: true}},
-              ...col.map((t, q, arr) => ({text: t, options: Object.assign({bold: true, fontSize: 10.5, color: '1F3864'}, q < arr.length - 1 ? {breakLine: true} : {})}))
+              // ①②③을 글머리로 넣어 줄이 바뀌어도 글자 시작 위치가 맞도록
+              ...col.map((t, q, arr) => ({text: t.replace(/^\S+\s/, ''), options: Object.assign({bold: true, fontSize: 10.5, color: '1F3864',
+                bullet: {characterCode: (0x2460 + Math.min(q, 19)).toString(16).toUpperCase(), indent: 15}}, q < arr.length - 1 ? {breakLine: true} : {})}))
             ], {x, y: ny, w: PBW, h: gp.noteH, fill: {color: 'FFF4D1'}, line: {color: 'E2A11B', width: 1.5}, valign: 'top', fontFace: PF, margin: 5});
           } else {
             slide.addText('점검 내용 / 특이사항 :', {x, y: ny, w: PBW, h: gp.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: gp.noteH > 0.5 ? 'top' : 'middle', fontFace: PF, margin: 5});
