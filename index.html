@@ -233,26 +233,16 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .chk{display:flex; align-items:center; gap:10px; font-size:14px}
 .chk input{width:20px; height:20px; accent-color:var(--navy); flex:none}
 
-/* 작업 카드: 밀폐 측정 · 화기 확인 · 특이사항 */
+/* 작업 카드: 확인 목록 · 특이사항 */
 .who-hint{margin:-4px 2px 0; font-size:13px; color:var(--muted)}
 .sub{background:var(--sunk); border:1px solid var(--line); border-radius:10px; padding:12px; display:grid; gap:10px}
 .sub .sub-t{margin:0; color:var(--ink); font-weight:600}
 .sub-help{margin:0; font-size:13px; color:var(--muted); line-height:1.5}
 .sub input[type=text], .sub input[type=time]{background:var(--surface)}
-.gas-row{display:grid; gap:8px; padding-top:10px; border-top:1px dashed var(--line)}
-.gas-top{display:grid; grid-template-columns:minmax(0,1fr) 112px 44px; gap:8px}
-.gas-top > *{min-width:0}
-.gas-x{border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--muted); font-size:18px}
-.gas-vals{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px}
-@media (min-width:560px){ .gas-vals{grid-template-columns:repeat(4, minmax(0,1fr))} }
-.gv{display:grid; gap:4px; font-size:13px; color:var(--muted); min-width:0}
-.gv em{font-style:normal; font-size:12px}
-.gv input{font-variant-numeric:tabular-nums}
-input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
-.gpill{display:inline-block; padding:3px 10px; border-radius:999px; font-size:13px; font-weight:600}
-.gpill.ok{background:var(--info-bg); color:var(--info-ink)}
-.gpill.bad, .gpill.setpoint{background:var(--danger); color:#fff}
-.gpill.incomplete{background:var(--warn-bg); color:var(--warn-ink)}
+.ck{background:var(--info-bg); border-color:transparent; color:var(--info-ink); gap:8px}
+.ck .sub-t{color:var(--info-ink)}
+.ck-g b{display:block; font-size:14px; font-weight:700}
+.ck-g ul{margin:4px 0 0; padding-left:18px; font-size:14px; line-height:1.55; display:grid; gap:2px}
 .add.sm{padding:10px; font-size:14px}
 .notes{display:grid; gap:8px}
 .note-row{display:grid; grid-template-columns:30px minmax(0,1fr) 44px; gap:6px; align-items:start}
@@ -272,6 +262,8 @@ input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
 .guide .tip{background:var(--warn-bg); color:var(--warn-ink); border-radius:10px; padding:12px 14px}
 .guide .tip h3{color:var(--warn-ink)}
 @media (max-width:400px){ .top h1{font-size:17px} .top-acts .ghost{padding:8px 9px} .top-acts .ghost.icon{width:34px; padding:8px 0} }
+
+.ver{margin:20px 0 0; text-align:center; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
 
 /* bottom bar */
 .bar{position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--surface); border-top:1px solid var(--line);
@@ -315,7 +307,7 @@ input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
   <div class="panel" id="resetPanel" hidden>
     <p>관리자·당직자·PC 담당자 정보는 그대로 남아요.</p>
     <div class="acts">
-      <button type="button" id="resetNext">같은 작업으로 다음 점검 쓰기<small>작업 목록은 두고 사진·특이사항·측정값만 비우고, 점검구분을 다음 단계로 바꿔요</small></button>
+      <button type="button" id="resetNext">같은 작업으로 다음 점검 쓰기<small>작업 목록은 두고 사진·특이사항만 비우고, 점검구분을 다음 단계로 바꿔요</small></button>
       <button type="button" id="resetAll">작업 모두 비우기<small>새 주말공사 보고를 처음부터 써요</small></button>
     </div>
     <div class="row-btn"><button type="button" id="resetCancel">취소</button></div>
@@ -380,6 +372,7 @@ input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
     <h2 class="sec-h" id="secWorks"><span>작업 목록</span><span id="workCount"></span></h2>
     <div class="works" id="works"></div>
     <div style="margin-top:12px"><button type="button" class="add" id="btnAdd">+ 작업 추가</button></div>
+    <p class="ver" data-ver></p>
   </section>
   <datalist id="coList"></datalist>
   <datalist id="peopleList"></datalist>
@@ -435,28 +428,16 @@ input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
           <li><b>점검일</b>: 토·일 버튼으로 바로 고를 수 있어요.</li>
           <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
           <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
-          <li><b>작업구분·주요 안전조치</b>를 누릅니다. 빠진 안전조치가 있으면 카드 아래에 안내가 나와요.</li>
-          <li><b>밀폐작업</b>을 누르면 측정값 칸이, <b>화기작업</b>을 누르면 소화기·방화포·화재감시자 확인 칸이 나와요.</li>
-          <li><b>사진</b>: 작업당 4장까지. 보고서에는 2장씩 한 칸으로 들어가요.</li>
+          <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요 (보고서에는 안 들어가요).</li>
+          <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 [1-1]·[1-2] 두 칸으로 나란히 들어가고 특이사항은 두 칸 아래에 함께 들어가요.</li>
           <li><b>점검 내용 / 특이사항</b>: 항목마다 ①, ②, ③으로 나뉘어 들어가요. 엔터를 누르면 다음 항목이 생기고, 보고서에서 노란 칸으로 강조돼요.</li>
         </ol>
-      </section>
-      <section class="tip">
-        <h3>밀폐공간 측정값 넣는 법</h3>
-        <ul>
-          <li>측정기를 켜면 처음에 'ALARM' 화면(10 / 30 / 19.5 / 10)이 잠깐 나와요. 이건 <b>경보 설정값</b>이라 측정값이 아니에요.</li>
-          <li>몇 초 뒤 나오는 <b>측정 화면의 숫자</b>를 넣으세요. 깨끗한 공기면 산소 20.9%, 나머지는 0이에요.</li>
-          <li>측정 위치마다 따로 넣고(예: 사일로 상부·하부), <b>측정자 이름</b>은 꼭 넣어 주세요. 측정 결과는 측정자·일시·장소와 함께 기록하고 3년 보관해야 해요.</li>
-          <li>기준: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만. 벗어나면 빨간색으로 표시돼요.</li>
-          <li>측정 화면 사진도 같이 찍어 두세요.</li>
-        </ul>
       </section>
       <section>
         <h3>'확인 필요'가 뜨면</h3>
         <ul>
-          <li>아래쪽 막대에 건수가, 작업 카드에 주황색 안내가 나와요.</li>
-          <li>빠진 안전조치(전기·설비 작업인데 LOTOTO 없음 등), 측정값 누락·기준 초과, 화기 확인 누락, 사진 없음을 알려 줘요.</li>
-          <li>경고가 있어도 보고서는 만들어져요. 실제로 한 조치라면 체크를 고치고, 안 했다면 조치 후 다시 만드세요.</li>
+          <li>사진이 없는 작업이 있으면 아래쪽 막대와 작업 카드에 알려 줘요.</li>
+          <li>경고가 있어도 보고서는 만들어져요.</li>
         </ul>
       </section>
       <section>
@@ -500,6 +481,7 @@ input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
           <li>전기·설비: 잠금장치(LOTOTO)를 건 모습.</li>
         </ul>
       </section>
+      <p class="ver" data-ver></p>
     </article>
   </div>
 </div>
@@ -587,12 +569,16 @@ const TYPES = [
   {k:'일반', ui:'일반', h:'일반\n작업'}, {k:'고소', ui:'고소', h:'고소\n작업'}, {k:'화기', ui:'화기', h:'화기\n작업'},
   {k:'밀폐', ui:'밀폐', h:'밀폐\n작업'}, {k:'중장비', ui:'중장비', h:'중장비\n작업'}
 ];
-const FIRE_ITEMS = [{k:'소화기', ui:'소화기 비치'}, {k:'방화포', ui:'인증 방화포'}, {k:'감시자', ui:'화재감시자'}];
-const GAS = [
-  {k:'o2', ui:'산소', unit:'%', ph:'20.9'}, {k:'co', ui:'일산화탄소', unit:'ppm', ph:'0'},
-  {k:'h2s', ui:'황화수소', unit:'ppm', ph:'0'}, {k:'lel', ui:'가연성가스', unit:'%LEL', ph:'0'}
-];
-const MAX_GAS = 3;
+// 작업구분을 고르면 작업 카드에 보여 주는 확인 목록 (입력 없음, 보고서에는 안 들어감)
+const CHECKS = {
+  '고소': ['안전대 착용과 걸이 위치', '작업발판·안전난간, 이동식 비계 바퀴 고정', '사다리 미끄럼 방지·2인 1조', '아래쪽 출입 통제, 낙하물 방지'],
+  '화기': ['소화기를 작업 장소 가까이 비치', '불티 비산방지: 성능인증 방화포 (2026.3.2부터 의무)', '화재감시자 배치', '주변 가연물 치우기·환기', '작업 후 잔불 확인'],
+  '밀폐': ['작업 전 산소·유해가스 측정 — 산소 18% 이상 23.5% 미만, 일산화탄소 30ppm 미만, 황화수소 10ppm 미만',
+    "측정기를 켜면 처음 나오는 'ALARM' 화면(10 / 30 / 19.5 / 10)은 경보 설정값이에요. 측정 화면의 값을 기록하세요",
+    '측정자·일시·장소·측정값 기록 (3년 보관)', '환기, 외부 감시인 배치, 출입 인원 확인', '안전대·구명줄, 이상 시 119 신고'],
+  '중장비': ['작업 반경 출입 통제·유도자 배치', '장비 점검, 아웃리거·지반 상태', '신호 방법 미리 정하기']
+};
+const CHECK_LOTO = ['전원 차단 후 잠금장치·표지 (LOTOTO)', '잔류 에너지(전기·공압·유압) 제거 확인', '작업 후 잠금 해제·시운전 확인'];
 const ROLES = [['insp', '관리자'], ['duty', '당직자'], ['pc', 'PC 담당자']];
 const MEASURES = [
   {k:'허가', ui:'작업허가', h:'작업\n허가'}, {k:'보호구', ui:'보호구', h:'보호구'}, {k:'LOTO', ui:'LOTOTO', h:'LOTOTO'},
@@ -605,6 +591,7 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
+const APP_VERSION = '2026.10.27-8';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '원주', '대구'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1', LS_PEOPLE = 'wkreport.people.v1';
@@ -728,10 +715,8 @@ async function shrinkPhoto(file){
 const newDraftId = () => 'd' + uid();
 function newWork(over){
   return Object.assign({id: uid(), title:'', company:'', people:'', phone:'', desc:'', types:[], measures:[], photos:[], note:'',
-    gas:[], gasBy:'', fire:[], open:true}, over || {});
+    open:true}, over || {});
 }
-function nowHM(){ const d = new Date(); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
-const newGasRow = () => ({loc:'', time: nowHM(), o2:'', co:'', h2s:'', lel:''});
 function exampleState(){
   return {
     example: false, draftId: newDraftId(), factory: '', date: defaultDate(), phase: 'before',
@@ -744,8 +729,7 @@ function normalize(s){
   const st = Object.assign(exampleState(), s);
   st.works = s.works.map(w => newWork(Object.assign({}, w, {
     types: Array.isArray(w.types) ? w.types.filter(k => TYPES.some(t => t.k === k)) : [], measures: Array.isArray(w.measures) ? w.measures : [],
-    photos: Array.isArray(w.photos) ? w.photos : [], gas: Array.isArray(w.gas) ? w.gas : [],
-    fire: Array.isArray(w.fire) ? w.fire : [], gasBy: w.gasBy || ''
+    photos: Array.isArray(w.photos) ? w.photos : []
   })));
   if (!PHASES.some(p => p.k === st.phase)) st.phase = 'before';
   if (!st.draftId) st.draftId = newDraftId();
@@ -760,68 +744,29 @@ let saveT = 0;
 function save(){ clearTimeout(saveT); saveT = setTimeout(() => ls.set(LS_DRAFT, state), 300); }
 const findWork = id => state.works.find(w => w.id === id);
 
-/* ---------- safety cross-check ---------- */
+/* ---------- 확인 목록 · 경고 ---------- */
 const LOTO_ELEC = /전기|배선|분전|차단기|전원|판넬|패널/;
 const LOTO_EQUIP = /안전커버|커버|포장기|컨베이어|설비|기계|모터|감속기|체인|벨트|믹서|오븐|분할기|성형기|라운더|슬라이서|호퍼|스크류/;
-const num = v => { const t = String(v == null ? '' : v).trim().replace(',', '.'); return t === '' ? NaN : Number(t); };
-// 적정공기: 산소 18% 이상 23.5% 미만, 일산화탄소 30ppm 미만, 황화수소 10ppm 미만 (산업안전보건기준에 관한 규칙 제618조)
-function gasEval(r){
-  const v = {o2: num(r.o2), co: num(r.co), h2s: num(r.h2s), lel: num(r.lel)};
-  if (['o2', 'co', 'h2s', 'lel'].every(k => isNaN(v[k]))) return {status: 'empty', bad: [], v};
-  const bad = [];
-  if (!isNaN(v.o2) && (v.o2 < 18 || v.o2 >= 23.5)) bad.push('o2');
-  if (!isNaN(v.co) && v.co >= 30) bad.push('co');
-  if (!isNaN(v.h2s) && v.h2s >= 10) bad.push('h2s');
-  if (!isNaN(v.lel) && v.lel >= 10) bad.push('lel');   // 측정기 경보 기준
-  const incomplete = ['o2', 'co', 'h2s'].some(k => isNaN(v[k]));
-  const setpoint = v.o2 === 19.5 && v.h2s === 10 && [25, 30, 35].includes(v.co);   // 켤 때 나오는 경보 설정값 화면
-  const low = !isNaN(v.o2) && v.o2 >= 18 && v.o2 < 20;
-  return {status: setpoint ? 'setpoint' : bad.length ? 'bad' : incomplete ? 'incomplete' : 'ok', bad, low, setpoint, v};
-}
-const GAS_STATUS = {ok: '적정공기', bad: '부적정', incomplete: '값 입력 필요', setpoint: '경보 설정값?'};
-function gasLabel(k, val){ const g = GAS.find(x => x.k === k); return `${g.ui} ${val}${g.unit}`; }
 function analyze(w, phase){
   phase = phase || state.phase;
-  const t = new Set(w.types), m = new Set(w.measures), miss = new Map();
-  const req = (type, keys) => {
-    if (!t.has(type)) return;
-    keys.forEach(k => { if (!m.has(k)){ if (!miss.has(k)) miss.set(k, []); miss.get(k).push(type + '작업'); } });
-  };
-  req('고소', ['추락방지', '보호구']);
-  req('화기', ['화기관리', '허가']);
-  req('밀폐', ['허가', '보호구']);
-  req('중장비', ['통제']);
-  const txt = (w.title || '') + ' ' + (w.desc || '');
-  if (!m.has('LOTO')){
-    const why = LOTO_ELEC.test(txt) ? '전기 작업' : LOTO_EQUIP.test(txt) ? '설비 작업' : '';
-    if (why){ if (!miss.has('LOTO')) miss.set('LOTO', []); miss.get('LOTO').push(why); }
-  }
   const issues = [];   // {lv: 'w' 경고 | 'i' 안내, t: html}
-  if (t.has('밀폐')){
-    const rows = (w.gas || []).filter(r => gasEval(r).status !== 'empty');
-    if (!rows.length) issues.push({lv: 'w', t: '<b>밀폐공간 측정값</b>을 넣어 주세요. 측정자·시각·장소와 함께 기록해야 해요.'});
-    else {
-      if (!String(w.gasBy || '').trim()) issues.push({lv: 'w', t: '<b>측정자</b> 이름을 넣어 주세요.'});
-      if (rows.some(r => !String(r.loc || '').trim() || !r.time)) issues.push({lv: 'w', t: '<b>측정 위치와 시각</b>을 넣어 주세요.'});
-      rows.forEach(r => {
-        const e = gasEval(r), where = esc(String(r.loc || '').trim() || '측정 위치');
-        if (e.setpoint) issues.push({lv: 'w', t: `${where}: 입력값이 측정기 <b>경보 설정값</b>(10 / 30 / 19.5 / 10)과 같아요. 측정 화면의 값을 넣었는지 확인하세요.`});
-        else if (e.status === 'bad') issues.push({lv: 'w', t: `${where}: <b>${esc(e.bad.map(k => gasLabel(k, r[k])).join(', '))}</b> — 기준을 벗어났어요. 환기 후 다시 측정하세요.`});
-        else if (e.status === 'incomplete') issues.push({lv: 'w', t: `${where}: 산소·일산화탄소·황화수소 값을 모두 넣어 주세요.`});
-        else if (e.low) issues.push({lv: 'i', t: `${where}: 산소 ${esc(r.o2)}% — 기준 안이지만 정상(20.9%)보다 낮아요. 환기 상태를 확인하세요.`});
-      });
-    }
-  }
-  if (t.has('화기')){
-    const missF = FIRE_ITEMS.filter(f => !(w.fire || []).includes(f.k)).map(f => f.ui);
-    if (missF.length) issues.push({lv: 'w', t: `화기작업 확인: <b>${esc(missF.join(', '))}</b> 미확인`});
-  }
   const hasContent = (w.title || '').trim() || (w.company || '').trim();
   if (hasContent && !(w.photos || []).length)
     issues.push({lv: 'w', t: phase === 'after' ? '<b>완료 사진</b>이 없어요. 작업 후 점검은 작업마다 완료 상태 사진을 넣어 주세요.' : '<b>작업 사진</b>이 없어요.'});
   if (hasContent && !(w.desc || '').trim()) issues.push({lv: 'i', t: '공사내용이 비어 있어요.'});
-  const lines = [...miss].map(([k, why]) => `<b>${esc(measUi(k))}</b> 체크 확인 (${esc(why.join(', '))})`);
-  return {miss, lines, issues, count: miss.size + issues.filter(x => x.lv === 'w').length};
+  return {miss: new Map(), lines: [], issues, count: issues.filter(x => x.lv === 'w').length};
+}
+// 작업구분·공사명으로 고른 확인 목록
+function checkGroups(w){
+  const gs = TYPES.filter(t => w.types.includes(t.k) && CHECKS[t.k]).map(t => ({t: t.ui + '작업', items: CHECKS[t.k]}));
+  const txt = (w.title || '') + ' ' + (w.desc || '');
+  if (LOTO_ELEC.test(txt)) gs.push({t: '전기 작업', items: CHECK_LOTO});
+  else if (LOTO_EQUIP.test(txt)) gs.push({t: '설비 작업', items: CHECK_LOTO});
+  return gs;
+}
+function checklistHTML(w){
+  const gs = checkGroups(w); if (!gs.length) return '';
+  return '<span class="lbl sub-t">확인할 것</span>' + gs.map(x => `<div class="ck-g"><b>${esc(x.t)}</b><ul>${x.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`).join('');
 }
 const countWarn = (works, phase) => works.reduce((s, w) => s + analyze(w, phase).count, 0);
 const stripTags = h => String(h).replace(/<[^>]+>/g, '');
@@ -942,43 +887,6 @@ function renderNotes(card, w, fi, caret){
   t.focus(); const p = caret === 'end' ? t.value.length : (caret || 0);
   try { t.setSelectionRange(p, p); } catch(e){}
 }
-function gasStatusHTML(r){
-  const e = gasEval(r); if (e.status === 'empty') return '';
-  return `<span class="gpill ${e.status}">${GAS_STATUS[e.status]}</span>`;
-}
-function gasRowHTML(w, r, j){
-  const e = gasEval(r);
-  return `<div class="gas-row" data-gi="${j}">
-  <div class="gas-top">
-    <input type="text" data-gk="loc" data-gi="${j}" value="${esc(r.loc)}" placeholder="측정 위치 (예: 사일로 상부)" aria-label="측정 위치" autocomplete="off">
-    <input type="time" data-gk="time" data-gi="${j}" value="${esc(r.time)}" aria-label="측정 시각">
-    <button type="button" class="gas-x" data-act="gas-del" data-gi="${j}" aria-label="이 측정 지우기">×</button>
-  </div>
-  <div class="gas-vals">${GAS.map(g => `<label class="gv"><span>${g.ui} <em>${g.unit}</em></span>
-    <input type="text" inputmode="decimal" data-gk="${g.k}" data-gi="${j}" value="${esc(r[g.k])}" placeholder="${g.ph}" class="${e.bad.includes(g.k) ? 'gbad' : ''}" autocomplete="off"></label>`).join('')}</div>
-  <div class="gas-st" data-gst>${gasStatusHTML(r)}</div>
-</div>`;
-}
-function gasHTML(w){
-  const id = w.id;
-  return `<section class="sub" aria-label="밀폐공간 측정">
-  <span class="lbl sub-t">밀폐공간 산소·유해가스 측정</span>
-  <p class="sub-help">측정기를 켜면 처음 나오는 'ALARM' 화면(10 / 30 / 19.5 / 10)은 경보 설정값이에요. 몇 초 뒤 측정 화면의 숫자를 넣으세요.</p>
-  <div><label class="lbl" for="w-${id}-gasBy">측정자</label>
-    <input type="text" id="w-${id}-gasBy" data-f="gasBy" value="${esc(w.gasBy)}" list="peopleList" placeholder="측정한 사람 이름" autocomplete="off"></div>
-  ${w.gas.map((r, j) => gasRowHTML(w, r, j)).join('')}
-  ${w.gas.length < MAX_GAS ? '<button type="button" class="add sm" data-act="gas-add">+ 측정 위치 추가</button>' : ''}
-  <p class="sub-help">기준: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만</p>
-</section>`;
-}
-function fireHTML(w){
-  return `<section class="sub" aria-label="화기작업 확인">
-  <span class="lbl sub-t">화기작업 확인</span>
-  <div class="chips">${FIRE_ITEMS.map(f => `<button type="button" class="chip m" data-act="chip" data-g="fire" data-k="${f.k}" aria-pressed="${w.fire.includes(f.k)}">${f.ui}</button>`).join('')}</div>
-  <p class="sub-help">2026년 3월부터 가연물이 있는 곳의 화기작업은 성능인증 방화포를 써야 해요. 소화기·방화포가 보이게 사진도 찍어 두세요.</p>
-</section>`;
-}
-
 function photosHTML(w){
   const tiles = w.photos.map(id => {
     const p = photos.get(id); if (!p) return '';
@@ -1020,8 +928,7 @@ function cardHTML(w, i){
       <textarea id="w-${id}-desc" data-f="desc" rows="2" placeholder="작업 내용을 짧게">${esc(w.desc)}</textarea></div>
     <div><span class="lbl">작업구분</span><div class="chips">${TYPES.map(t => chip('types', t, 't')).join('')}</div></div>
     <div><span class="lbl">주요 안전조치</span><div class="chips" data-mchips>${MEASURES.map(m => chip('measures', m, 'm')).join('')}</div></div>
-    ${w.types.includes('밀폐') ? gasHTML(w) : ''}
-    ${w.types.includes('화기') ? fireHTML(w) : ''}
+    <section class="sub ck" data-check${checklistHTML(w) ? '' : ' hidden'}>${checklistHTML(w)}</section>
     <div data-warn${warnHTML(w) ? '' : ' hidden'} style="display:grid;gap:8px">${warnHTML(w)}</div>
     <div><span class="lbl">작업 사진 <em data-phcount>${w.photos.length}/${MAX_PHOTOS}</em></span>
       <div class="ph-grid" data-phgrid>${photosHTML(w)}</div>
@@ -1057,6 +964,7 @@ function refreshChecks(card, w){
   const a = analyze(w);
   const box = card.querySelector('[data-warn]');
   const wh = warnHTML(w); box.innerHTML = wh; box.hidden = !wh;
+  const ck = card.querySelector('[data-check]'); if (ck){ const ch = checklistHTML(w); ck.innerHTML = ch; ck.hidden = !ch; }
   const flag = card.querySelector('.w-flag'); flag.textContent = `확인 ${a.count}`; flag.hidden = !a.count;
   card.querySelector('.w-sum').textContent = summaryOf(w);
   updateBar();
@@ -1132,17 +1040,7 @@ el.works.addEventListener('click', e => {
     const g = t.dataset.g, arr = w[g], k = t.dataset.k, i = arr.indexOf(k);
     if (i >= 0) arr.splice(i, 1); else arr.push(k);
     t.setAttribute('aria-pressed', String(i < 0));
-    if (g === 'types' && (k === '밀폐' || k === '화기')){
-      if (k === '밀폐' && i < 0 && !w.gas.length) w.gas.push(newGasRow());
-      rerenderCard(w); save(); return;
-    }
     refreshChecks(card, w); save();
-  } else if (act === 'gas-add'){
-    if (w.gas.length >= MAX_GAS) return;
-    w.gas.push(newGasRow()); rerenderCard(w); save();
-    const inp = $(`#card-${w.id} .gas-row[data-gi="${w.gas.length - 1}"] [data-gk="loc"]`); if (inp) inp.focus();
-  } else if (act === 'gas-del'){
-    w.gas.splice(Number(t.dataset.gi), 1); rerenderCard(w); save();
   } else if (act === 'note-add'){
     const items = noteEdit(card); if (items.length >= MAX_NOTES) return;
     items.push(''); w.note = items.join('\n'); renderNotes(card, w, items.length - 1, 0); save();
@@ -1197,16 +1095,6 @@ el.works.addEventListener('input', e => {
     } else { w.note = noteEdit(card).join('\n'); autoGrow(e.target); }
     updateBar(); save(); return;
   }
-  const gk = e.target.dataset.gk;
-  if (gk){
-    const card = e.target.closest('.work'); const w = findWork(card.dataset.id); if (!w) return;
-    const j = Number(e.target.dataset.gi), r = w.gas[j]; if (!r) return;
-    r[gk] = e.target.value;
-    const row = e.target.closest('.gas-row'), ev = gasEval(r);
-    row.querySelector('[data-gst]').innerHTML = gasStatusHTML(r);
-    GAS.forEach(g => { const i2 = row.querySelector(`[data-gk="${g.k}"]`); if (i2) i2.classList.toggle('gbad', ev.bad.includes(g.k)); });
-    refreshChecks(card, w); save(); return;
-  }
   const f = e.target.dataset.f; if (!f || f === 'file') return;
   const card = e.target.closest('.work'); const w = findWork(card.dataset.id); if (!w) return;
   w[f] = e.target.value; e.target.classList.remove('bad');
@@ -1215,7 +1103,7 @@ el.works.addEventListener('input', e => {
     const tEl = card.querySelector('.w-title');
     tEl.textContent = w.title || '공사명 미입력'; tEl.classList.toggle('empty', !w.title);
   }
-  if (f === 'title' || f === 'desc' || f === 'gasBy' || f === 'company') refreshChecks(card, w);
+  if (f === 'title' || f === 'desc' || f === 'company') refreshChecks(card, w);
   else if (f === 'company' || f === 'people') card.querySelector('.w-sum').textContent = summaryOf(w);
   save();
 });
@@ -1277,8 +1165,7 @@ el.btnAdd.addEventListener('click', () => {
 function clearWorks(keepList){
   if (keepList){
     state.works.forEach(w => {
-      w.photos.forEach(dropPhoto); w.photos = []; w.note = ''; w.fire = [];
-      w.gas = w.types.includes('밀폐') ? [newGasRow()] : [];
+      w.photos.forEach(dropPhoto); w.photos = []; w.note = '';
     });
     state.phase = state.phase === 'before' ? 'during' : 'after';
   } else {
@@ -1295,7 +1182,7 @@ el.btnReset.addEventListener('click', () => {
   const open = el.resetPanel.hidden; el.resetPanel.hidden = !open; el.btnReset.setAttribute('aria-expanded', String(open));
 });
 $('#resetCancel').addEventListener('click', () => { el.resetPanel.hidden = true; el.btnReset.setAttribute('aria-expanded', 'false'); });
-$('#resetNext').addEventListener('click', () => { clearWorks(true); toast(`사진·특이사항·측정값을 비우고 점검구분을 '${phaseOf(state.phase).ui}'(으)로 바꿨어요.`); });
+$('#resetNext').addEventListener('click', () => { clearWorks(true); toast(`사진·특이사항을 비우고 점검구분을 '${phaseOf(state.phase).ui}'(으)로 바꿨어요.`); });
 $('#resetAll').addEventListener('click', () => { clearWorks(false); toast('새 보고서를 시작했어요.'); });
 $('#exClear').addEventListener('click', () => { clearWorks(false); });
 $('#exKeep').addEventListener('click', () => { state.example = false; el.exBanner.hidden = true; save(); });
@@ -1489,8 +1376,6 @@ function makeDoc(st){
     works: st.works.filter(w => !isEmptyWork(w)).map(w => ({
       title: w.title, company: w.company, people: w.people, phone: w.phone, desc: w.desc,
       types: [...w.types], measures: [...w.measures], note: w.note,
-      gas: w.types.includes('밀폐') ? w.gas.map(r => Object.assign({}, r)) : [], gasBy: w.types.includes('밀폐') ? w.gasBy : '',
-      fire: w.types.includes('화기') ? [...w.fire] : [],
       photos: w.photos.map(id => photos.get(id)).filter(Boolean).map(p => p.blob)
     }))
   };
@@ -1508,11 +1393,9 @@ const RW = 2100, RM = 60, RIW = RW - 2 * RM;
 const Y_INFO = RM + 92, INFO_H = 80, Y_TABLE = Y_INFO + INFO_H + 26, HEAD1 = 54, HEAD2 = 76;
 const BG = 30, BW = (RIW - BG * 2) / 3, BH_HEAD = 56, CELL = BW / 2;
 const PAD = 14, LH = 34;
-const GAS_GAP = 28, GAS_CAP = 44, GAS_HEAD = 50, GAS_ROW = 50;
-const GAS_REPORT = {ok: '적정', bad: '부적정', incomplete: '값 부족', setpoint: '확인 필요'};
 
 async function loadFonts(doc){
-  const sample = [doc.factory, doc.inspName, doc.dutyName, doc.pcName, ...doc.works.flatMap(w => [w.title, w.company, w.desc, w.note, w.gasBy, ...(w.gas || []).map(r => r.loc)]),
+  const sample = [doc.factory, doc.inspName, doc.dutyName, doc.pcName, ...doc.works.flatMap(w => [w.title, w.company, w.desc, w.note]),
     '①②③④⑤⑥⑦⑧⑨⑩당직측정위치시각산소일산화탄소황화수소가연성가스판정적정부적정값부족기록없음확인필요화기입회소화기비치인증방화포화재감시자미확인중량물취급LEL%ppm:',
     'PC[]공장주말외주업체작업보고사진점검일구분자전중후연락처명인원공사내용체크주요안전조치일반고소화기밀폐중장비허가보호구LOTO추락방지관리통제정리담당없음특이사항년월일요토☎■0123456789-()·/:…계속'].join('');
   try {
@@ -1544,54 +1427,41 @@ async function prepare(doc){
     setF(m, 600, 25);
     const tl = wrap(m, w.title, col('title').w - PAD * 2);
     const cl = wrap(m, (w.company || '') + (w.people ? ` (${w.people}명)` : ''), col('co').w - PAD * 2);
-    // 공사내용 칸: 내용 + 화기작업 확인
+    // 공사내용 칸
     const dw = col('desc').w - PAD * 2, items = [];
     const add = (text, wt, sz, color, lh) => { setF(m, wt, sz); wrap(m, text, dw).forEach(t => items.push({t, wt, sz, color, lh})); };
     if (w.desc) add(w.desc, 400, 24, C.ink, 32);
-    if ((w.types || []).includes('화기')){
-      const done = FIRE_ITEMS.filter(f => (w.fire || []).includes(f.k)).map(f => f.ui);
-      const missF = FIRE_ITEMS.filter(f => !(w.fire || []).includes(f.k)).map(f => f.ui);
-      if (items.length) items.push({gap: 6});
-      add('화기 확인: ' + (done.length ? done.join(' · ') : '없음'), 600, 20, C.navy, 27);
-      if (missF.length) add('미확인: ' + missF.join(', '), 700, 20, C.red, 27);
-    }
     const dH = items.reduce((s2, it) => s2 + (it.gap || it.lh), 0);
     const h = Math.max(96, Math.max(tl.length * LH, cl.length * LH + (w.phone ? 30 : 0), dH) + 36);
     return {w, tl, cl, items, dH, h};
   });
-  // 밀폐공간 측정 기록
-  const gasRows = [];
-  works.forEach((w, i) => {
-    if (!(w.types || []).includes('밀폐')) return;
-    const rs = (w.gas || []).filter(r => gasEval(r).status !== 'empty');
-    if (!rs.length) gasRows.push({no: i + 1, r: null, by: w.gasBy});
-    rs.forEach(r => gasRows.push({no: i + 1, r, by: w.gasBy}));
-  });
-  const gasH = gasRows.length ? GAS_GAP + GAS_CAP + GAS_HEAD + gasRows.length * GAS_ROW : 0;
-  const blocks = [];
+  // 사진 묶음: 2장까지 한 칸, 3~4장은 [n-1]·[n-2] 두 칸을 나란히 놓고 특이사항은 두 칸 아래에 하나로
+  const groups = [];
   works.forEach((w, i) => {
     if (!w.imgs.length && !w.note.trim()) return;
     const chunks = []; for (let j = 0; j < w.imgs.length; j += 2) chunks.push(w.imgs.slice(j, j + 2));
     if (!chunks.length) chunks.push([]);
-    chunks.forEach((c, j) => blocks.push({no: i + 1, title: w.title, part: chunks.length > 1 ? j + 1 : 0, imgs: c, note: j === 0 ? w.note : null}));
+    groups.push({no: i + 1, title: w.title, chunks, span: Math.min(chunks.length, 3), note: w.note});
   });
   setF(m, 600, 23);
-  blocks.forEach(b => {
-    b.noteLines = null;
-    if (b.note !== null){
-      b.noteLines = [];
-      noteItems(b.note).forEach((t, k) => {
-        const pre = circ(k) + ' ', ind = m.measureText(pre).width;
-        wrap(m, t, BW - 28 - ind).forEach((ln, q) => b.noteLines.push({pre: q === 0 ? pre : '', ind, t: ln}));
-      });
-    }
-    b.noteH = b.noteLines === null ? 0 : (b.noteLines.length ? 12 + 48 + b.noteLines.length * 31 : 12 + 46);
-    b.h = BH_HEAD + CELL + b.noteH;
+  groups.forEach(gp => {
+    gp.w = gp.span * BW + (gp.span - 1) * BG;
+    gp.noteLines = [];
+    noteItems(gp.note).forEach((t, k) => {
+      const pre = circ(k) + ' ', ind = m.measureText(pre).width;
+      wrap(m, t, gp.w - 28 - ind).forEach((ln, q) => gp.noteLines.push({pre: q === 0 ? pre : '', ind, t: ln}));
+    });
+    gp.noteH = gp.noteLines.length ? 12 + 48 + gp.noteLines.length * 31 : 12 + 46;
+    gp.h = BH_HEAD + CELL + gp.noteH;
   });
-  const bRows = [];
-  for (let i = 0; i < blocks.length; i += 3){ const r = blocks.slice(i, i + 3); bRows.push({blocks: r, h: Math.max(...r.map(b => b.h))}); }
+  const bRows = []; let cur = null;
+  groups.forEach(gp => {
+    if (!cur || cur.used + gp.span > 3){ cur = {groups: [], used: 0}; bRows.push(cur); }
+    gp.slot = cur.used; cur.used += gp.span; cur.groups.push(gp);
+  });
+  bRows.forEach(r => { r.h = Math.max(...r.groups.map(gp => gp.h)); });
   const bodyH = rows.reduce((s, r) => s + r.h, 0);
-  return {doc, cols, col, rows, bRows, bodyH, gasRows, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH + gasH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
+  return {doc, cols, col, rows, bRows, bodyH, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
 }
 
 function drawTop(g, R){
@@ -1711,82 +1581,44 @@ function drawTop(g, R){
   const total = nl.length * 32 + phl.length * 28, top = midPc - total / 2;
   g.fillStyle = C.ink; lines(g, nl, pc.x + pc.w / 2, top + nl.length * 16, 32);
   g.fillStyle = C.muted; setF(g, 400, phSize); lines(g, phl, pc.x + pc.w / 2, top + nl.length * 32 + phl.length * 14, 28);
-  return drawGas(g, R, y);
-}
-function drawGas(g, R, y){
-  if (!R.gasRows.length) return y;
-  y += GAS_GAP;
-  g.textBaseline = 'middle';
-  g.fillStyle = C.navy; setF(g, 700, 24); g.textAlign = 'left'; g.fillText('밀폐공간 산소·유해가스 측정 기록', RM, y + GAS_CAP / 2 - 4);
-  g.fillStyle = C.muted; setF(g, 400, 19); g.textAlign = 'right';
-  g.fillText('적정공기: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만', RW - RM, y + GAS_CAP / 2 - 4);
-  y += GAS_CAP;
-  const gc = [{w:64, h:'No'}, {w:540, h:'측정 위치'}, {w:150, h:'측정 시각'}, {w:190, h:'산소 (%)'}, {w:220, h:'일산화탄소 (ppm)'},
-    {w:200, h:'황화수소 (ppm)'}, {w:220, h:'가연성가스 (%LEL)'}, {w:176, h:'판정'}, {w:220, h:'측정자'}];
-  let x = RM; gc.forEach(c => { c.x = x; x += c.w; });
-  g.lineWidth = 2; g.strokeStyle = '#fff';
-  gc.forEach(c => { g.fillStyle = C.navy; g.fillRect(c.x, y, c.w, GAS_HEAD); g.fillStyle = '#fff'; setF(g, 600, 21); lines(g, [c.h], c.x + c.w / 2, y + GAS_HEAD / 2, 26); g.strokeRect(c.x, y, c.w, GAS_HEAD); });
-  y += GAS_HEAD;
-  const keys = [null, null, null, 'o2', 'co', 'h2s', 'lel'];
-  R.gasRows.forEach(gr => {
-    const e = gr.r ? gasEval(gr.r) : null;
-    const cells = gr.r ? [String(gr.no), gr.r.loc, gr.r.time, gr.r.o2, gr.r.co, gr.r.h2s, gr.r.lel] : [String(gr.no), '측정 기록 없음', '', '', '', '', ''];
-    gc.forEach((c, k) => {
-      g.fillStyle = '#fff'; g.fillRect(c.x, y, c.w, GAS_ROW);
-      g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(c.x, y, c.w, GAS_ROW);
-      let text, color = C.ink, wt = 500;
-      if (k < 7){
-        text = String(cells[k] == null || String(cells[k]).trim() === '' ? '-' : cells[k]).trim();
-        if (keys[k] && e && e.bad.includes(keys[k])){ color = C.red; wt = 700; }
-        if (!gr.r && k === 1){ color = C.red; wt = 700; }
-      } else if (k === 7){
-        const stt = e ? e.status : 'none';
-        text = e ? GAS_REPORT[stt] : '기록 없음'; wt = 700;
-        color = stt === 'ok' ? C.navy : stt === 'incomplete' ? C.noteLab : C.red;
-      } else { text = String(gr.by || '').trim() || '미입력'; if (!String(gr.by || '').trim()) color = C.red; }
-      setF(g, wt, 22); const tt = ellipsize(g, text, c.w - (k === 1 ? PAD * 2 : 12));
-      g.fillStyle = color;
-      if (k === 1){ g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(tt, c.x + PAD, y + GAS_ROW / 2); }
-      else lines(g, [tt], c.x + c.w / 2, y + GAS_ROW / 2, 26);
-    });
-    y += GAS_ROW;
-  });
   return y;
 }
-
 function drawBlockRow(g, row, y){
-  row.blocks.forEach((b, j) => {
-    const x = RM + j * (BW + BG);
-    g.fillStyle = C.navy; g.fillRect(x, y, BW, BH_HEAD);
-    g.fillStyle = '#fff'; setF(g, 600, 24);
-    lines(g, [ellipsize(g, `[${b.no}] ${b.title}${b.part ? ` (${b.part})` : ''}`, BW - 28)], x + BW / 2, y + BH_HEAD / 2, 30);
-    for (let k = 0; k < 2; k++){
-      const px = x + k * CELL, py = y + BH_HEAD, img = b.imgs[k];
-      if (img) cover(g, img, px, py, CELL, CELL);
-      else { g.fillStyle = C.empty; g.fillRect(px, py, CELL, CELL); g.fillStyle = '#98A3B6'; setF(g, 500, 22); lines(g, ['사진 없음'], px + CELL / 2, py + CELL / 2, 28); }
-    }
-    g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, y + BH_HEAD, BW, CELL);
-    g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
-    if (b.noteLines !== null){
-      const ny = y + BH_HEAD + CELL + 12, nh = b.noteH - 12, has = b.noteLines.length > 0;
-      g.fillStyle = has ? C.noteBg : '#fff'; g.fillRect(x, ny, BW, nh);
-      g.strokeStyle = has ? C.noteLine : C.line; g.lineWidth = has ? 2.5 : 1.5;
-      g.strokeRect(x + (has ? 1 : 0), ny + (has ? 1 : 0), BW - (has ? 2 : 0), nh - (has ? 2 : 0));
-      g.textAlign = 'left'; g.textBaseline = 'middle';
-      if (has){
-        g.fillStyle = C.noteLab; setF(g, 700, 19); g.fillText('■ 점검 내용 / 특이사항', x + 14, ny + 23);
-        g.fillStyle = C.noteInk; setF(g, 600, 23);
-        b.noteLines.forEach((ln, i) => { if (ln.pre) g.fillText(ln.pre, x + 14, ny + 54 + i * 31); g.fillText(ln.t, x + 14 + ln.ind, ny + 54 + i * 31); });
-      } else {
-        g.fillStyle = C.muted; setF(g, 500, 19); g.fillText('점검 내용 / 특이사항 :', x + 14, ny + nh / 2);
+  row.groups.forEach(gp => {
+    const x0 = RM + gp.slot * (BW + BG);
+    gp.chunks.forEach((imgs, k) => {
+      const x = x0 + k * (BW + BG);
+      g.fillStyle = C.navy; g.fillRect(x, y, BW, BH_HEAD);
+      g.fillStyle = '#fff'; setF(g, 600, 24);
+      const label = gp.chunks.length > 1 ? `[${gp.no}-${k + 1}] ${gp.title}` : `[${gp.no}] ${gp.title}`;
+      lines(g, [ellipsize(g, label, BW - 28)], x + BW / 2, y + BH_HEAD / 2, 30);
+      for (let q = 0; q < 2; q++){
+        const px = x + q * CELL, py = y + BH_HEAD, img = imgs[q];
+        if (img) cover(g, img, px, py, CELL, CELL);
+        else { g.fillStyle = C.empty; g.fillRect(px, py, CELL, CELL); g.fillStyle = '#98A3B6'; setF(g, 500, 22); lines(g, ['사진 없음'], px + CELL / 2, py + CELL / 2, 28); }
       }
+      g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, y + BH_HEAD, BW, CELL);
+      g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
+    });
+    const ny = y + BH_HEAD + CELL + 12, nh = gp.noteH - 12, has = gp.noteLines.length > 0, W = gp.w;
+    g.fillStyle = has ? C.noteBg : '#fff'; g.fillRect(x0, ny, W, nh);
+    g.strokeStyle = has ? C.noteLine : C.line; g.lineWidth = has ? 2.5 : 1.5;
+    g.strokeRect(x0 + (has ? 1 : 0), ny + (has ? 1 : 0), W - (has ? 2 : 0), nh - (has ? 2 : 0));
+    g.textAlign = 'left'; g.textBaseline = 'middle';
+    if (has){
+      g.fillStyle = C.noteLab; setF(g, 700, 19); g.fillText('■ 점검 내용 / 특이사항', x0 + 14, ny + 23);
+      g.fillStyle = C.noteInk; setF(g, 600, 23);
+      gp.noteLines.forEach((ln, i) => { if (ln.pre) g.fillText(ln.pre, x0 + 14, ny + 54 + i * 31); g.fillText(ln.t, x0 + 14 + ln.ind, ny + 54 + i * 31); });
+    } else {
+      g.fillStyle = C.muted; setF(g, 500, 19); g.fillText('점검 내용 / 특이사항 :', x0 + 14, ny + nh / 2);
     }
   });
   return row.h;
 }
-function drawFooter(g, R, H, extra){
+function drawFooter(g, H, text){
+  if (!text) return;
   g.fillStyle = '#98A3B6'; setF(g, 400, 19); g.textAlign = 'right'; g.textBaseline = 'middle';
-  g.fillText([extra, `작성 ${R.doc.inspName || ''} · ${stamp()}`].filter(Boolean).join('   ·   '), RW - RM, H - 32);
+  g.fillText(text, RW - RM, H - 32);
 }
 function canvasBlob(cv, q){ return new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('encode')), 'image/jpeg', q || 0.9)); }
 
@@ -1795,14 +1627,13 @@ async function renderImage(doc){
   try {
     let H = R.topH;
     if (R.bRows.length) H += 44 + R.bRows.reduce((s, r) => s + r.h, 0) + (R.bRows.length - 1) * BG;
-    H += 64;
+    H += 44;
     const scale = Math.min(1, Math.sqrt(15e6 / (RW * H)));   // stay inside phone canvas limits
     const cv = document.createElement('canvas'); cv.width = Math.round(RW * scale); cv.height = Math.round(H * scale);
     const g = cv.getContext('2d'); g.scale(scale, scale);
     g.fillStyle = C.paper; g.fillRect(0, 0, RW, H);
     let y = drawTop(g, R);
     if (R.bRows.length){ y += 44; R.bRows.forEach(r => { y += drawBlockRow(g, r, y) + BG; }); }
-    drawFooter(g, R, H);
     const blob = await canvasBlob(cv, 0.9);
     const tw = 520, th = Math.round(cv.height * tw / cv.width);
     const tc = document.createElement('canvas'); tc.width = tw; tc.height = Math.min(th, 900);
@@ -1842,7 +1673,7 @@ async function renderPages(doc){
       y += drawBlockRow(g, r, y);
       first = false;
     });
-    pages.forEach((cv, i) => drawFooter(cv.getContext('2d'), R, PH, `${i + 1} / ${pages.length}`));
+    if (pages.length > 1) pages.forEach((cv, i) => drawFooter(cv.getContext('2d'), PH, `${i + 1} / ${pages.length}`));
     return pages;
   } finally { R.release(); }
 }
@@ -1926,11 +1757,6 @@ async function buildPpt(doc){
     const descRuns = w => {
       const L = [];
       if (w.desc) L.push({sz: 9.5, runs: [{text: w.desc, options: {}}]});
-      if ((w.types || []).includes('화기')){
-        const done = FIRE_ITEMS.filter(f => (w.fire || []).includes(f.k)).map(f => f.ui), missF = FIRE_ITEMS.filter(f => !(w.fire || []).includes(f.k)).map(f => f.ui);
-        L.push({sz: 8.5, runs: [{text: '화기 확인: ', options: {bold: true, fontSize: 8.5, color: '1F3864'}}, {text: done.length ? done.join(' · ') : '없음', options: {fontSize: 8.5, color: '1F3864'}}]});
-        if (missF.length) L.push({sz: 8.5, runs: [{text: '미확인: ' + missF.join(', '), options: {bold: true, fontSize: 8.5, color: 'B42318'}}]});
-      }
       const runs = [];
       L.forEach((ln, i) => ln.runs.forEach((r, j) => runs.push({text: r.text, options: Object.assign({}, r.options, j === ln.runs.length - 1 && i < L.length - 1 ? {breakLine: true} : {})})));
       return {runs: runs.length ? runs : '', n: L.reduce((s2, ln) => s2 + estLines(ln.runs.map(r => r.text).join(''), colW[3] - 0.12, ln.sz), 0)};
@@ -1997,39 +1823,9 @@ async function buildPpt(doc){
       slide.addTable(tableRows, {x: M, y: y0, w: IW, colW, rowH, fontFace: PF});
       yAfter = y0 + rowH.reduce((s, h) => s + h, 0);
     });
-    // 밀폐공간 측정 기록 표
-    const gasRows = [];
-    doc.works.forEach((w, i) => {
-      if (!(w.types || []).includes('밀폐')) return;
-      const rs = (w.gas || []).filter(r => gasEval(r).status !== 'empty');
-      if (!rs.length) gasRows.push({no: i + 1, r: null, by: w.gasBy});
-      rs.forEach(r => gasRows.push({no: i + 1, r, by: w.gasBy}));
-    });
-    if (gasRows.length){
-      const gH = 0.3 + 0.32 + gasRows.length * 0.3;
-      let gy = yAfter + 0.18;
-      if (gy + gH > BOTTOM){ slide = pptx.addSlide(); slideNo(slide); title(slide, docTitle(doc) + ' (계속)', docDateLine(doc)); gy = 1.05; }
-      slide.addText('밀폐공간 산소·유해가스 측정 기록', {x: M, y: gy, w: IW * 0.45, h: 0.28, bold: true, color: '1F3864', fontSize: 11, fontFace: PF, margin: 0, valign: 'middle'});
-      slide.addText('적정공기: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만', {x: M + IW * 0.35, y: gy, w: IW * 0.65, h: 0.28, fontSize: 8.5, color: '5B6780', align: 'right', fontFace: PF, margin: 0, valign: 'middle'});
-      const gcPx = [64, 540, 150, 190, 220, 200, 220, 176, 220];
-      const head = ['No', '측정 위치', '측정 시각', '산소 (%)', '일산화탄소 (ppm)', '황화수소 (ppm)', '가연성가스 (%LEL)', '판정', '측정자'].map(t => hd(t, {fontSize: 9}));
-      const body = gasRows.map(gr => {
-        const e = gr.r ? gasEval(gr.r) : null, stt = e ? e.status : null;
-        const val = k => { const v = gr.r ? String(gr.r[k] == null ? '' : gr.r[k]).trim() : ''; return bd(v || '-', e && e.bad.includes(k) ? {bold: true, color: 'B42318'} : {}); };
-        const by = String(gr.by || '').trim();
-        return [bd(String(gr.no), {bold: true}),
-          bd(gr.r ? (String(gr.r.loc || '').trim() || '-') : '측정 기록 없음', gr.r ? {align: 'left'} : {align: 'left', bold: true, color: 'B42318'}),
-          bd(gr.r ? (gr.r.time || '-') : '-'), val('o2'), val('co'), val('h2s'), val('lel'),
-          bd(e ? GAS_REPORT[stt] : '기록 없음', {bold: true, color: stt === 'ok' ? '1F3864' : stt === 'incomplete' ? '8A5300' : 'B42318'}),
-          bd(by || '미입력', by ? {} : {color: 'B42318'})];
-      });
-      slide.addTable([head, ...body], {x: M, y: gy + 0.3, w: IW, colW: gcPx.map(w => +(w * K).toFixed(3)), rowH: [0.32, ...gasRows.map(() => 0.3)], fontFace: PF});
-      yAfter = gy + gH;
-    }
-
-    // photo blocks, three to a row, like the paper form
+    // 사진 묶음: 2장까지 한 칸, 3~4장은 [n-1]·[n-2] 두 칸 + 특이사항 한 칸
     const PBG = 0.2, PBW = (IW - PBG * 2) / 3, PHEAD = 0.34, PCW = PBW / 2, PCH = 1.62, NGAP = 0.06;
-    const blocks = [];
+    const groups = [];
     for (const [i, w] of doc.works.entries()){
       const imgs = [];
       for (const b of (w.photos || [])){
@@ -2037,16 +1833,18 @@ async function buildPpt(doc){
         try { imgs.push(await loadImg(u)); } catch(e){}
       }
       if (!imgs.length && !w.note.trim()) continue;
-      const parts = []; for (let j = 0; j < imgs.length; j += 2) parts.push(imgs.slice(j, j + 2));
-      if (!parts.length) parts.push([]);
-      parts.forEach((p, j) => {
-        const items = j === 0 ? noteItems(w.note).map((t, k) => `${circ(k)} ${t}`) : null;
-        const note = items === null ? null : items.join('\n');
-        const noteH = note === null ? 0 : note ? Math.max(0.56, 0.3 + items.reduce((s2, t) => s2 + estLines(t, PBW - 0.2, 10.5), 0) * 0.2) : 0.32;
-        blocks.push({no: i + 1, title: w.title, part: parts.length > 1 ? j + 1 : 0, imgs: p, note, noteH, h: PHEAD + PCH + (note === null ? 0 : NGAP + noteH)});
-      });
+      const chunks = []; for (let j = 0; j < imgs.length; j += 2) chunks.push(imgs.slice(j, j + 2));
+      if (!chunks.length) chunks.push([]);
+      const span = Math.min(chunks.length, 3), gw = span * PBW + (span - 1) * PBG;
+      const items = noteItems(w.note).map((t, k) => `${circ(k)} ${t}`);
+      const noteH = items.length ? Math.max(0.56, 0.3 + items.reduce((s2, t) => s2 + estLines(t, gw - 0.2, 10.5), 0) * 0.2) : 0.32;
+      groups.push({no: i + 1, title: w.title, chunks, span, gw, items, noteH, h: PHEAD + PCH + NGAP + noteH});
     }
-    const bRows = []; for (let i = 0; i < blocks.length; i += 3){ const r = blocks.slice(i, i + 3); bRows.push({blocks: r, h: Math.max(...r.map(b => b.h))}); }
+    const bRows = []; let prow = null;
+    groups.forEach(gp => {
+      if (!prow || prow.used + gp.span > 3){ prow = {groups: [], used: 0, h: 0}; bRows.push(prow); }
+      gp.slot = prow.used; prow.used += gp.span; prow.groups.push(gp); prow.h = Math.max(prow.h, gp.h);
+    });
     let y = yAfter + 0.25;
     for (const r of bRows){
       if (y + r.h > BOTTOM){
@@ -2054,26 +1852,27 @@ async function buildPpt(doc){
         title(slide, docTitle(doc).replace('작업 보고', '작업 사진'), docDateLine(doc));
         y = 1.05;
       }
-      for (const [j, b] of r.blocks.entries()){
-        const x = M + j * (PBW + PBG);
-        const head = `[${b.no}] ${b.title}${b.part ? ` (${b.part})` : ''}`;
-        const fs = estLines(head, PBW - 0.15, 11) > 1 ? (estLines(head, PBW - 0.15, 9) > 1 ? 8 : 9) : 11;
-        slide.addText(head, {x, y, w: PBW, h: PHEAD, fill: {color: '1F3864'}, color: 'FFFFFF', bold: true, fontSize: fs, align: 'center', valign: 'middle', fontFace: PF, margin: 3});
-        for (let k = 0; k < 2; k++){
-          const px = x + k * PCW, py = y + PHEAD;
-          if (b.imgs[k]) slide.addImage({data: await cropForPpt(b.imgs[k], PCW / PCH), x: px, y: py, w: PCW, h: PCH});
-          else slide.addText('사진 없음', {x: px, y: py, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, color: '98A3B6', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
-        }
-        if (b.note !== null){
-          const ny = y + PHEAD + PCH + NGAP;
-          if (b.note){
-            slide.addText([
-              {text: '■ 점검 내용 / 특이사항', options: {bold: true, fontSize: 9, color: '8A5300', breakLine: true}},
-              ...b.note.split('\n').map((t, k, arr) => ({text: t, options: Object.assign({bold: true, fontSize: 10.5, color: '1F3864'}, k < arr.length - 1 ? {breakLine: true} : {})}))
-            ], {x, y: ny, w: PBW, h: b.noteH, fill: {color: 'FFF4D1'}, line: {color: 'E2A11B', width: 1.5}, valign: 'top', fontFace: PF, margin: 5});
-          } else {
-            slide.addText('점검 내용 / 특이사항 :', {x, y: ny, w: PBW, h: b.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: 'middle', fontFace: PF, margin: 5});
+      for (const gp of r.groups){
+        const x0 = M + gp.slot * (PBW + PBG);
+        for (const [k, imgs] of gp.chunks.entries()){
+          const x = x0 + k * (PBW + PBG);
+          const head = gp.chunks.length > 1 ? `[${gp.no}-${k + 1}] ${gp.title}` : `[${gp.no}] ${gp.title}`;
+          const fs = estLines(head, PBW - 0.15, 11) > 1 ? (estLines(head, PBW - 0.15, 9) > 1 ? 8 : 9) : 11;
+          slide.addText(head, {x, y, w: PBW, h: PHEAD, fill: {color: '1F3864'}, color: 'FFFFFF', bold: true, fontSize: fs, align: 'center', valign: 'middle', fontFace: PF, margin: 3});
+          for (let q = 0; q < 2; q++){
+            const px = x + q * PCW, py = y + PHEAD;
+            if (imgs[q]) slide.addImage({data: await cropForPpt(imgs[q], PCW / PCH), x: px, y: py, w: PCW, h: PCH});
+            else slide.addText('사진 없음', {x: px, y: py, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, color: '98A3B6', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
           }
+        }
+        const ny = y + PHEAD + PCH + NGAP;
+        if (gp.items.length){
+          slide.addText([
+            {text: '■ 점검 내용 / 특이사항', options: {bold: true, fontSize: 9, color: '8A5300', breakLine: true}},
+            ...gp.items.map((t, k, arr) => ({text: t, options: Object.assign({bold: true, fontSize: 10.5, color: '1F3864'}, k < arr.length - 1 ? {breakLine: true} : {})}))
+          ], {x: x0, y: ny, w: gp.gw, h: gp.noteH, fill: {color: 'FFF4D1'}, line: {color: 'E2A11B', width: 1.5}, valign: 'top', fontFace: PF, margin: 5});
+        } else {
+          slide.addText('점검 내용 / 특이사항 :', {x: x0, y: ny, w: gp.gw, h: gp.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: 'middle', fontFace: PF, margin: 5});
         }
       }
       y += r.h + PBG;
@@ -2201,7 +2000,6 @@ function loadDoc(rec){
     works: d.works.map(w => newWork({
       title: w.title || '', company: w.company || '', people: w.people || '', phone: w.phone || '', desc: w.desc || '',
       types: [...(w.types || [])], measures: [...(w.measures || [])], note: w.note || '',
-      gas: (w.gas || []).map(r => Object.assign({}, r)), gasBy: w.gasBy || '', fire: [...(w.fire || [])],
       photos: (w.photos || []).map(b => addPhotoBlob(b)), open: false
     }))
   });
@@ -2266,10 +2064,7 @@ async function uploadRecord(rec, onStep){
       inspName: d.inspName, inspPhone: d.inspPhone, pcName: d.pcName, workCount: d.works.length,
       titles: d.works.map(w => w.title), companies: [...new Set(d.works.map(w => w.company).filter(Boolean))],
       photoCount: d.works.reduce((s, w) => s + w.photos.length, 0), warnCount: countWarn(d.works, d.phase),
-      duty: [d.dutyName, d.dutyPhone].filter(Boolean).join(' '),
-      gas: d.works.map((w, i) => (w.types || []).includes('밀폐')
-        ? `[${i + 1}] ` + ((w.gas || []).filter(r => gasEval(r).status !== 'empty').map(r => `${r.loc || '-'} ${r.time || ''} O2 ${r.o2}% CO ${r.co} H2S ${r.h2s} LEL ${r.lel || '-'} ${GAS_REPORT[gasEval(r).status]}`).join('; ') || '측정 기록 없음') + (w.gasBy ? ` (측정자 ${w.gasBy})` : '')
-        : '').filter(Boolean).join(' / ')
+      duty: [d.dutyName, d.dutyPhone].filter(Boolean).join(' ')
     },
     files: {
       image: {name: rec.name + '.jpg', type: 'image/jpeg', b64: await blobToB64(rec.image)},
@@ -2548,6 +2343,7 @@ $('#helpTipClose').addEventListener('click', () => { $('#helpTip').hidden = true
 
 /* ---------- boot ---------- */
 async function boot(){
+  document.querySelectorAll('[data-ver]').forEach(n => { n.textContent = '앱 버전 ' + APP_VERSION; });
   readConnectHash();
   document.querySelectorAll('[data-sync-only]').forEach(n => { n.hidden = !CAN_SYNC; });
   $('#helpTip').hidden = !!ls.get(LS_HELP) || !!state.example;
