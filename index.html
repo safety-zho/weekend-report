@@ -233,6 +233,45 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .chk{display:flex; align-items:center; gap:10px; font-size:14px}
 .chk input{width:20px; height:20px; accent-color:var(--navy); flex:none}
 
+/* 작업 카드: 밀폐 측정 · 화기 확인 · 입회 */
+.who-hint{margin:-4px 2px 0; font-size:13px; color:var(--muted)}
+.sub{background:var(--sunk); border:1px solid var(--line); border-radius:10px; padding:12px; display:grid; gap:10px}
+.sub .sub-t{margin:0; color:var(--ink); font-weight:600}
+.sub-help{margin:0; font-size:13px; color:var(--muted); line-height:1.5}
+.sub input[type=text], .sub input[type=time]{background:var(--surface)}
+.gas-row{display:grid; gap:8px; padding-top:10px; border-top:1px dashed var(--line)}
+.gas-top{display:grid; grid-template-columns:minmax(0,1fr) 112px 44px; gap:8px}
+.gas-top > *{min-width:0}
+.gas-x{border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--muted); font-size:18px}
+.gas-vals{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px}
+@media (min-width:560px){ .gas-vals{grid-template-columns:repeat(4, minmax(0,1fr))} }
+.gv{display:grid; gap:4px; font-size:13px; color:var(--muted); min-width:0}
+.gv em{font-style:normal; font-size:12px}
+.gv input{font-variant-numeric:tabular-nums}
+input.gbad{border-color:var(--danger); color:var(--danger); font-weight:700}
+.gpill{display:inline-block; padding:3px 10px; border-radius:999px; font-size:13px; font-weight:600}
+.gpill.ok{background:var(--info-bg); color:var(--info-ink)}
+.gpill.bad, .gpill.setpoint{background:var(--danger); color:#fff}
+.gpill.incomplete{background:var(--warn-bg); color:var(--warn-ink)}
+.add.sm{padding:10px; font-size:14px}
+.chip.v[aria-pressed="true"]{background:var(--navy); border-color:var(--navy); color:var(--on-navy)}
+.chip.add-chip{border-style:dashed; color:var(--link); background:transparent}
+.chip.add-chip::before{display:none}
+.wit-new{display:flex; gap:8px; margin-top:8px}
+.wit-new input{flex:1; min-width:0}
+.wit-new button{flex:none; padding:0 16px; border-radius:8px; border:1px solid var(--navy); background:var(--navy); color:var(--on-navy); font-weight:600}
+.pv-warn{color:var(--warn-ink); background:var(--warn-bg); border-radius:8px; padding:10px 12px; font-size:13px; line-height:1.5}
+.pv-warn ul{margin:6px 0 0; padding-left:18px}
+/* 사용법 */
+.ghost.icon{width:38px; padding:8px 0; font-weight:700; text-align:center}
+.guide{display:grid; gap:20px; max-width:640px; margin:0 auto; font-size:15px; line-height:1.65}
+.guide h3{margin:0 0 6px; font-size:16px; font-weight:700; color:var(--ink)}
+.guide ol, .guide ul{margin:0; padding-left:20px; display:grid; gap:4px}
+.guide b{font-weight:600}
+.guide .tip{background:var(--warn-bg); color:var(--warn-ink); border-radius:10px; padding:12px 14px}
+.guide .tip h3{color:var(--warn-ink)}
+@media (max-width:400px){ .top h1{font-size:17px} .top-acts .ghost{padding:8px 9px} .top-acts .ghost.icon{width:34px; padding:8px 0} }
+
 /* bottom bar */
 .bar{position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--surface); border-top:1px solid var(--line);
   padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
@@ -268,17 +307,22 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <h1>주말공사 작업 보고</h1>
       <div class="top-sub" id="topSub"></div>
     </div>
-    <div class="top-acts"><button type="button" class="ghost" id="btnHist">보관함</button>
+    <div class="top-acts"><button type="button" class="ghost icon" id="btnHelp" aria-label="사용법">?</button><button type="button" class="ghost" id="btnHist">보관함</button>
     <button type="button" class="ghost" id="btnReset" aria-expanded="false" aria-controls="resetPanel">새로 작성</button></div>
   </header>
 
   <div class="panel" id="resetPanel" hidden>
-    <p>관리자·PC 담당자 정보는 그대로 남아요.</p>
+    <p>관리자·당직자·PC 담당자 정보는 그대로 남아요.</p>
     <div class="acts">
-      <button type="button" id="resetNext">같은 작업으로 다음 점검 쓰기<small>작업 목록은 두고 사진·특이사항만 비워요</small></button>
+      <button type="button" id="resetNext">같은 작업으로 다음 점검 쓰기<small>작업 목록은 두고 사진·특이사항·측정값만 비우고, 점검구분을 다음 단계로 바꿔요</small></button>
       <button type="button" id="resetAll">작업 모두 비우기<small>새 주말공사 보고를 처음부터 써요</small></button>
     </div>
     <div class="row-btn"><button type="button" id="resetCancel">취소</button></div>
+  </div>
+
+  <div class="panel ex" id="helpTip" hidden>
+    <p>처음 쓰시면 위쪽 <b>?</b> 버튼에서 사용법을 볼 수 있어요.</p>
+    <div class="row-btn"><button type="button" id="helpTipOpen">사용법 보기</button><button type="button" id="helpTipClose">닫기</button></div>
   </div>
 
   <div class="panel ex" id="exBanner" hidden>
@@ -309,14 +353,22 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <div class="who">
         <div class="lbl-row"><span class="lbl">관리자</span><button type="button" class="pick-link" data-pick="people" data-target="insp"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록에서 선택</button></div>
         <div class="grid2">
-          <input type="text" id="inspName" placeholder="이름" aria-label="관리자 이름" autocomplete="off" list="peopleList">
+          <input type="text" id="inspName" placeholder="이름 직함" aria-label="관리자 이름과 직함" autocomplete="off" list="peopleList">
           <input type="tel" id="inspPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="관리자 연락처" autocomplete="off">
         </div>
       </div>
       <div class="who">
+        <div class="lbl-row"><span class="lbl">당직자</span><button type="button" class="pick-link" data-pick="people" data-target="duty"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록에서 선택</button></div>
+        <div class="grid2">
+          <input type="text" id="dutyName" placeholder="이름 직함" aria-label="당직자 이름과 직함" autocomplete="off" list="peopleList">
+          <input type="tel" id="dutyPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="당직자 연락처" autocomplete="off">
+        </div>
+      </div>
+      <p class="who-hint">이름 뒤에 직함을 붙이면 보고서에 그대로 나와요 (예: 홍길동 센터장).</p>
+      <div class="who">
         <div class="lbl-row"><span class="lbl">PC 담당자</span><button type="button" class="pick-link" data-pick="people" data-target="pc"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록에서 선택</button></div>
         <div class="grid2">
-          <input type="text" id="pcName" placeholder="이름" aria-label="PC 담당자 이름" autocomplete="off" list="peopleList">
+          <input type="text" id="pcName" placeholder="이름 직함" aria-label="PC 담당자 이름과 직함" autocomplete="off" list="peopleList">
           <input type="tel" id="pcPhone" placeholder="010-0000-0000" inputmode="tel" aria-label="PC 담당자 연락처" autocomplete="off">
         </div>
       </div>
@@ -357,6 +409,98 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <button type="button" class="ghost" id="btnPdf">PDF 받기</button>
     </div>
     <div class="hint" id="saveHint">저장 버튼이 안 되면 이미지를 길게 눌러 저장하세요.</div>
+  </div>
+</div>
+
+<div class="sheet" id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="sheet-h">
+    <h2 id="helpTitle">사용법</h2>
+    <button type="button" class="ghost" id="helpClose">닫기</button>
+  </div>
+  <div class="sheet-b">
+    <article class="guide">
+      <section>
+        <h3>처음 한 번만</h3>
+        <ol>
+          <li>공장 버튼(성남·원주·대구)을 누릅니다.</li>
+          <li>관리자·당직자·PC 담당자를 넣습니다. 이름 뒤에 직함을 붙이면 보고서에 그대로 나와요 (예: 홍길동 센터장).</li>
+          <li>'목록에서 선택'에 자주 쓰는 사람을 저장해 두면 다음부터 누르기만 하면 돼요.</li>
+          <li>보고서를 한 번 만들고 나면, 다음부터는 공장 버튼만 눌러도 세 사람이 자동으로 채워져요.</li>
+        </ol>
+      </section>
+      <section>
+        <h3>보고서 쓰기</h3>
+        <ol>
+          <li><b>점검일</b>: 토·일 버튼으로 바로 고를 수 있어요.</li>
+          <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
+          <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
+          <li><b>작업구분·주요 안전조치</b>를 누릅니다. 빠진 안전조치는 주황 점선으로 표시돼요.</li>
+          <li><b>밀폐작업</b>을 누르면 측정값 칸이, <b>화기작업</b>을 누르면 소화기·방화포·화재감시자 확인 칸이 나와요.</li>
+          <li><b>입회·확인</b>: 현장에 나온 사람·부서를 누릅니다. 없는 항목은 '+ 추가'.</li>
+          <li><b>사진</b>: 작업당 4장까지. 보고서에는 2장씩 한 칸으로 들어가요.</li>
+          <li><b>점검 내용 / 특이사항</b>: 입력하면 보고서에서 노란 칸으로 강조돼요.</li>
+        </ol>
+      </section>
+      <section class="tip">
+        <h3>밀폐공간 측정값 넣는 법</h3>
+        <ul>
+          <li>측정기를 켜면 처음에 'ALARM' 화면(10 / 30 / 19.5 / 10)이 잠깐 나와요. 이건 <b>경보 설정값</b>이라 측정값이 아니에요.</li>
+          <li>몇 초 뒤 나오는 <b>측정 화면의 숫자</b>를 넣으세요. 깨끗한 공기면 산소 20.9%, 나머지는 0이에요.</li>
+          <li>측정 위치마다 따로 넣고(예: 사일로 상부·하부), <b>측정자 이름</b>은 꼭 넣어 주세요. 측정 결과는 측정자·일시·장소와 함께 기록하고 3년 보관해야 해요.</li>
+          <li>기준: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만. 벗어나면 빨간색으로 표시돼요.</li>
+          <li>측정 화면 사진도 같이 찍어 두세요.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>'확인 필요'가 뜨면</h3>
+        <ul>
+          <li>아래쪽 막대에 건수가, 작업 카드에 주황색 안내가 나와요.</li>
+          <li>빠진 안전조치(전기·설비 작업인데 LOTOTO 없음 등), 측정값 누락·기준 초과, 화기 확인 누락, 사진 없음을 알려 줘요.</li>
+          <li>경고가 있어도 보고서는 만들어져요. 실제로 한 조치라면 체크를 고치고, 안 했다면 조치 후 다시 만드세요.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>보고서 만들고 보내기</h3>
+        <ol>
+          <li>'보고서 이미지 만들기'를 누르면 미리보기가 나와요. 남은 확인 사항도 함께 보여 줘요.</li>
+          <li><b>공유하기</b>: 문자·메일·사내 메신저 등 폰에 있는 앱으로 바로 보내요.</li>
+          <li><b>이미지 저장 / PPT 받기 / PDF 받기</b>: 파일로 저장해 첨부해요. PPT는 표와 글자를 고칠 수 있어요.</li>
+          <li>만든 보고서는 보관함에 자동 저장돼요.</li>
+        </ol>
+      </section>
+      <section>
+        <h3>작업 전 → 중 → 후 이어 쓰기</h3>
+        <ul>
+          <li>'새로 작성' → <b>같은 작업으로 다음 점검 쓰기</b>: 작업 목록은 그대로 두고 사진·특이사항·측정값만 비워요. 점검구분은 다음 단계로 바뀌어요.</li>
+          <li>다른 공사를 처음부터 쓸 땐 <b>작업 모두 비우기</b>.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>보관함</h3>
+        <ul>
+          <li><b>이 폰</b>: 내가 만든 보고서. 이미지·PPT·PDF 다시 받기, 불러와서 고치기, 삭제.</li>
+          <li data-sync-only><b>팀 전체</b>: 주말 제출 현황(공장별 작업 전·후)과 공장별 보고 목록.</li>
+        </ul>
+      </section>
+      <section data-sync-only>
+        <h3>팀 드라이브 연결</h3>
+        <ul>
+          <li>관리자에게 받은 <b>연결 링크</b>(문자·메일)를 폰에서 열면 바로 연결돼요.</li>
+          <li>직접 연결: 보관함 → 팀 드라이브 연결 → 웹 앱 주소와 팀 코드 입력.</li>
+          <li>연결되면 보고서를 만들 때마다 이미지·PDF·PPT가 드라이브 공장별 폴더에 올라가요.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>사진 찍을 때</h3>
+        <ul>
+          <li>작업마다 최소 1장. 작업 후 점검은 완료 상태로.</li>
+          <li>밀폐: 측정 화면, 감시인, 안전대 착용.</li>
+          <li>화기: 소화기·방화포가 보이게.</li>
+          <li>바닥 개구부: 덮개·펜스·표지.</li>
+          <li>전기·설비: 잠금장치(LOTOTO)를 건 모습.</li>
+        </ul>
+      </section>
+    </article>
   </div>
 </div>
 
@@ -441,8 +585,16 @@ const FONT_FACE = 'IBM Plex Sans KR';
 const FONT = '"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const TYPES = [
   {k:'일반', ui:'일반', h:'일반\n작업'}, {k:'고소', ui:'고소', h:'고소\n작업'}, {k:'화기', ui:'화기', h:'화기\n작업'},
-  {k:'밀폐', ui:'밀폐', h:'밀폐\n작업'}, {k:'중장비', ui:'중장비', h:'중장비\n작업'}
+  {k:'밀폐', ui:'밀폐', h:'밀폐\n작업'}, {k:'중장비', ui:'중장비', h:'중장비\n작업'}, {k:'중량물', ui:'중량물', h:'중량물\n취급'}
 ];
+const FIRE_ITEMS = [{k:'소화기', ui:'소화기 비치'}, {k:'방화포', ui:'인증 방화포'}, {k:'감시자', ui:'화재감시자'}];
+const WIT_DEFAULT = ['센터장', '생산기술지원팀', '기술지원팀', '자재과'];   // 입회·확인 기본 버튼
+const GAS = [
+  {k:'o2', ui:'산소', unit:'%', ph:'20.9'}, {k:'co', ui:'일산화탄소', unit:'ppm', ph:'0'},
+  {k:'h2s', ui:'황화수소', unit:'ppm', ph:'0'}, {k:'lel', ui:'가연성가스', unit:'%LEL', ph:'0'}
+];
+const MAX_GAS = 3;
+const ROLES = [['insp', '관리자'], ['duty', '당직자'], ['pc', 'PC 담당자']];
 const MEASURES = [
   {k:'허가', ui:'작업허가', h:'작업\n허가'}, {k:'보호구', ui:'보호구', h:'보호구'}, {k:'LOTO', ui:'LOTOTO', h:'LOTOTO'},
   {k:'추락방지', ui:'추락방지', h:'추락\n방지'}, {k:'화기관리', ui:'화기관리', h:'화기\n관리'}, {k:'통제', ui:'통제(정리)', h:'통제\n(정리)'}
@@ -576,12 +728,15 @@ async function shrinkPhoto(file){
 /* ---------- state ---------- */
 const newDraftId = () => 'd' + uid();
 function newWork(over){
-  return Object.assign({id: uid(), title:'', company:'', people:'', phone:'', desc:'', types:[], measures:[], photos:[], note:'', open:true}, over || {});
+  return Object.assign({id: uid(), title:'', company:'', people:'', phone:'', desc:'', types:[], measures:[], photos:[], note:'',
+    gas:[], gasBy:'', fire:[], wit:[], open:true}, over || {});
 }
+function nowHM(){ const d = new Date(); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+const newGasRow = () => ({loc:'', time: nowHM(), o2:'', co:'', h2s:'', lel:''});
 function exampleState(){
   return {
     example: false, draftId: newDraftId(), factory: '', date: defaultDate(), phase: 'before',
-    inspName: '', inspPhone: '', pcName: '', pcPhone: '',
+    inspName: '', inspPhone: '', dutyName: '', dutyPhone: '', pcName: '', pcPhone: '',
     works: [newWork()]
   };
 }
@@ -590,7 +745,8 @@ function normalize(s){
   const st = Object.assign(exampleState(), s);
   st.works = s.works.map(w => newWork(Object.assign({}, w, {
     types: Array.isArray(w.types) ? w.types : [], measures: Array.isArray(w.measures) ? w.measures : [],
-    photos: Array.isArray(w.photos) ? w.photos : []
+    photos: Array.isArray(w.photos) ? w.photos : [], gas: Array.isArray(w.gas) ? w.gas : [],
+    fire: Array.isArray(w.fire) ? w.fire : [], wit: Array.isArray(w.wit) ? w.wit : [], gasBy: w.gasBy || ''
   })));
   if (!PHASES.some(p => p.k === st.phase)) st.phase = 'before';
   if (!st.draftId) st.draftId = newDraftId();
@@ -600,13 +756,35 @@ let state = normalize(ls.get(LS_DRAFT)) || exampleState();
 let companies = ls.get(LS_CO) || {};   // 업체명 -> {phone, people, used}
 let people = ls.get(LS_PEOPLE) || {};     // 이름 -> {phone, used, fac:{공장: 마지막 사용}}
 const LS_FACDEF = 'wkreport.factoryDefaults.v1';
-let facDefaults = ls.get(LS_FACDEF) || {};  // 공장 -> {pcName, pcPhone}
+let facDefaults = ls.get(LS_FACDEF) || {};  // 공장 -> {inspName, inspPhone, dutyName, dutyPhone, pcName, pcPhone}
+const LS_WIT = 'wkreport.witness.v1';
+let customWit = ls.get(LS_WIT) || [];       // 직접 추가한 입회·확인 항목
 let saveT = 0;
 function save(){ clearTimeout(saveT); saveT = setTimeout(() => ls.set(LS_DRAFT, state), 300); }
 const findWork = id => state.works.find(w => w.id === id);
 
 /* ---------- safety cross-check ---------- */
-function analyze(w){
+const LOTO_ELEC = /전기|배선|분전|차단기|전원|판넬|패널/;
+const LOTO_EQUIP = /안전커버|커버|포장기|컨베이어|설비|기계|모터|감속기|체인|벨트|믹서|오븐|분할기|성형기|라운더|슬라이서|호퍼|스크류/;
+const num = v => { const t = String(v == null ? '' : v).trim().replace(',', '.'); return t === '' ? NaN : Number(t); };
+// 적정공기: 산소 18% 이상 23.5% 미만, 일산화탄소 30ppm 미만, 황화수소 10ppm 미만 (산업안전보건기준에 관한 규칙 제618조)
+function gasEval(r){
+  const v = {o2: num(r.o2), co: num(r.co), h2s: num(r.h2s), lel: num(r.lel)};
+  if (['o2', 'co', 'h2s', 'lel'].every(k => isNaN(v[k]))) return {status: 'empty', bad: [], v};
+  const bad = [];
+  if (!isNaN(v.o2) && (v.o2 < 18 || v.o2 >= 23.5)) bad.push('o2');
+  if (!isNaN(v.co) && v.co >= 30) bad.push('co');
+  if (!isNaN(v.h2s) && v.h2s >= 10) bad.push('h2s');
+  if (!isNaN(v.lel) && v.lel >= 10) bad.push('lel');   // 측정기 경보 기준
+  const incomplete = ['o2', 'co', 'h2s'].some(k => isNaN(v[k]));
+  const setpoint = v.o2 === 19.5 && v.h2s === 10 && [25, 30, 35].includes(v.co);   // 켤 때 나오는 경보 설정값 화면
+  const low = !isNaN(v.o2) && v.o2 >= 18 && v.o2 < 20;
+  return {status: setpoint ? 'setpoint' : bad.length ? 'bad' : incomplete ? 'incomplete' : 'ok', bad, low, setpoint, v};
+}
+const GAS_STATUS = {ok: '적정공기', bad: '부적정', incomplete: '값 입력 필요', setpoint: '경보 설정값?'};
+function gasLabel(k, val){ const g = GAS.find(x => x.k === k); return `${g.ui} ${val}${g.unit}`; }
+function analyze(w, phase){
+  phase = phase || state.phase;
   const t = new Set(w.types), m = new Set(w.measures), miss = new Map();
   const req = (type, keys) => {
     if (!t.has(type)) return;
@@ -616,14 +794,47 @@ function analyze(w){
   req('화기', ['화기관리', '허가']);
   req('밀폐', ['허가', '보호구']);
   req('중장비', ['통제']);
-  if (/전기|배선|분전|차단기|전원|판넬|패널/.test(w.title + ' ' + w.desc) && !m.has('LOTO')){
-    if (!miss.has('LOTO')) miss.set('LOTO', []); miss.get('LOTO').push('전기 작업');
+  const txt = (w.title || '') + ' ' + (w.desc || '');
+  if (!m.has('LOTO')){
+    const why = LOTO_ELEC.test(txt) ? '전기 작업' : LOTO_EQUIP.test(txt) ? '설비 작업' : '';
+    if (why){ if (!miss.has('LOTO')) miss.set('LOTO', []); miss.get('LOTO').push(why); }
   }
-  return {
-    miss,
-    lines: [...miss].map(([k, why]) => `<b>${esc(measUi(k))}</b> 체크 확인 (${esc(why.join(', '))})`),
-    info: t.has('밀폐') ? '밀폐작업은 산소·유해가스 측정, 환기, 감시인 배치를 확인하고 특이사항에 남겨 주세요.' : ''
-  };
+  const issues = [];   // {lv: 'w' 경고 | 'i' 안내, t: html}
+  if (t.has('밀폐')){
+    const rows = (w.gas || []).filter(r => gasEval(r).status !== 'empty');
+    if (!rows.length) issues.push({lv: 'w', t: '<b>밀폐공간 측정값</b>을 넣어 주세요. 측정자·시각·장소와 함께 기록해야 해요.'});
+    else {
+      if (!String(w.gasBy || '').trim()) issues.push({lv: 'w', t: '<b>측정자</b> 이름을 넣어 주세요.'});
+      if (rows.some(r => !String(r.loc || '').trim() || !r.time)) issues.push({lv: 'w', t: '<b>측정 위치와 시각</b>을 넣어 주세요.'});
+      rows.forEach(r => {
+        const e = gasEval(r), where = esc(String(r.loc || '').trim() || '측정 위치');
+        if (e.setpoint) issues.push({lv: 'w', t: `${where}: 입력값이 측정기 <b>경보 설정값</b>(10 / 30 / 19.5 / 10)과 같아요. 측정 화면의 값을 넣었는지 확인하세요.`});
+        else if (e.status === 'bad') issues.push({lv: 'w', t: `${where}: <b>${esc(e.bad.map(k => gasLabel(k, r[k])).join(', '))}</b> — 기준을 벗어났어요. 환기 후 다시 측정하세요.`});
+        else if (e.status === 'incomplete') issues.push({lv: 'w', t: `${where}: 산소·일산화탄소·황화수소 값을 모두 넣어 주세요.`});
+        else if (e.low) issues.push({lv: 'i', t: `${where}: 산소 ${esc(r.o2)}% — 기준 안이지만 정상(20.9%)보다 낮아요. 환기 상태를 확인하세요.`});
+      });
+    }
+  }
+  if (t.has('화기')){
+    const missF = FIRE_ITEMS.filter(f => !(w.fire || []).includes(f.k)).map(f => f.ui);
+    if (missF.length) issues.push({lv: 'w', t: `화기작업 확인: <b>${esc(missF.join(', '))}</b> 미확인`});
+  }
+  const hasContent = (w.title || '').trim() || (w.company || '').trim();
+  if (hasContent && !(w.photos || []).length)
+    issues.push({lv: 'w', t: phase === 'after' ? '<b>완료 사진</b>이 없어요. 작업 후 점검은 작업마다 완료 상태 사진을 넣어 주세요.' : '<b>작업 사진</b>이 없어요.'});
+  if (hasContent && !(w.desc || '').trim()) issues.push({lv: 'i', t: '공사내용이 비어 있어요.'});
+  const lines = [...miss].map(([k, why]) => `<b>${esc(measUi(k))}</b> 체크 확인 (${esc(why.join(', '))})`);
+  return {miss, lines, issues, count: miss.size + issues.filter(x => x.lv === 'w').length};
+}
+const countWarn = (works, phase) => works.reduce((s, w) => s + analyze(w, phase).count, 0);
+const stripTags = h => String(h).replace(/<[^>]+>/g, '');
+function warnList(works, phase){
+  const out = [];
+  works.forEach((w, i) => {
+    const a = analyze(w, phase);
+    [...a.lines, ...a.issues.filter(x => x.lv === 'w').map(x => x.t)].forEach(t => out.push(`${i + 1}번: ${stripTags(t)}`));
+  });
+  return out;
 }
 const isEmptyWork = w => !w.title.trim() && !w.company.trim() && !w.desc.trim() && !w.note.trim() && !w.photos.length && !w.types.length && !w.measures.length;
 
@@ -635,7 +846,7 @@ const el = {
   toast: $('#toast'), sheet: $('#sheet'), preview: $('#preview'), sheetMeta: $('#sheetMeta'), sheetBody: $('#sheetBody'),
   btnSave: $('#btnSave'), btnDl: $('#btnDl'), saveHint: $('#saveHint'), btnMake: $('#btnMake'), btnZoom: $('#btnZoom')
 };
-const BASIC = ['factory', 'date', 'inspName', 'inspPhone', 'pcName', 'pcPhone'];
+const BASIC = ['factory', 'date', 'inspName', 'inspPhone', 'dutyName', 'dutyPhone', 'pcName', 'pcPhone'];
 
 function renderBasic(){
   BASIC.forEach(k => { $('#' + k).value = state[k] || ''; });
@@ -656,16 +867,17 @@ function setFactory(f){
   applyFacDefaults(prev, f);
   updateTop(); renderCompanies(); save();
 }
-// PC 담당자는 공장마다 다르니, 공장을 바꾸면 그 공장 담당자로 바꿉니다
+// 관리자·당직자·PC 담당자는 공장마다 다르니, 공장을 바꾸면 그 공장 사람으로 바꿉니다
 function applyFacDefaults(prev, next){
   if (prev === next) return;
-  const pd = facDefaults[prev], nd = facDefaults[next];
-  const setPc = (n, ph) => { state.pcName = n; state.pcPhone = ph; $('#pcName').value = n; $('#pcPhone').value = ph; };
-  if (nd && nd.pcName){
-    if (state.pcName !== nd.pcName){ setPc(nd.pcName, nd.pcPhone || ''); toast(`${next}공장 PC 담당자 ${nd.pcName}(으)로 바꿨어요.`); }
-  } else if (pd && state.pcName && state.pcName === pd.pcName){
-    setPc('', '');
-  }
+  const pd = facDefaults[prev] || {}, nd = facDefaults[next] || {}, changed = [];
+  ROLES.forEach(([r, lab]) => {
+    const nk = r + 'Name', phk = r + 'Phone';
+    const set = (n, ph) => { state[nk] = n; state[phk] = ph; $('#' + nk).value = n; $('#' + phk).value = ph; };
+    if (nd[nk]){ if (state[nk] !== nd[nk]){ set(nd[nk], nd[phk] || ''); changed.push(lab); } }
+    else if (pd[nk] && state[nk] === pd[nk]) set('', '');
+  });
+  if (changed.length) toast(`${next}공장 ${changed.join('·')}를 채웠어요.`);
 }
 function renderDate(){
   const dw = dowOf(state.date);
@@ -707,10 +919,52 @@ function summaryOf(w){
 }
 function warnHTML(w){
   const a = analyze(w);
+  const W = [...a.lines, ...a.issues.filter(x => x.lv === 'w').map(x => x.t)], I = a.issues.filter(x => x.lv === 'i').map(x => x.t);
   let h = '';
-  if (a.lines.length) h += `<div class="warn w">${a.lines.map(l => `<div>${l}</div>`).join('')}</div>`;
-  if (a.info) h += `<div class="warn i"><div>${esc(a.info)}</div></div>`;
+  if (W.length) h += `<div class="warn w">${W.map(l => `<div>${l}</div>`).join('')}</div>`;
+  if (I.length) h += `<div class="warn i">${I.map(l => `<div>${l}</div>`).join('')}</div>`;
   return h;
+}
+function gasStatusHTML(r){
+  const e = gasEval(r); if (e.status === 'empty') return '';
+  return `<span class="gpill ${e.status}">${GAS_STATUS[e.status]}</span>`;
+}
+function gasRowHTML(w, r, j){
+  const e = gasEval(r);
+  return `<div class="gas-row" data-gi="${j}">
+  <div class="gas-top">
+    <input type="text" data-gk="loc" data-gi="${j}" value="${esc(r.loc)}" placeholder="측정 위치 (예: 사일로 상부)" aria-label="측정 위치" autocomplete="off">
+    <input type="time" data-gk="time" data-gi="${j}" value="${esc(r.time)}" aria-label="측정 시각">
+    <button type="button" class="gas-x" data-act="gas-del" data-gi="${j}" aria-label="이 측정 지우기">×</button>
+  </div>
+  <div class="gas-vals">${GAS.map(g => `<label class="gv"><span>${g.ui} <em>${g.unit}</em></span>
+    <input type="text" inputmode="decimal" data-gk="${g.k}" data-gi="${j}" value="${esc(r[g.k])}" placeholder="${g.ph}" class="${e.bad.includes(g.k) ? 'gbad' : ''}" autocomplete="off"></label>`).join('')}</div>
+  <div class="gas-st" data-gst>${gasStatusHTML(r)}</div>
+</div>`;
+}
+function gasHTML(w){
+  const id = w.id;
+  return `<section class="sub" aria-label="밀폐공간 측정">
+  <span class="lbl sub-t">밀폐공간 산소·유해가스 측정</span>
+  <p class="sub-help">측정기를 켜면 처음 나오는 'ALARM' 화면(10 / 30 / 19.5 / 10)은 경보 설정값이에요. 몇 초 뒤 측정 화면의 숫자를 넣으세요.</p>
+  <div><label class="lbl" for="w-${id}-gasBy">측정자</label>
+    <input type="text" id="w-${id}-gasBy" data-f="gasBy" value="${esc(w.gasBy)}" list="peopleList" placeholder="측정한 사람 이름" autocomplete="off"></div>
+  ${w.gas.map((r, j) => gasRowHTML(w, r, j)).join('')}
+  ${w.gas.length < MAX_GAS ? '<button type="button" class="add sm" data-act="gas-add">+ 측정 위치 추가</button>' : ''}
+  <p class="sub-help">기준: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만</p>
+</section>`;
+}
+function fireHTML(w){
+  return `<section class="sub" aria-label="화기작업 확인">
+  <span class="lbl sub-t">화기작업 확인</span>
+  <div class="chips">${FIRE_ITEMS.map(f => `<button type="button" class="chip m" data-act="chip" data-g="fire" data-k="${f.k}" aria-pressed="${w.fire.includes(f.k)}">${f.ui}</button>`).join('')}</div>
+  <p class="sub-help">2026년 3월부터 가연물이 있는 곳의 화기작업은 성능인증 방화포를 써야 해요. 소화기·방화포가 보이게 사진도 찍어 두세요.</p>
+</section>`;
+}
+const witOptions = w => [...new Set([...WIT_DEFAULT, ...customWit, ...w.wit])];
+function witHTML(w){
+  return witOptions(w).map(n => `<button type="button" class="chip v" data-act="chip" data-g="wit" data-k="${esc(n)}" aria-pressed="${w.wit.includes(n)}">${esc(n)}</button>`).join('') +
+    `<button type="button" class="chip add-chip" data-act="wit-open">+ 추가</button>`;
 }
 function photosHTML(w){
   const tiles = w.photos.map(id => {
@@ -735,7 +989,7 @@ function cardHTML(w, i){
     <span class="no">${i + 1}</span>
     <button type="button" class="w-toggle" data-act="toggle" aria-expanded="${w.open}" aria-controls="body-${id}">
       <span class="tx"><span class="w-title${w.title ? '' : ' empty'}">${esc(w.title) || '공사명 미입력'}</span><span class="w-sum">${esc(summaryOf(w))}</span></span>
-      <span class="w-flag"${a.miss.size ? '' : ' hidden'}>확인 ${a.miss.size}</span>
+      <span class="w-flag"${a.count ? '' : ' hidden'}>확인 ${a.count}</span>
       <span class="chev" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
     </button>
   </div>
@@ -754,7 +1008,11 @@ function cardHTML(w, i){
       <textarea id="w-${id}-desc" data-f="desc" rows="2" placeholder="작업 내용을 짧게">${esc(w.desc)}</textarea></div>
     <div><span class="lbl">작업구분</span><div class="chips">${TYPES.map(t => chip('types', t, 't')).join('')}</div></div>
     <div><span class="lbl">주요 안전조치</span><div class="chips" data-mchips>${MEASURES.map(m => chip('measures', m, 'm')).join('')}</div></div>
-    <div data-warn${a.lines.length || a.info ? '' : ' hidden'} style="display:grid;gap:8px">${warnHTML(w)}</div>
+    ${w.types.includes('밀폐') ? gasHTML(w) : ''}
+    ${w.types.includes('화기') ? fireHTML(w) : ''}
+    <div><span class="lbl">입회·확인</span><div class="chips" data-wit>${witHTML(w)}</div>
+      <div class="wit-new" data-witnew hidden><input type="text" data-witin placeholder="예: 안전보건팀" aria-label="입회·확인 직접 입력" autocomplete="off"><button type="button" data-act="wit-save">추가</button></div></div>
+    <div data-warn${warnHTML(w) ? '' : ' hidden'} style="display:grid;gap:8px">${warnHTML(w)}</div>
     <div><span class="lbl">작업 사진 <em data-phcount>${w.photos.length}/${MAX_PHOTOS}</em></span>
       <div class="ph-grid" data-phgrid>${photosHTML(w)}</div>
       <input type="file" class="vh" id="f-${id}" data-f="file" accept="image/*" multiple tabindex="-1"></div>
@@ -792,14 +1050,14 @@ function refreshChecks(card, w){
     b.classList.toggle('need', !on && a.miss.has(k));
   });
   const box = card.querySelector('[data-warn]');
-  box.innerHTML = warnHTML(w); box.hidden = !(a.lines.length || a.info);
-  const flag = card.querySelector('.w-flag'); flag.textContent = `확인 ${a.miss.size}`; flag.hidden = !a.miss.size;
+  const wh = warnHTML(w); box.innerHTML = wh; box.hidden = !wh;
+  const flag = card.querySelector('.w-flag'); flag.textContent = `확인 ${a.count}`; flag.hidden = !a.count;
   card.querySelector('.w-sum').textContent = summaryOf(w);
   updateBar();
 }
 function updateBar(){
-  const n = state.works.reduce((s, w) => s + analyze(w).miss.size, 0);
-  el.barStat.innerHTML = n ? `<b>확인 필요 ${n}건</b>안전조치 체크` : `작업 ${state.works.filter(w => !isEmptyWork(w)).length}건`;
+  const n = countWarn(state.works.filter(w => !isEmptyWork(w)));
+  el.barStat.innerHTML = n ? `<b>확인 필요 ${n}건</b>작업 카드 안내 참고` : `작업 ${state.works.filter(w => !isEmptyWork(w)).length}건`;
 }
 function autoGrow(t){ t.style.height = 'auto'; t.style.height = (t.scrollHeight + 2) + 'px'; }
 
@@ -820,10 +1078,10 @@ BASIC.forEach(k => {
     if (k === 'date') renderDate();
     save();
   });
-  if (k === 'inspName' || k === 'pcName') input.addEventListener('change', () => {
+  if (k.endsWith('Name')) input.addEventListener('change', () => {
     const hit = people[input.value.trim()]; if (!hit || !hit.phone) return;
-    const pk = k === 'inspName' ? 'inspPhone' : 'pcPhone';
-    state[pk] = hit.phone; $('#' + pk).value = hit.phone; save();
+    const phk = k.replace('Name', 'Phone');
+    state[phk] = hit.phone; $('#' + phk).value = hit.phone; save();
   });
   if (k.endsWith('Phone')) input.addEventListener('change', () => { input.value = state[k] = fmtPhone(input.value); save(); });
 });
@@ -864,16 +1122,34 @@ el.works.addEventListener('click', e => {
     if (w.open) card.querySelectorAll('textarea').forEach(autoGrow);
     save();
   } else if (act === 'chip'){
-    const arr = w[t.dataset.g], k = t.dataset.k, i = arr.indexOf(k);
+    const g = t.dataset.g, arr = w[g], k = t.dataset.k, i = arr.indexOf(k);
     if (i >= 0) arr.splice(i, 1); else arr.push(k);
     t.setAttribute('aria-pressed', String(i < 0));
+    if (g === 'types' && (k === '밀폐' || k === '화기')){
+      if (k === '밀폐' && i < 0 && !w.gas.length) w.gas.push(newGasRow());
+      rerenderCard(w); save(); return;
+    }
     refreshChecks(card, w); save();
+  } else if (act === 'gas-add'){
+    if (w.gas.length >= MAX_GAS) return;
+    w.gas.push(newGasRow()); rerenderCard(w); save();
+    const inp = $(`#card-${w.id} .gas-row[data-gi="${w.gas.length - 1}"] [data-gk="loc"]`); if (inp) inp.focus();
+  } else if (act === 'gas-del'){
+    w.gas.splice(Number(t.dataset.gi), 1); rerenderCard(w); save();
+  } else if (act === 'wit-open'){
+    const box = card.querySelector('[data-witnew]'); box.hidden = !box.hidden;
+    if (!box.hidden) box.querySelector('input').focus();
+  } else if (act === 'wit-save'){
+    const inp = card.querySelector('[data-witin]'), n = inp.value.trim();
+    if (!n){ inp.focus(); return; }
+    if (!WIT_DEFAULT.includes(n) && !customWit.includes(n)){ customWit.push(n); ls.set(LS_WIT, customWit); }
+    if (!w.wit.includes(n)) w.wit.push(n);
+    rerenderCard(w); save();
   } else if (act === 'rmph'){
     w.photos = w.photos.filter(id => id !== t.dataset.ph); dropPhoto(t.dataset.ph);
     card.querySelector('[data-phgrid]').innerHTML = photosHTML(w);
     card.querySelector('[data-phcount]').textContent = `${w.photos.length}/${MAX_PHOTOS}`;
-    card.querySelector('.w-sum').textContent = summaryOf(w);
-    save();
+    refreshChecks(card, w); save();
   } else if (act === 'del'){
     card.querySelector('[data-delc]').hidden = false; t.hidden = true;
   } else if (act === 'del-no'){
@@ -886,10 +1162,21 @@ el.works.addEventListener('click', e => {
   }
 });
 el.works.addEventListener('keydown', e => {
+  if (e.target.matches('[data-witin]') && e.key === 'Enter'){ e.preventDefault(); e.target.closest('.work').querySelector('[data-act="wit-save"]').click(); return; }
   const l = e.target.closest('.ph-add');
   if (l && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); l.click(); }
 });
 el.works.addEventListener('input', e => {
+  const gk = e.target.dataset.gk;
+  if (gk){
+    const card = e.target.closest('.work'); const w = findWork(card.dataset.id); if (!w) return;
+    const j = Number(e.target.dataset.gi), r = w.gas[j]; if (!r) return;
+    r[gk] = e.target.value;
+    const row = e.target.closest('.gas-row'), ev = gasEval(r);
+    row.querySelector('[data-gst]').innerHTML = gasStatusHTML(r);
+    GAS.forEach(g => { const i2 = row.querySelector(`[data-gk="${g.k}"]`); if (i2) i2.classList.toggle('gbad', ev.bad.includes(g.k)); });
+    refreshChecks(card, w); save(); return;
+  }
   const f = e.target.dataset.f; if (!f || f === 'file') return;
   const card = e.target.closest('.work'); const w = findWork(card.dataset.id); if (!w) return;
   w[f] = e.target.value; e.target.classList.remove('bad');
@@ -898,7 +1185,7 @@ el.works.addEventListener('input', e => {
     const tEl = card.querySelector('.w-title');
     tEl.textContent = w.title || '공사명 미입력'; tEl.classList.toggle('empty', !w.title);
   }
-  if (f === 'title' || f === 'desc') refreshChecks(card, w);
+  if (f === 'title' || f === 'desc' || f === 'gasBy' || f === 'company') refreshChecks(card, w);
   else if (f === 'company' || f === 'people') card.querySelector('.w-sum').textContent = summaryOf(w);
   save();
 });
@@ -930,7 +1217,7 @@ el.works.addEventListener('change', async e => {
     live.querySelector('[data-phgrid]').innerHTML = photosHTML(w);
     live.querySelector('[data-phcount]').textContent = `${w.photos.length}/${MAX_PHOTOS}`;
     live.querySelector('.w-sum').textContent = summaryOf(w);
-    save();
+    refreshChecks(live, w); save();
   }
 });
 el.btnAdd.addEventListener('click', () => {
@@ -945,8 +1232,11 @@ el.btnAdd.addEventListener('click', () => {
 /* ---------- reset / example ---------- */
 function clearWorks(keepList){
   if (keepList){
-    state.works.forEach(w => { w.photos.forEach(dropPhoto); w.photos = []; w.note = ''; });
-    if (state.phase !== 'after'){ state.phase = 'after'; }
+    state.works.forEach(w => {
+      w.photos.forEach(dropPhoto); w.photos = []; w.note = ''; w.fire = [];
+      w.gas = w.types.includes('밀폐') ? [newGasRow()] : [];
+    });
+    state.phase = state.phase === 'before' ? 'during' : 'after';
   } else {
     state.works.forEach(w => w.photos.forEach(dropPhoto));
     state.works = [newWork()];
@@ -961,7 +1251,7 @@ el.btnReset.addEventListener('click', () => {
   const open = el.resetPanel.hidden; el.resetPanel.hidden = !open; el.btnReset.setAttribute('aria-expanded', String(open));
 });
 $('#resetCancel').addEventListener('click', () => { el.resetPanel.hidden = true; el.btnReset.setAttribute('aria-expanded', 'false'); });
-$('#resetNext').addEventListener('click', () => { clearWorks(true); toast("사진·특이사항을 비우고 점검구분을 '작업 후'로 바꿨어요."); });
+$('#resetNext').addEventListener('click', () => { clearWorks(true); toast(`사진·특이사항·측정값을 비우고 점검구분을 '${phaseOf(state.phase).ui}'(으)로 바꿨어요.`); });
 $('#resetAll').addEventListener('click', () => { clearWorks(false); toast('새 보고서를 시작했어요.'); });
 $('#exClear').addEventListener('click', () => { clearWorks(false); });
 $('#exKeep').addEventListener('click', () => { state.example = false; el.exBanner.hidden = true; save(); });
@@ -1104,7 +1394,7 @@ function focusBad(err){
 const C = { // report palette: always a white paper document
   navy:'#1F3864', slate:'#4D6390', orange:'#C2561A', ink:'#16213A', muted:'#5B6780', line:'#B9C3D3',
   label:'#E3E8F1', tintT:'#E4EAF5', tintM:'#FBE7DA', box:'#3A4660', empty:'#EEF1F6', paper:'#FFFFFF',
-  noteBg:'#FFF4D1', noteLine:'#E2A11B', noteLab:'#8A5300', noteInk:'#1F3864'
+  noteBg:'#FFF4D1', noteLine:'#E2A11B', noteLab:'#8A5300', noteInk:'#1F3864', red:'#B42318'
 };
 function setF(g, weight, size){ g.font = `${weight} ${size}px ${FONT}`; }
 function wrap(g, text, maxW){
@@ -1151,10 +1441,12 @@ function cover(g, img, x, y, w, h){
 function makeDoc(st){
   return {
     draftId: st.draftId, factory: st.factory, date: st.date, phase: st.phase,
-    inspName: st.inspName, inspPhone: st.inspPhone, pcName: st.pcName, pcPhone: st.pcPhone,
+    inspName: st.inspName, inspPhone: st.inspPhone, dutyName: st.dutyName || '', dutyPhone: st.dutyPhone || '', pcName: st.pcName, pcPhone: st.pcPhone,
     works: st.works.filter(w => !isEmptyWork(w)).map(w => ({
       title: w.title, company: w.company, people: w.people, phone: w.phone, desc: w.desc,
       types: [...w.types], measures: [...w.measures], note: w.note,
+      gas: w.types.includes('밀폐') ? w.gas.map(r => Object.assign({}, r)) : [], gasBy: w.types.includes('밀폐') ? w.gasBy : '',
+      fire: w.types.includes('화기') ? [...w.fire] : [], wit: [...w.wit],
       photos: w.photos.map(id => photos.get(id)).filter(Boolean).map(p => p.blob)
     }))
   };
@@ -1172,9 +1464,12 @@ const RW = 2100, RM = 60, RIW = RW - 2 * RM;
 const Y_INFO = RM + 92, INFO_H = 80, Y_TABLE = Y_INFO + INFO_H + 26, HEAD1 = 54, HEAD2 = 76;
 const BG = 30, BW = (RIW - BG * 2) / 3, BH_HEAD = 56, CELL = BW / 2;
 const PAD = 14, LH = 34;
+const GAS_GAP = 28, GAS_CAP = 44, GAS_HEAD = 50, GAS_ROW = 50;
+const GAS_REPORT = {ok: '적정', bad: '부적정', incomplete: '값 부족', setpoint: '확인 필요'};
 
 async function loadFonts(doc){
-  const sample = [doc.factory, doc.inspName, doc.pcName, ...doc.works.flatMap(w => [w.title, w.company, w.desc, w.note]),
+  const sample = [doc.factory, doc.inspName, doc.dutyName, doc.pcName, ...doc.works.flatMap(w => [w.title, w.company, w.desc, w.note, w.gasBy, ...(w.wit || []), ...(w.gas || []).map(r => r.loc)]),
+    '당직측정위치시각산소일산화탄소황화수소가연성가스판정적정부적정값부족기록없음확인필요화기입회소화기비치인증방화포화재감시자미확인중량물취급LEL%ppm:',
     'PC[]공장주말외주업체작업보고사진점검일구분자전중후연락처명인원공사내용체크주요안전조치일반고소화기밀폐중장비허가보호구LOTO추락방지관리통제정리담당없음특이사항년월일요토☎■0123456789-()·/:…계속'].join('');
   try {
     await Promise.race([
@@ -1195,9 +1490,9 @@ async function prepare(doc){
   }));
   const m = document.createElement('canvas').getContext('2d');
   const colsDef = [
-    {k:'no', w:70, h:'No'}, {k:'title', w:290, h:'공사명'}, {k:'co', w:260, h:'업체명 (인원)\n연락처'}, {k:'desc', w:290, h:'공사내용'},
-    ...TYPES.map(t => ({k:'t', key:t.k, w:80, h:t.h})), ...MEASURES.map(x => ({k:'m', key:x.k, w:80, h:x.h})),
-    {k:'pc', w:190, h:'PC\n담당자'}
+    {k:'no', w:64, h:'No'}, {k:'title', w:260, h:'공사명'}, {k:'co', w:240, h:'업체명 (인원)\n연락처'}, {k:'desc', w:304, h:'공사내용'},
+    ...TYPES.map(t => ({k:'t', key:t.k, w:76, h:t.h})), ...MEASURES.map(x => ({k:'m', key:x.k, w:76, h:x.h})),
+    {k:'pc', w:200, h:'PC\n담당자'}
   ];
   let cx = RM; const cols = colsDef.map(c => { const o = Object.assign({x: cx}, c); cx += c.w; return o; });
   const col = k => cols.find(c => c.k === k);
@@ -1205,11 +1500,31 @@ async function prepare(doc){
     setF(m, 600, 25);
     const tl = wrap(m, w.title, col('title').w - PAD * 2);
     const cl = wrap(m, (w.company || '') + (w.people ? ` (${w.people}명)` : ''), col('co').w - PAD * 2);
-    setF(m, 400, 24);
-    const dl = w.desc ? wrap(m, w.desc, col('desc').w - PAD * 2) : [];
-    const h = Math.max(96, Math.max(tl.length * LH, cl.length * LH + (w.phone ? 30 : 0), dl.length * 32) + 36);
-    return {w, tl, cl, dl, h};
+    // 공사내용 칸: 내용 + 화기작업 확인 + 입회·확인
+    const dw = col('desc').w - PAD * 2, items = [];
+    const add = (text, wt, sz, color, lh) => { setF(m, wt, sz); wrap(m, text, dw).forEach(t => items.push({t, wt, sz, color, lh})); };
+    if (w.desc) add(w.desc, 400, 24, C.ink, 32);
+    if ((w.types || []).includes('화기')){
+      const done = FIRE_ITEMS.filter(f => (w.fire || []).includes(f.k)).map(f => f.ui);
+      const missF = FIRE_ITEMS.filter(f => !(w.fire || []).includes(f.k)).map(f => f.ui);
+      if (items.length) items.push({gap: 6});
+      add('화기 확인: ' + (done.length ? done.join(' · ') : '없음'), 600, 20, C.navy, 27);
+      if (missF.length) add('미확인: ' + missF.join(', '), 700, 20, C.red, 27);
+    }
+    if ((w.wit || []).length){ if (items.length) items.push({gap: 6}); add('입회·확인: ' + w.wit.join(', '), 600, 20, C.slate, 27); }
+    const dH = items.reduce((s2, it) => s2 + (it.gap || it.lh), 0);
+    const h = Math.max(96, Math.max(tl.length * LH, cl.length * LH + (w.phone ? 30 : 0), dH) + 36);
+    return {w, tl, cl, items, dH, h};
   });
+  // 밀폐공간 측정 기록
+  const gasRows = [];
+  works.forEach((w, i) => {
+    if (!(w.types || []).includes('밀폐')) return;
+    const rs = (w.gas || []).filter(r => gasEval(r).status !== 'empty');
+    if (!rs.length) gasRows.push({no: i + 1, r: null, by: w.gasBy});
+    rs.forEach(r => gasRows.push({no: i + 1, r, by: w.gasBy}));
+  });
+  const gasH = gasRows.length ? GAS_GAP + GAS_CAP + GAS_HEAD + gasRows.length * GAS_ROW : 0;
   const blocks = [];
   works.forEach((w, i) => {
     if (!w.imgs.length && !w.note.trim()) return;
@@ -1226,7 +1541,7 @@ async function prepare(doc){
   const bRows = [];
   for (let i = 0; i < blocks.length; i += 3){ const r = blocks.slice(i, i + 3); bRows.push({blocks: r, h: Math.max(...r.map(b => b.h))}); }
   const bodyH = rows.reduce((s, r) => s + r.h, 0);
-  return {doc, cols, col, rows, bRows, bodyH, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
+  return {doc, cols, col, rows, bRows, bodyH, gasRows, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH + gasH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
 }
 
 function drawTop(g, R){
@@ -1235,34 +1550,50 @@ function drawTop(g, R){
   g.fillText(docTitle(st), RM, RM + 50);
   g.fillStyle = C.navy; g.fillRect(RM, RM + 72, RIW, 3);
   // info row
+  const hasDuty = !!String(st.dutyName || '').trim();
   const info = [
-    {w:150, lab:true, t:'점검일'}, {w:300, t:dateLabel(st.date)}, {w:190, lab:true, t:'점검구분 (■)'}, {w:900, phase:true},
-    {w:140, lab:true, t:'관리자'}, {w:300, who:true}
+    {w:150, lab:true, t:'점검일'}, {w:290, t:dateLabel(st.date)}, {w:190, lab:true, t:'점검구분 (■)'}, {w:720, phase:true},
+    {w:140, lab:true, t: hasDuty ? '관리자\n당직자' : '관리자'}, {w:490, who:true}
   ];
   let ix = RM;
   info.forEach(c => {
     g.fillStyle = c.lab ? C.label : '#fff'; g.fillRect(ix, Y_INFO, c.w, INFO_H);
     g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(ix, Y_INFO, c.w, INFO_H);
     const mid = Y_INFO + INFO_H / 2;
-    if (c.lab){ g.fillStyle = C.navy; setF(g, 600, 24); lines(g, [c.t], ix + c.w / 2, mid, 30); }
+    if (c.lab){ const tl2 = c.t.split('\n'); g.fillStyle = C.navy; setF(g, 600, tl2.length > 1 ? 22 : 24); lines(g, tl2, ix + c.w / 2, mid, 30); }
     else if (c.phase){
       setF(g, 500, 25);
       const items = PHASES.map(p => ({p, tw: g.measureText(p.full).width}));
-      const total = items.reduce((s, it) => s + 36 + it.tw, 0) + 56 * (items.length - 1);
+      const base = items.reduce((s, it) => s + 36 + it.tw, 0);
+      const gap = Math.max(20, Math.min(56, (c.w - 40 - base) / (items.length - 1)));
+      const total = base + gap * (items.length - 1);
       let px = ix + (c.w - total) / 2;
       items.forEach(it => {
         const on = st.phase === it.p.k;
         box(g, px, mid - 12, 24, on);
         g.fillStyle = on ? C.ink : C.muted; setF(g, on ? 700 : 500, 25); g.textAlign = 'left'; g.textBaseline = 'middle';
         g.fillText(it.p.full, px + 36, mid + 1);
-        px += 36 + it.tw + 56;
+        px += 36 + it.tw + gap;
       });
     } else if (c.who){
-      g.fillStyle = C.ink; setF(g, 600, 25);
-      if (st.inspPhone){
-        lines(g, [st.inspName], ix + c.w / 2, mid - 15, 30);
-        g.fillStyle = C.muted; setF(g, 400, 21); lines(g, ['☎ ' + st.inspPhone], ix + c.w / 2, mid + 17, 28);
-      } else lines(g, [st.inspName], ix + c.w / 2, mid, 30);
+      const ppl = [['insp'], ['duty']].map(([r]) => ({n: String(st[r + 'Name'] || '').trim(), p: st[r + 'Phone'] || ''})).filter(x => x.n);
+      if (ppl.length === 2){
+        ppl.forEach((x, k) => {
+          const yy = mid + (k === 0 ? -17 : 17);
+          setF(g, 600, 23); const nm = ellipsize(g, x.n, c.w * 0.5), nw = g.measureText(nm).width;
+          setF(g, 400, 20); const pt = x.p ? '   ☎ ' + x.p : '', pw = pt ? g.measureText(pt).width : 0;
+          const sx = Math.max(ix + 10, ix + (c.w - nw - pw) / 2);
+          g.textAlign = 'left'; g.textBaseline = 'middle';
+          g.fillStyle = C.ink; setF(g, 600, 23); g.fillText(nm, sx, yy);
+          if (pt){ g.fillStyle = C.muted; setF(g, 400, 20); g.fillText(pt, sx + nw, yy); }
+        });
+      } else if (ppl.length === 1){
+        g.fillStyle = C.ink; setF(g, 600, 25);
+        if (ppl[0].p){
+          lines(g, [ppl[0].n], ix + c.w / 2, mid - 15, 30);
+          g.fillStyle = C.muted; setF(g, 400, 21); lines(g, ['☎ ' + ppl[0].p], ix + c.w / 2, mid + 17, 28);
+        } else lines(g, [ppl[0].n], ix + c.w / 2, mid, 30);
+      }
     } else { g.fillStyle = C.ink; setF(g, 600, 25); lines(g, [c.t], ix + c.w / 2, mid, 30); }
     ix += c.w;
   });
@@ -1307,7 +1638,10 @@ function drawTop(g, R){
         g.fillStyle = C.ink; setF(g, 600, 25); lines(g, r.cl, c.x + c.w / 2, top + n * LH / 2, LH);
         if (r.w.phone){ g.fillStyle = C.muted; setF(g, 400, 21); lines(g, ['☎ ' + r.w.phone], c.x + c.w / 2, top + n * LH + 13, 28); }
       }
-      else if (c.k === 'desc'){ g.fillStyle = C.ink; setF(g, 400, 24); lines(g, r.dl, 0, mid, 32, 'left', c.x + PAD); }
+      else if (c.k === 'desc'){
+        let yy = mid - r.dH / 2; g.textAlign = 'left'; g.textBaseline = 'middle';
+        r.items.forEach(it => { if (it.gap){ yy += it.gap; return; } g.fillStyle = it.color; setF(g, it.wt, it.sz); g.fillText(it.t, c.x + PAD, yy + it.lh / 2); yy += it.lh; });
+      }
       else if (c.k === 't' || c.k === 'm'){
         const on = (c.k === 't' ? r.w.types : r.w.measures).includes(c.key);
         box(g, c.x + c.w / 2 - 14, mid - 14, 28, on);
@@ -1327,6 +1661,46 @@ function drawTop(g, R){
   const total = nl.length * 32 + phl.length * 28, top = midPc - total / 2;
   g.fillStyle = C.ink; lines(g, nl, pc.x + pc.w / 2, top + nl.length * 16, 32);
   g.fillStyle = C.muted; setF(g, 400, phSize); lines(g, phl, pc.x + pc.w / 2, top + nl.length * 32 + phl.length * 14, 28);
+  return drawGas(g, R, y);
+}
+function drawGas(g, R, y){
+  if (!R.gasRows.length) return y;
+  y += GAS_GAP;
+  g.textBaseline = 'middle';
+  g.fillStyle = C.navy; setF(g, 700, 24); g.textAlign = 'left'; g.fillText('밀폐공간 산소·유해가스 측정 기록', RM, y + GAS_CAP / 2 - 4);
+  g.fillStyle = C.muted; setF(g, 400, 19); g.textAlign = 'right';
+  g.fillText('적정공기: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만', RW - RM, y + GAS_CAP / 2 - 4);
+  y += GAS_CAP;
+  const gc = [{w:64, h:'No'}, {w:540, h:'측정 위치'}, {w:150, h:'측정 시각'}, {w:190, h:'산소 (%)'}, {w:220, h:'일산화탄소 (ppm)'},
+    {w:200, h:'황화수소 (ppm)'}, {w:220, h:'가연성가스 (%LEL)'}, {w:176, h:'판정'}, {w:220, h:'측정자'}];
+  let x = RM; gc.forEach(c => { c.x = x; x += c.w; });
+  g.lineWidth = 2; g.strokeStyle = '#fff';
+  gc.forEach(c => { g.fillStyle = C.navy; g.fillRect(c.x, y, c.w, GAS_HEAD); g.fillStyle = '#fff'; setF(g, 600, 21); lines(g, [c.h], c.x + c.w / 2, y + GAS_HEAD / 2, 26); g.strokeRect(c.x, y, c.w, GAS_HEAD); });
+  y += GAS_HEAD;
+  const keys = [null, null, null, 'o2', 'co', 'h2s', 'lel'];
+  R.gasRows.forEach(gr => {
+    const e = gr.r ? gasEval(gr.r) : null;
+    const cells = gr.r ? [String(gr.no), gr.r.loc, gr.r.time, gr.r.o2, gr.r.co, gr.r.h2s, gr.r.lel] : [String(gr.no), '측정 기록 없음', '', '', '', '', ''];
+    gc.forEach((c, k) => {
+      g.fillStyle = '#fff'; g.fillRect(c.x, y, c.w, GAS_ROW);
+      g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(c.x, y, c.w, GAS_ROW);
+      let text, color = C.ink, wt = 500;
+      if (k < 7){
+        text = String(cells[k] == null || String(cells[k]).trim() === '' ? '-' : cells[k]).trim();
+        if (keys[k] && e && e.bad.includes(keys[k])){ color = C.red; wt = 700; }
+        if (!gr.r && k === 1){ color = C.red; wt = 700; }
+      } else if (k === 7){
+        const stt = e ? e.status : 'none';
+        text = e ? GAS_REPORT[stt] : '기록 없음'; wt = 700;
+        color = stt === 'ok' ? C.navy : stt === 'incomplete' ? C.noteLab : C.red;
+      } else { text = String(gr.by || '').trim() || '미입력'; if (!String(gr.by || '').trim()) color = C.red; }
+      setF(g, wt, 22); const tt = ellipsize(g, text, c.w - (k === 1 ? PAD * 2 : 12));
+      g.fillStyle = color;
+      if (k === 1){ g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(tt, c.x + PAD, y + GAS_ROW / 2); }
+      else lines(g, [tt], c.x + c.w / 2, y + GAS_ROW / 2, 26);
+    });
+    y += GAS_ROW;
+  });
   return y;
 }
 
@@ -1485,7 +1859,7 @@ async function buildPpt(doc){
     pptx.theme = {headFontFace: PF, bodyFontFace: PF};
     const SW = 13.333, M = 0.4, IW = SW - 2 * M, BOTTOM = 7.12;
     const K = IW / 1980;
-    const colPx = [70, 290, 260, 290, ...TYPES.map(() => 80), ...MEASURES.map(() => 80), 190];
+    const colPx = [64, 260, 240, 304, ...TYPES.map(() => 76), ...MEASURES.map(() => 76), 200];
     const colW = colPx.map(w => +(w * K).toFixed(3));
     const CM = [0.03, 0.05, 0.03, 0.05];
     const WB = {type: 'solid', pt: 1, color: 'FFFFFF'}, GB = {type: 'solid', pt: 0.75, color: 'B9C3D3'};
@@ -1499,14 +1873,28 @@ async function buildPpt(doc){
     };
 
     // rows of the main table, with estimated heights
+    const descRuns = w => {
+      const L = [];
+      if (w.desc) L.push({sz: 9.5, runs: [{text: w.desc, options: {}}]});
+      if ((w.types || []).includes('화기')){
+        const done = FIRE_ITEMS.filter(f => (w.fire || []).includes(f.k)).map(f => f.ui), missF = FIRE_ITEMS.filter(f => !(w.fire || []).includes(f.k)).map(f => f.ui);
+        L.push({sz: 8.5, runs: [{text: '화기 확인: ', options: {bold: true, fontSize: 8.5, color: '1F3864'}}, {text: done.length ? done.join(' · ') : '없음', options: {fontSize: 8.5, color: '1F3864'}}]});
+        if (missF.length) L.push({sz: 8.5, runs: [{text: '미확인: ' + missF.join(', '), options: {bold: true, fontSize: 8.5, color: 'B42318'}}]});
+      }
+      if ((w.wit || []).length) L.push({sz: 8.5, runs: [{text: '입회·확인: ', options: {bold: true, fontSize: 8.5, color: '4D6390'}}, {text: w.wit.join(', '), options: {fontSize: 8.5, color: '4D6390'}}]});
+      const runs = [];
+      L.forEach((ln, i) => ln.runs.forEach((r, j) => runs.push({text: r.text, options: Object.assign({}, r.options, j === ln.runs.length - 1 && i < L.length - 1 ? {breakLine: true} : {})})));
+      return {runs: runs.length ? runs : '', n: L.reduce((s2, ln) => s2 + estLines(ln.runs.map(r => r.text).join(''), colW[3] - 0.12, ln.sz), 0)};
+    };
     const rows = doc.works.map((w, i) => {
       const coName = (w.company || '') + (w.people ? ` (${w.people}명)` : '');
-      const lines = Math.max(estLines(w.title, colW[1] - 0.12, 10), estLines(coName, colW[2] - 0.12, 10) + (w.phone ? 1 : 0), estLines(w.desc, colW[3] - 0.12, 9.5));
+      const d = descRuns(w);
+      const lines = Math.max(estLines(w.title, colW[1] - 0.12, 10), estLines(coName, colW[2] - 0.12, 10) + (w.phone ? 1 : 0), d.n);
       const coCell = w.phone
         ? [{text: coName, options: {bold: true, breakLine: true}}, {text: '☎ ' + w.phone, options: {fontSize: 8.5, color: '5B6780'}}]
         : coName;
       const cells = [
-        bd(String(i + 1), {bold: true}), bd(w.title, {bold: true}), bd(coCell), bd(w.desc || '', {align: 'left', fontSize: 9.5}),
+        bd(String(i + 1), {bold: true}), bd(w.title, {bold: true}), bd(coCell), bd(d.runs, {align: 'left', fontSize: 9.5}),
         ...TYPES.map(t => { const on = w.types.includes(t.k); return bd(on ? '■' : '☐', {fontSize: 14, fill: {color: on ? 'E4EAF5' : 'FFFFFF'}}); }),
         ...MEASURES.map(x => { const on = w.measures.includes(x.k); return bd(on ? '■' : '☐', {fontSize: 14, fill: {color: on ? 'FBE7DA' : 'FFFFFF'}}); })
       ];
@@ -1543,11 +1931,12 @@ async function buildPpt(doc){
         });
         const lab = t => ({text: t, options: {fill: {color: 'E3E8F1'}, color: '1F3864', bold: true, fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, border: GB, margin: CM}});
         const val = (t, o) => ({text: t, options: Object.assign({fill: {color: 'FFFFFF'}, color: '16213A', fontSize: 10.5, align: 'center', valign: 'middle', fontFace: PF, border: GB, margin: CM}, o || {})});
-        const who = doc.inspPhone
-          ? [{text: doc.inspName || '', options: {bold: true, breakLine: true}}, {text: '☎ ' + doc.inspPhone, options: {fontSize: 8.5, color: '5B6780'}}]
-          : (doc.inspName || '');
-        slide.addTable([[lab('점검일'), val(dateLabel(doc.date), {bold: true}), lab('점검구분 (■)'), val(phaseRuns), lab('관리자'), val(who)]],
-          {x: M, y: 0.98, w: IW, colW: [150, 300, 190, 900, 140, 300].map(w => +(w * K).toFixed(3)), rowH: [0.44], fontFace: PF});
+        const ppl = [['insp'], ['duty']].map(([r]) => ({n: String(doc[r + 'Name'] || '').trim(), p: doc[r + 'Phone'] || ''})).filter(x => x.n);
+        let who = '';
+        if (ppl.length === 2) who = ppl.flatMap((x, k) => [{text: x.n, options: {bold: true}}, {text: x.p ? '   ☎ ' + x.p : '', options: Object.assign({fontSize: 8.5, color: '5B6780'}, k === 0 ? {breakLine: true} : {})}]);
+        else if (ppl.length === 1) who = ppl[0].p ? [{text: ppl[0].n, options: {bold: true, breakLine: true}}, {text: '☎ ' + ppl[0].p, options: {fontSize: 8.5, color: '5B6780'}}] : ppl[0].n;
+        slide.addTable([[lab('점검일'), val(dateLabel(doc.date), {bold: true}), lab('점검구분 (■)'), val(phaseRuns), lab(ppl.length === 2 ? '관리자\n당직자' : '관리자'), val(who)]],
+          {x: M, y: 0.98, w: IW, colW: [150, 290, 190, 720, 140, 490].map(w => +(w * K).toFixed(3)), rowH: [0.44], fontFace: PF});
         y0 = 1.52;
       } else {
         title(slide, docTitle(doc) + ' (계속)', docDateLine(doc));
@@ -1559,6 +1948,35 @@ async function buildPpt(doc){
       slide.addTable(tableRows, {x: M, y: y0, w: IW, colW, rowH, fontFace: PF});
       yAfter = y0 + rowH.reduce((s, h) => s + h, 0);
     });
+    // 밀폐공간 측정 기록 표
+    const gasRows = [];
+    doc.works.forEach((w, i) => {
+      if (!(w.types || []).includes('밀폐')) return;
+      const rs = (w.gas || []).filter(r => gasEval(r).status !== 'empty');
+      if (!rs.length) gasRows.push({no: i + 1, r: null, by: w.gasBy});
+      rs.forEach(r => gasRows.push({no: i + 1, r, by: w.gasBy}));
+    });
+    if (gasRows.length){
+      const gH = 0.3 + 0.32 + gasRows.length * 0.3;
+      let gy = yAfter + 0.18;
+      if (gy + gH > BOTTOM){ slide = pptx.addSlide(); slideNo(slide); title(slide, docTitle(doc) + ' (계속)', docDateLine(doc)); gy = 1.05; }
+      slide.addText('밀폐공간 산소·유해가스 측정 기록', {x: M, y: gy, w: IW * 0.45, h: 0.28, bold: true, color: '1F3864', fontSize: 11, fontFace: PF, margin: 0, valign: 'middle'});
+      slide.addText('적정공기: 산소 18% 이상 23.5% 미만 · 일산화탄소 30ppm 미만 · 황화수소 10ppm 미만', {x: M + IW * 0.35, y: gy, w: IW * 0.65, h: 0.28, fontSize: 8.5, color: '5B6780', align: 'right', fontFace: PF, margin: 0, valign: 'middle'});
+      const gcPx = [64, 540, 150, 190, 220, 200, 220, 176, 220];
+      const head = ['No', '측정 위치', '측정 시각', '산소 (%)', '일산화탄소 (ppm)', '황화수소 (ppm)', '가연성가스 (%LEL)', '판정', '측정자'].map(t => hd(t, {fontSize: 9}));
+      const body = gasRows.map(gr => {
+        const e = gr.r ? gasEval(gr.r) : null, stt = e ? e.status : null;
+        const val = k => { const v = gr.r ? String(gr.r[k] == null ? '' : gr.r[k]).trim() : ''; return bd(v || '-', e && e.bad.includes(k) ? {bold: true, color: 'B42318'} : {}); };
+        const by = String(gr.by || '').trim();
+        return [bd(String(gr.no), {bold: true}),
+          bd(gr.r ? (String(gr.r.loc || '').trim() || '-') : '측정 기록 없음', gr.r ? {align: 'left'} : {align: 'left', bold: true, color: 'B42318'}),
+          bd(gr.r ? (gr.r.time || '-') : '-'), val('o2'), val('co'), val('h2s'), val('lel'),
+          bd(e ? GAS_REPORT[stt] : '기록 없음', {bold: true, color: stt === 'ok' ? '1F3864' : stt === 'incomplete' ? '8A5300' : 'B42318'}),
+          bd(by || '미입력', by ? {} : {color: 'B42318'})];
+      });
+      slide.addTable([head, ...body], {x: M, y: gy + 0.3, w: IW, colW: gcPx.map(w => +(w * K).toFixed(3)), rowH: [0.32, ...gasRows.map(() => 0.3)], fontFace: PF});
+      yAfter = gy + gH;
+    }
 
     // photo blocks, three to a row, like the paper form
     const PBG = 0.2, PBW = (IW - PBG * 2) / 3, PHEAD = 0.34, PCW = PBW / 2, PCH = 1.62, NGAP = 0.06;
@@ -1729,10 +2147,11 @@ function loadDoc(rec){
   const d = rec.doc;
   state = Object.assign(exampleState(), {
     example: false, draftId: d.draftId || rec.draftId || newDraftId(), factory: d.factory || '', date: d.date || defaultDate(), phase: d.phase || 'before',
-    inspName: d.inspName || '', inspPhone: d.inspPhone || '', pcName: d.pcName || '', pcPhone: d.pcPhone || '',
+    inspName: d.inspName || '', inspPhone: d.inspPhone || '', dutyName: d.dutyName || '', dutyPhone: d.dutyPhone || '', pcName: d.pcName || '', pcPhone: d.pcPhone || '',
     works: d.works.map(w => newWork({
       title: w.title || '', company: w.company || '', people: w.people || '', phone: w.phone || '', desc: w.desc || '',
       types: [...(w.types || [])], measures: [...(w.measures || [])], note: w.note || '',
+      gas: (w.gas || []).map(r => Object.assign({}, r)), gasBy: w.gasBy || '', fire: [...(w.fire || [])], wit: [...(w.wit || [])],
       photos: (w.photos || []).map(b => addPhotoBlob(b)), open: false
     }))
   });
@@ -1796,7 +2215,12 @@ async function uploadRecord(rec, onStep){
       date: d.date, dow: dw >= 0 ? DAYS[dw] : '', phase: phaseOf(d.phase).full, factory: d.factory,
       inspName: d.inspName, inspPhone: d.inspPhone, pcName: d.pcName, workCount: d.works.length,
       titles: d.works.map(w => w.title), companies: [...new Set(d.works.map(w => w.company).filter(Boolean))],
-      photoCount: d.works.reduce((s, w) => s + w.photos.length, 0), warnCount: d.works.reduce((s, w) => s + analyze(w).miss.size, 0)
+      photoCount: d.works.reduce((s, w) => s + w.photos.length, 0), warnCount: countWarn(d.works, d.phase),
+      duty: [d.dutyName, d.dutyPhone].filter(Boolean).join(' '),
+      witness: d.works.map((w, i) => (w.wit || []).length ? `[${i + 1}] ${w.wit.join(', ')}` : '').filter(Boolean).join(' / '),
+      gas: d.works.map((w, i) => (w.types || []).includes('밀폐')
+        ? `[${i + 1}] ` + ((w.gas || []).filter(r => gasEval(r).status !== 'empty').map(r => `${r.loc || '-'} ${r.time || ''} O2 ${r.o2}% CO ${r.co} H2S ${r.h2s} LEL ${r.lel || '-'} ${GAS_REPORT[gasEval(r).status]}`).join('; ') || '측정 기록 없음') + (w.gasBy ? ` (측정자 ${w.gasBy})` : '')
+        : '').filter(Boolean).join(' / ')
     },
     files: {
       image: {name: rec.name + '.jpg', type: 'image/jpeg', b64: await blobToB64(rec.image)},
@@ -1963,7 +2387,7 @@ function syncScrollLock(){ document.body.style.overflow = document.querySelector
 $('#btnClose').addEventListener('click', closeSheet);
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (!el.sheet.hidden) closeSheet(); else if (!hs.sheet.hidden) closeHist(); else if (!pk.sheet.hidden) closePick();
+  if (!el.sheet.hidden) closeSheet(); else if (!helpSheet.hidden) closeHelp(); else if (!hs.sheet.hidden) closeHist(); else if (!pk.sheet.hidden) closePick();
 });
 el.btnZoom.addEventListener('click', () => {
   const z = !el.sheetBody.classList.contains('zoom');
@@ -2022,12 +2446,16 @@ function rememberLists(){
     const o = companies[n] || {};
     companies[n] = tagFac({phone: w.phone || o.phone || '', people: w.people || o.people || '', used: now, fac: o.fac}, fac, now);
   });
-  [['inspName', 'inspPhone'], ['pcName', 'pcPhone']].forEach(([nk, phk]) => {
-    const n = (state[nk] || '').trim(); if (!n) return;
+  ROLES.forEach(([r]) => {
+    const n = (state[r + 'Name'] || '').trim(); if (!n) return;
     const o = people[n] || {};
-    people[n] = tagFac({phone: state[phk] || o.phone || '', used: now, fac: o.fac}, fac, now);
+    people[n] = tagFac({phone: state[r + 'Phone'] || o.phone || '', used: now, fac: o.fac}, fac, now);
   });
-  if (fac && state.pcName.trim()){ facDefaults[fac] = {pcName: state.pcName.trim(), pcPhone: state.pcPhone || ''}; ls.set(LS_FACDEF, facDefaults); }
+  if (fac){
+    const d = Object.assign({}, facDefaults[fac]);
+    ROLES.forEach(([r]) => { const n = (state[r + 'Name'] || '').trim(); if (n){ d[r + 'Name'] = n; d[r + 'Phone'] = state[r + 'Phone'] || ''; } });
+    facDefaults[fac] = d; ls.set(LS_FACDEF, facDefaults);
+  }
   saveLists();
 }
 el.btnMake.addEventListener('click', async () => {
@@ -2037,9 +2465,9 @@ el.btnMake.addEventListener('click', async () => {
     const doc = makeDoc(state);
     const out = await renderImage(doc);
     setCurrent({blob: out.blob, name: docFileBase(doc), doc});
-    const nWarn = state.works.reduce((s, w) => s + analyze(w).miss.size, 0);
+    const warns = warnList(state.works.filter(w => !isEmptyWork(w)), state.phase);
     const meta = `<div>${esc(current.name)}.jpg · ${fmtMB(out.blob.size)}</div>` +
-      (nWarn ? `<div style="color:var(--warn-ink)">안전조치 확인 필요 ${nWarn}건이 남아 있어요. 닫고 다시 확인할 수 있어요.</div>` : '');
+      (warns.length ? `<div class="pv-warn"><b>확인 필요 ${warns.length}건</b> — 닫고 고친 뒤 다시 만들 수 있어요.<ul>${warns.slice(0, 6).map(t => `<li>${esc(t)}</li>`).join('')}${warns.length > 6 ? `<li>외 ${warns.length - 6}건</li>` : ''}</ul></div>` : '');
     openPreview(meta + '<div id="histNote">보관함에 저장하는 중…</div>');
     rememberLists();
     try {
@@ -2055,9 +2483,24 @@ el.btnMake.addEventListener('click', async () => {
   }
 });
 
+/* ---------- 사용법 ---------- */
+const LS_HELP = 'wkreport.helpSeen.v1';
+const helpSheet = $('#help');
+function openHelp(){
+  helpSheet.hidden = false; syncScrollLock(); helpSheet.querySelector('.sheet-b').scrollTop = 0;
+  ls.set(LS_HELP, 1); $('#helpTip').hidden = true;
+}
+function closeHelp(){ helpSheet.hidden = true; syncScrollLock(); }
+$('#btnHelp').addEventListener('click', openHelp);
+$('#helpClose').addEventListener('click', closeHelp);
+$('#helpTipOpen').addEventListener('click', openHelp);
+$('#helpTipClose').addEventListener('click', () => { $('#helpTip').hidden = true; ls.set(LS_HELP, 1); });
+
 /* ---------- boot ---------- */
 async function boot(){
   readConnectHash();
+  document.querySelectorAll('[data-sync-only]').forEach(n => { n.hidden = !CAN_SYNC; });
+  $('#helpTip').hidden = !!ls.get(LS_HELP) || !!state.example;
   renderBasic(); renderCompanies();
   // restore photos saved on this device
   const ids = state.works.flatMap(w => w.photos);
