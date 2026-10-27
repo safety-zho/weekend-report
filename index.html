@@ -429,7 +429,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
           <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
           <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
           <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요 (보고서에는 안 들어가요).</li>
-          <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 [1-1]·[1-2] 두 칸으로 나란히 들어가고 특이사항은 두 칸 아래에 함께 들어가요.</li>
+          <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 '[1] 공사명-1', '[1] 공사명-2' 두 칸으로 나란히 들어가요. 특이사항은 두 칸 아래에 번호를 이어서 나눠 들어가요.</li>
           <li><b>점검 내용 / 특이사항</b>: 항목마다 ①, ②, ③으로 나뉘어 들어가요. 엔터를 누르면 다음 항목이 생기고, 보고서에서 노란 칸으로 강조돼요.</li>
         </ol>
       </section>
@@ -591,7 +591,7 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.27-8';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.10.27-9';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '원주', '대구'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1', LS_PEOPLE = 'wkreport.people.v1';
@@ -1388,6 +1388,20 @@ function docFileBase(d){
 }
 function stamp(t){ const n = t ? new Date(t) : new Date(); return `${fmtDate(n)} ${pad2(n.getHours())}:${pad2(n.getMinutes())}`; }
 
+// 특이사항 항목을 사진 칸 수만큼 나눔: 앞 칸부터 채우고, 줄 수가 비슷해지도록
+function splitNotes(items, n){
+  const cols = Array.from({length: n}, () => []);
+  if (n === 1){ items.forEach(it => cols[0].push(...it)); return cols; }
+  const total = items.reduce((s2, it) => s2 + it.length, 0), target = Math.ceil(total / n);
+  let c = 0;
+  items.forEach((it, k) => {
+    const left = items.length - k;   // 남은 항목 수
+    if (c < n - 1 && cols[c].length && (cols[c].length + it.length > target || left < n - c)) c++;
+    cols[c].push(...it);
+  });
+  return cols;
+}
+
 /* ---------- canvas layout engine: one tall image, or A4 pages for PDF ---------- */
 const RW = 2100, RM = 60, RIW = RW - 2 * RM;
 const Y_INFO = RM + 92, INFO_H = 80, Y_TABLE = Y_INFO + INFO_H + 26, HEAD1 = 54, HEAD2 = 76;
@@ -1435,7 +1449,7 @@ async function prepare(doc){
     const h = Math.max(96, Math.max(tl.length * LH, cl.length * LH + (w.phone ? 30 : 0), dH) + 36);
     return {w, tl, cl, items, dH, h};
   });
-  // 사진 묶음: 2장까지 한 칸, 3~4장은 [n-1]·[n-2] 두 칸을 나란히 놓고 특이사항은 두 칸 아래에 하나로
+  // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸을 나란히. 특이사항은 칸마다 번호를 이어서 나눠 넣음
   const groups = [];
   works.forEach((w, i) => {
     if (!w.imgs.length && !w.note.trim()) return;
@@ -1445,13 +1459,13 @@ async function prepare(doc){
   });
   setF(m, 600, 23);
   groups.forEach(gp => {
-    gp.w = gp.span * BW + (gp.span - 1) * BG;
-    gp.noteLines = [];
-    noteItems(gp.note).forEach((t, k) => {
+    const items = noteItems(gp.note).map((t, k) => {
       const pre = circ(k) + ' ', ind = m.measureText(pre).width;
-      wrap(m, t, gp.w - 28 - ind).forEach((ln, q) => gp.noteLines.push({pre: q === 0 ? pre : '', ind, t: ln}));
+      return wrap(m, t, BW - 28 - ind).map((ln, q) => ({pre: q === 0 ? pre : '', ind, t: ln}));
     });
-    gp.noteH = gp.noteLines.length ? 12 + 48 + gp.noteLines.length * 31 : 12 + 46;
+    gp.noteCols = splitNotes(items, gp.span);
+    const maxL = Math.max(0, ...gp.noteCols.map(c => c.length));
+    gp.noteH = maxL ? 12 + 48 + maxL * 31 : 12 + 46;
     gp.h = BH_HEAD + CELL + gp.noteH;
   });
   const bRows = []; let cur = null;
@@ -1590,8 +1604,9 @@ function drawBlockRow(g, row, y){
       const x = x0 + k * (BW + BG);
       g.fillStyle = C.navy; g.fillRect(x, y, BW, BH_HEAD);
       g.fillStyle = '#fff'; setF(g, 600, 24);
-      const label = gp.chunks.length > 1 ? `[${gp.no}-${k + 1}] ${gp.title}` : `[${gp.no}] ${gp.title}`;
-      lines(g, [ellipsize(g, label, BW - 28)], x + BW / 2, y + BH_HEAD / 2, 30);
+      const pre = `[${gp.no}] `, suf = gp.chunks.length > 1 ? `-${k + 1}` : '';
+      const label = pre + ellipsize(g, gp.title, BW - 28 - g.measureText(pre).width - g.measureText(suf).width) + suf;
+      lines(g, [label], x + BW / 2, y + BH_HEAD / 2, 30);
       for (let q = 0; q < 2; q++){
         const px = x + q * CELL, py = y + BH_HEAD, img = imgs[q];
         if (img) cover(g, img, px, py, CELL, CELL);
@@ -1599,19 +1614,20 @@ function drawBlockRow(g, row, y){
       }
       g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, y + BH_HEAD, BW, CELL);
       g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
+      // 이 칸의 특이사항
+      const nl = gp.noteCols[k] || [], ny = y + BH_HEAD + CELL + 12, nh = gp.noteH - 12, has = nl.length > 0;
+      g.fillStyle = has ? C.noteBg : '#fff'; g.fillRect(x, ny, BW, nh);
+      g.strokeStyle = has ? C.noteLine : C.line; g.lineWidth = has ? 2.5 : 1.5;
+      g.strokeRect(x + (has ? 1 : 0), ny + (has ? 1 : 0), BW - (has ? 2 : 0), nh - (has ? 2 : 0));
+      g.textAlign = 'left'; g.textBaseline = 'middle';
+      if (has){
+        g.fillStyle = C.noteLab; setF(g, 700, 19); g.fillText('■ 점검 내용 / 특이사항', x + 14, ny + 23);
+        g.fillStyle = C.noteInk; setF(g, 600, 23);
+        nl.forEach((ln, i) => { if (ln.pre) g.fillText(ln.pre, x + 14, ny + 54 + i * 31); g.fillText(ln.t, x + 14 + ln.ind, ny + 54 + i * 31); });
+      } else {
+        g.fillStyle = C.muted; setF(g, 500, 19); g.fillText('점검 내용 / 특이사항 :', x + 14, ny + (nh > 60 ? 23 : nh / 2));
+      }
     });
-    const ny = y + BH_HEAD + CELL + 12, nh = gp.noteH - 12, has = gp.noteLines.length > 0, W = gp.w;
-    g.fillStyle = has ? C.noteBg : '#fff'; g.fillRect(x0, ny, W, nh);
-    g.strokeStyle = has ? C.noteLine : C.line; g.lineWidth = has ? 2.5 : 1.5;
-    g.strokeRect(x0 + (has ? 1 : 0), ny + (has ? 1 : 0), W - (has ? 2 : 0), nh - (has ? 2 : 0));
-    g.textAlign = 'left'; g.textBaseline = 'middle';
-    if (has){
-      g.fillStyle = C.noteLab; setF(g, 700, 19); g.fillText('■ 점검 내용 / 특이사항', x0 + 14, ny + 23);
-      g.fillStyle = C.noteInk; setF(g, 600, 23);
-      gp.noteLines.forEach((ln, i) => { if (ln.pre) g.fillText(ln.pre, x0 + 14, ny + 54 + i * 31); g.fillText(ln.t, x0 + 14 + ln.ind, ny + 54 + i * 31); });
-    } else {
-      g.fillStyle = C.muted; setF(g, 500, 19); g.fillText('점검 내용 / 특이사항 :', x0 + 14, ny + nh / 2);
-    }
   });
   return row.h;
 }
@@ -1823,7 +1839,7 @@ async function buildPpt(doc){
       slide.addTable(tableRows, {x: M, y: y0, w: IW, colW, rowH, fontFace: PF});
       yAfter = y0 + rowH.reduce((s, h) => s + h, 0);
     });
-    // 사진 묶음: 2장까지 한 칸, 3~4장은 [n-1]·[n-2] 두 칸 + 특이사항 한 칸
+    // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸, 특이사항은 칸마다 이어서
     const PBG = 0.2, PBW = (IW - PBG * 2) / 3, PHEAD = 0.34, PCW = PBW / 2, PCH = 1.62, NGAP = 0.06;
     const groups = [];
     for (const [i, w] of doc.works.entries()){
@@ -1835,10 +1851,13 @@ async function buildPpt(doc){
       if (!imgs.length && !w.note.trim()) continue;
       const chunks = []; for (let j = 0; j < imgs.length; j += 2) chunks.push(imgs.slice(j, j + 2));
       if (!chunks.length) chunks.push([]);
-      const span = Math.min(chunks.length, 3), gw = span * PBW + (span - 1) * PBG;
-      const items = noteItems(w.note).map((t, k) => `${circ(k)} ${t}`);
-      const noteH = items.length ? Math.max(0.56, 0.3 + items.reduce((s2, t) => s2 + estLines(t, gw - 0.2, 10.5), 0) * 0.2) : 0.32;
-      groups.push({no: i + 1, title: w.title, chunks, span, gw, items, noteH, h: PHEAD + PCH + NGAP + noteH});
+      const span = Math.min(chunks.length, 3);
+      const items = noteItems(w.note).map((t, k) => { const text = `${circ(k)} ${t}`; return Array.from({length: estLines(text, PBW - 0.2, 10.5)}, (_, q) => q === 0 ? text : null); });
+      const cols = splitNotes(items, span).map(c => c.filter(Boolean));
+      const lineCount = c => c.reduce((s2, t) => s2 + estLines(t, PBW - 0.2, 10.5), 0);
+      const maxL = Math.max(0, ...cols.map(lineCount));
+      const noteH = maxL ? Math.max(0.56, 0.3 + maxL * 0.2) : 0.32;
+      groups.push({no: i + 1, title: w.title, chunks, span, cols, noteH, h: PHEAD + PCH + NGAP + noteH});
     }
     const bRows = []; let prow = null;
     groups.forEach(gp => {
@@ -1856,7 +1875,7 @@ async function buildPpt(doc){
         const x0 = M + gp.slot * (PBW + PBG);
         for (const [k, imgs] of gp.chunks.entries()){
           const x = x0 + k * (PBW + PBG);
-          const head = gp.chunks.length > 1 ? `[${gp.no}-${k + 1}] ${gp.title}` : `[${gp.no}] ${gp.title}`;
+          const head = `[${gp.no}] ${gp.title}${gp.chunks.length > 1 ? `-${k + 1}` : ''}`;
           const fs = estLines(head, PBW - 0.15, 11) > 1 ? (estLines(head, PBW - 0.15, 9) > 1 ? 8 : 9) : 11;
           slide.addText(head, {x, y, w: PBW, h: PHEAD, fill: {color: '1F3864'}, color: 'FFFFFF', bold: true, fontSize: fs, align: 'center', valign: 'middle', fontFace: PF, margin: 3});
           for (let q = 0; q < 2; q++){
@@ -1864,15 +1883,15 @@ async function buildPpt(doc){
             if (imgs[q]) slide.addImage({data: await cropForPpt(imgs[q], PCW / PCH), x: px, y: py, w: PCW, h: PCH});
             else slide.addText('사진 없음', {x: px, y: py, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, color: '98A3B6', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
           }
-        }
-        const ny = y + PHEAD + PCH + NGAP;
-        if (gp.items.length){
-          slide.addText([
-            {text: '■ 점검 내용 / 특이사항', options: {bold: true, fontSize: 9, color: '8A5300', breakLine: true}},
-            ...gp.items.map((t, k, arr) => ({text: t, options: Object.assign({bold: true, fontSize: 10.5, color: '1F3864'}, k < arr.length - 1 ? {breakLine: true} : {})}))
-          ], {x: x0, y: ny, w: gp.gw, h: gp.noteH, fill: {color: 'FFF4D1'}, line: {color: 'E2A11B', width: 1.5}, valign: 'top', fontFace: PF, margin: 5});
-        } else {
-          slide.addText('점검 내용 / 특이사항 :', {x: x0, y: ny, w: gp.gw, h: gp.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: 'middle', fontFace: PF, margin: 5});
+          const ny = y + PHEAD + PCH + NGAP, col = gp.cols[k] || [];
+          if (col.length){
+            slide.addText([
+              {text: '■ 점검 내용 / 특이사항', options: {bold: true, fontSize: 9, color: '8A5300', breakLine: true}},
+              ...col.map((t, q, arr) => ({text: t, options: Object.assign({bold: true, fontSize: 10.5, color: '1F3864'}, q < arr.length - 1 ? {breakLine: true} : {})}))
+            ], {x, y: ny, w: PBW, h: gp.noteH, fill: {color: 'FFF4D1'}, line: {color: 'E2A11B', width: 1.5}, valign: 'top', fontFace: PF, margin: 5});
+          } else {
+            slide.addText('점검 내용 / 특이사항 :', {x, y: ny, w: PBW, h: gp.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: gp.noteH > 0.5 ? 'top' : 'middle', fontFace: PF, margin: 5});
+          }
         }
       }
       y += r.h + PBG;
