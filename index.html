@@ -246,8 +246,15 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .sub input[type=text], .sub input[type=time]{background:var(--surface)}
 .ck{background:var(--info-bg); border-color:transparent; color:var(--info-ink); gap:8px}
 .ck .sub-t{color:var(--info-ink)}
-.ck-g b{display:block; font-size:14px; font-weight:700}
-.ck-g ul{margin:4px 0 0; padding-left:18px; font-size:14px; line-height:1.55; display:grid; gap:2px}
+.ck-g summary{list-style:none; display:flex; align-items:center; gap:6px; min-height:34px; font-size:14px; font-weight:700; cursor:pointer}
+.ck-g summary::-webkit-details-marker{display:none}
+.ck-g summary::after{content:""; width:7px; height:7px; margin:0 6px 3px auto; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); transition:transform .15s}
+.ck-g[open] summary::after{transform:rotate(-135deg); margin-bottom:-3px}
+.ck-n{font-size:12px; font-weight:600; opacity:.75}
+.ck-g ul{margin:2px 0 6px; padding-left:18px; font-size:14px; line-height:1.55; display:grid; gap:4px; word-break:keep-all; overflow-wrap:anywhere}
+.ck-ref{display:inline-block; font-size:12px; font-weight:600; line-height:1.4; padding:0 6px; border-radius:6px; background:var(--surface); color:var(--info-ink); white-space:nowrap}
+.ck-src{margin:2px 0 0; font-size:12px; line-height:1.5; opacity:.85}
+.ck-src a{color:inherit; text-decoration:underline; text-underline-offset:2px}
 .add.sm{padding:10px; font-size:14px}
 .notes{display:grid; gap:8px}
 .note-row{display:grid; grid-template-columns:30px minmax(0,1fr) 44px; gap:6px; align-items:start}
@@ -338,7 +345,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <div>
         <span class="lbl" id="facLbl">공장</span>
         <div class="seg fac-seg" role="group" aria-labelledby="facLbl" id="facSeg" tabindex="-1"></div>
-        <div class="fac" id="facOther" hidden><span>PC [</span><input type="text" id="factory" placeholder="공장 이름" aria-label="공장 이름 직접 입력" autocomplete="off"><span>]공장</span></div>
+        <div class="fac" id="facOther" hidden><span>PC [</span><input type="text" id="factory" placeholder="이름 입력 (예: 물류센터)" aria-label="장소 이름 직접 입력" autocomplete="off"><span>]</span></div>
       </div>
       <div>
         <label class="lbl" for="date">점검일</label>
@@ -422,7 +429,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <section>
         <h3>처음 한 번만</h3>
         <ol>
-          <li>공장 버튼(성남·원주·대구)을 누릅니다.</li>
+          <li>공장 버튼(성남·대구·원주)을 누릅니다. 목록에 없는 곳은 '기타'를 누르고 이름을 직접 쓰세요.</li>
           <li>관리자·당직자·PC 담당자를 넣습니다. 이름 뒤에 직함을 붙이면 보고서에 그대로 나와요 (예: 홍길동 센터장).</li>
           <li>'목록에서 선택'에 자주 쓰는 사람을 저장해 두면 다음부터 누르기만 하면 돼요.</li>
           <li>보고서를 한 번 만들고 나면, 다음부터는 공장 버튼만 눌러도 세 사람이 자동으로 채워져요.</li>
@@ -434,7 +441,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
           <li><b>점검일</b>: 토·일 버튼으로 바로 고를 수 있어요.</li>
           <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
           <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
-          <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요 (보고서에는 안 들어가요).</li>
+          <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요. 산업안전보건기준에 관한 규칙의 해당 조문을 줄여 쓴 것이고, 조문 번호가 함께 붙어 있어요. 다 읽은 목록은 제목을 눌러 접을 수 있어요 (보고서에는 안 들어가요).</li>
           <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 '[1] 공사명-1', '[1] 공사명-2' 두 칸으로 나란히 들어가요. 특이사항은 두 칸 아래에 같은 내용으로 들어가요.</li>
           <li><b>점검 내용 / 특이사항</b>: 항목마다 ①, ②, ③으로 나뉘어 들어가요. 엔터를 누르면 다음 항목이 생기고, 보고서에서 노란 칸으로 강조돼요.</li>
         </ol>
@@ -481,7 +488,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
         <h3>사진 찍을 때</h3>
         <ul>
           <li>작업마다 최소 1장. 작업 후 점검은 완료 상태로.</li>
-          <li>밀폐: 측정 화면, 감시인, 안전대 착용.</li>
+          <li>밀폐: 측정 화면, 감시인, 안전대 착용. 측정기를 켜면 처음 뜨는 'ALARM' 화면(10 / 30 / 19.5 / 10)은 경보 설정값이니, 그다음 나오는 실제 측정값 화면을 찍으세요.</li>
           <li>화기: 소화기·방화포가 보이게.</li>
           <li>바닥 개구부: 덮개·펜스·표지.</li>
           <li>전기·설비: 잠금장치(LOTOTO)를 건 모습.</li>
@@ -544,7 +551,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
     <details class="pshare" id="pShare">
       <summary>다른 폰과 목록 나누기</summary>
       <div class="pshare-body">
-        <p>목록을 복사해 카카오톡으로 보내고, 받은 폰에서 아래 칸에 붙여넣으면 똑같이 들어가요. 사람·업체 목록이 함께 옮겨져요.</p>
+        <p>목록을 복사해 문자·메일·메신저로 보내고, 받은 폰에서 아래 칸에 붙여넣으면 똑같이 들어가요. 사람·업체 목록이 함께 옮겨져요.</p>
         <button type="button" class="ghost" id="pCopy">내 목록 복사하기</button>
         <textarea id="pText" rows="4" placeholder="받은 목록을 여기에 붙여넣기"></textarea>
         <button type="button" class="ghost" id="pImport">붙여넣은 목록 가져오기</button>
@@ -576,15 +583,63 @@ const TYPES = [
   {k:'밀폐', ui:'밀폐', h:'밀폐\n작업'}, {k:'중장비', ui:'중장비', h:'중장비\n작업'}
 ];
 // 작업구분을 고르면 작업 카드에 보여 주는 확인 목록 (입력 없음, 보고서에는 안 들어감)
+// 근거: 산업안전보건기준에 관한 규칙 (고용노동부령 제454호, 2025.12.1. 시행). [내용, 조문]
+const LAW_NAME = '산업안전보건기준에 관한 규칙';
+const LAW_URL = 'https://www.law.go.kr/법령/산업안전보건기준에관한규칙';
 const CHECKS = {
-  '고소': ['안전대 착용과 걸이 위치', '작업발판·안전난간, 이동식 비계 바퀴 고정', '사다리 미끄럼 방지·2인 1조', '아래쪽 출입 통제, 낙하물 방지'],
-  '화기': ['소화기를 작업 장소 가까이 비치', '불티 비산방지: 성능인증 방화포 (2026.3.2부터 의무)', '화재감시자 배치', '주변 가연물 치우기·환기', '작업 후 잔불 확인'],
-  '밀폐': ['작업 전 산소·유해가스 측정 — 산소 18% 이상 23.5% 미만, 일산화탄소 30ppm 미만, 황화수소 10ppm 미만',
-    "측정기를 켜면 처음 나오는 'ALARM' 화면(10 / 30 / 19.5 / 10)은 경보 설정값이에요. 측정 화면의 값을 기록하세요",
-    '측정자·일시·장소·측정값 기록 (3년 보관)', '환기, 외부 감시인 배치, 출입 인원 확인', '안전대·구명줄, 이상 시 119 신고'],
-  '중장비': ['작업 반경 출입 통제·유도자 배치', '장비 점검, 아웃리거·지반 상태', '신호 방법 미리 정하기']
+  '고소': [
+    ['작업발판 설치(비계 조립 등). 곤란하면 추락방호망, 그것도 곤란하면 안전대 착용 등 추락 방지 조치', '제42조①②'],
+    ['작업발판·통로의 끝과 개구부에 안전난간·울타리·수직형 추락방망·덮개 등 설치. 덮개는 뒤집히거나 떨어지지 않게, 어두워도 개구부임을 알 수 있게 표시', '제43조①'],
+    ['추락·낙하 위험 작업은 안전모, 높이 2m 이상은 안전대 지급·착용', '제32조①1·2호'],
+    ['높이 2m 이상에서 안전대를 쓰면 걸 수 있는 부착설비 설치, 작업 시작 전 안전대·부속설비 이상 유무 점검', '제44조'],
+    ['이동식비계: 브레이크·쐐기로 바퀴 고정 후 시설물에 고정하거나 아웃트리거 설치, 최상부 작업 시 안전난간, 작업발판 수평 유지(난간 딛기·받침대·사다리 사용 금지), 최대적재하중 250kg 이하', '제68조'],
+    ['이동식 사다리는 작업발판·추락방호망 설치가 곤란할 때: 버팀대 3개 이상, 평탄·견고하고 미끄럽지 않은 바닥, 시설물에 고정·아웃트리거·다른 근로자 지지 중 하나 이상', '제42조④1·2호'],
+    ['사다리 작업은 높이 3.5m 이하에서만, 최상부 발판과 그 아래 디딤대에 올라서지 않기(1m 이하 사다리 제외), 2m 이상이면 안전모와 안전대, 사용 전 변형·이상 점검', '제42조④4~7호'],
+    ['물체가 떨어지거나 날아올 위험: 낙하물 방지망·수직보호망·방호선반 설치, 출입금지구역 설정, 보호구 착용', '제14조②']
+  ],
+  '화기': [
+    ['가연성물질(천조각·톱밥·종이류·인화성 액체 등)은 화재위험이 없는 곳에 따로 보관, 작업장에는 필요한 양만', '제236조②'],
+    ['작업 준비·작업 절차 수립, 작업장 내 위험물 사용·보관 현황 파악', '제241조②1·2호'],
+    ['인근 가연성물질 방호조치, 소화기구 비치', '제241조②3호'],
+    ['불꽃·불티 비산방지(비산방지덮개·용접방화포 등). 용접방화포는 소방시설법 제40조①에 따른 성능인증 제품', '제241조②4호'],
+    ['인화성 액체의 증기·인화성 가스가 남지 않게 환기. 통풍·환기가 부족한 곳에서 환기용으로 산소 사용 금지', '제241조①, ②5호'],
+    ['작업자 화재예방·피난교육 등 비상조치', '제241조②6호'],
+    ['작업 시작 전 위 사항 확인·조치 후 작업. 끝날 때까지 작업내용·일시·안전점검·조치사항을 작업장소에 서면 게시', '제241조③④'],
+    ['용접·용단 작업반경 11m 이내에 가연성물질이 있는 등의 장소: 화재감시자 지정·배치, 확성기·휴대용 조명기구·화재 대피용 마스크 지급', '제241조의2']
+  ],
+  '밀폐': [
+    ['작업 시작 전 확인하고 끝날 때까지 출입구에 게시: 작업 정보, 관리감독자·근로자·감시인, 산소·유해가스 측정결과와 후속조치, 가스 누출·유입 가능성, 착용 보호구, 비상연락체계', '제619조②③'],
+    ['작업 시작 전(중단했다 다시 시작할 때 포함) 지정된 측정자가 산소·유해가스 농도 측정·평가', '제619조의2①'],
+    ['적정공기: 산소 18% 이상 23.5% 미만, 이산화탄소 1.5% 미만, 일산화탄소 30ppm 미만, 황화수소 10ppm 미만', '제618조3호'],
+    ['측정한 사람 성명, 측정 일시·장소, 결과를 기록해 3년간 보존', '제619조의2④'],
+    ['작업 전·작업 중 환기. 적정공기가 아니면 환기하거나 공기호흡기·송기마스크 착용', '제620조①, 제619조의2③'],
+    ['들어갈 때와 나올 때마다 인원 점검, 관계자 외 출입금지 표지 게시', '제621조, 제622조'],
+    ['밀폐공간 밖에 감시인 배치, 작업장과 감시인 사이 상시 연락설비. 이상 시 감시인은 지체 없이 관할 소방관서(119)에 신고하고 사업주·관리감독자에게 알림', '제623조'],
+    ['추락 우려가 있으면 안전대·구명밧줄·공기호흡기·송기마스크 지급·착용, 구출용 공기호흡기·송기마스크·사다리·섬유로프 비치', '제624조, 제625조']
+  ],
+  '중장비': [
+    ['차량계 건설기계·차량계 하역운반기계(지게차 등) 작업: 사전조사 후 작업계획서 작성, 근로자에게 알리기', '제38조①②'],
+    ['차량계 하역운반기계 작업계획서를 작성했으면 작업지휘자 지정', '제39조①'],
+    ['운전 중인 장비에 부딪칠 위험이 있는 곳은 출입금지. 유도자를 배치해 유도할 때만 예외, 운전자는 유도에 따름', '제172조, 제200조'],
+    ['넘어지거나 굴러떨어질 우려: 유도자 배치, 지반 부동침하 방지, 갓길 붕괴 방지, 도로 폭 유지', '제199조'],
+    ['양중기 작업·유도자 배치 작업은 일정한 신호방법을 정하고, 운전자는 그 신호에 따름', '제40조①'],
+    ['고소작업대: 바닥과 가능하면 수평 유지, 아웃트리거 또는 브레이크 확실히 사용, 안전모·안전대 착용, 관계자 외 출입 방지', '제186조②④'],
+    ['운전위치를 떠날 때: 포크·버킷 등은 가장 낮은 위치나 지면에, 원동기 정지·브레이크, 시동키 분리', '제99조']
+  ]
 };
-const CHECK_LOTO = ['전원 차단 후 잠금장치·표지 (LOTOTO)', '잔류 에너지(전기·공압·유압) 제거 확인', '작업 후 잠금 해제·시운전 확인'];
+// 공사명·내용에 전기/설비 낱말이 있으면 붙는 목록 (LOTOTO)
+const CHECK_ELEC = [
+  ['작업 전 전로 차단: 모든 전원을 도면·배선도로 확인하고, 차단 후 단로기 등을 개방·확인', '제319조②1·2호'],
+  ['차단장치·단로기에 잠금장치와 꼬리표 부착 (LOTOTO)', '제319조②3호'],
+  ['잔류전하 완전 방전, 검전기로 충전 여부 확인, 필요하면 단락 접지기구로 접지', '제319조②4~6호'],
+  ['다시 전원을 넣을 때: 작업기구·접지기구 제거, 모든 작업자가 떨어졌는지 확인, 잠금장치·꼬리표는 설치한 사람이 직접 철거, 이상 유무 확인 후 투입', '제319조③']
+];
+const CHECK_EQUIP = [
+  ['정비·청소·급유·검사·수리·교체·조정 작업 시 기계 운전 정지', '제92조①'],
+  ['기동장치에 잠금장치를 하고 열쇠 별도 관리, 또는 표지판 설치 (LOTOTO)', '제92조②'],
+  ['기계가 갑자기 가동될 우려가 있으면 작업지휘자 배치 등', '제92조③'],
+  ['내부의 압축 기체·액체는 미리 방출', '제92조④']
+];
 const ROLES = [['insp', '관리자'], ['duty', '당직자'], ['pc', 'PC 담당자']];
 const MEASURES = [
   {k:'허가', ui:'작업허가', h:'작업\n허가'}, {k:'보호구', ui:'보호구', h:'보호구'}, {k:'LOTO', ui:'LOTOTO', h:'LOTOTO'},
@@ -597,9 +652,11 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.27-13';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.10.28-15';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
-const FACTORIES = ['성남', '원주', '대구'];   // 공장 버튼 (공장이 늘면 여기에 추가)
+const FACTORIES = ['성남', '대구', '원주'];   // 공장 버튼 (공장이 늘면 여기에 추가)
+// 공장 버튼으로 고른 곳은 'OO공장', 기타로 직접 쓴 곳은 쓴 이름 그대로
+const facName = f => !f ? '' : FACTORIES.includes(f) ? f + '공장' : f;
 const LS_DRAFT = 'wkreport.draft.v1', LS_CO = 'wkreport.companies.v1', LS_PEOPLE = 'wkreport.people.v1';
 
 /* ---------- small helpers ---------- */
@@ -766,14 +823,21 @@ function analyze(w, phase){
 function checkGroups(w){
   const gs = TYPES.filter(t => w.types.includes(t.k) && CHECKS[t.k]).map(t => ({t: t.ui + '작업', items: CHECKS[t.k]}));
   const txt = (w.title || '') + ' ' + (w.desc || '');
-  if (LOTO_ELEC.test(txt)) gs.push({t: '전기 작업', items: CHECK_LOTO});
-  else if (LOTO_EQUIP.test(txt)) gs.push({t: '설비 작업', items: CHECK_LOTO});
+  if (LOTO_ELEC.test(txt)) gs.push({t: '전기 작업', items: CHECK_ELEC});
+  else if (LOTO_EQUIP.test(txt)) gs.push({t: '설비 작업', items: CHECK_EQUIP});
   return gs;
 }
+const ckClosed = new Set();   // 접어 둔 확인 목록 (작업구분 이름으로, 앱을 연 동안만 기억)
 function checklistHTML(w){
   const gs = checkGroups(w); if (!gs.length) return '';
-  return '<span class="lbl sub-t">확인할 것</span>' + gs.map(x => `<div class="ck-g"><b>${esc(x.t)}</b><ul>${x.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`).join('');
+  return '<span class="lbl sub-t">확인할 것</span>'
+    + gs.map(x => `<details class="ck-g" data-ckg="${esc(x.t)}"${ckClosed.has(x.t) ? '' : ' open'}><summary>${esc(x.t)} <span class="ck-n">${x.items.length}개</span></summary><ul>${x.items.map(([t, ref]) => `<li>${esc(t)} <span class="ck-ref">${esc(ref)}</span></li>`).join('')}</ul></details>`).join('')
+    + `<p class="ck-src">근거: ${LAW_NAME} (2025.12.1. 시행). 줄여 쓴 것이니 정확한 문구는 <a href="${LAW_URL}" target="_blank" rel="noopener">법제처 원문</a>에서 확인하세요.</p>`;
 }
+document.addEventListener('toggle', e => {
+  const d = e.target; if (!d.matches || !d.matches('details.ck-g')) return;
+  if (d.open) ckClosed.delete(d.dataset.ckg); else ckClosed.add(d.dataset.ckg);
+}, true);
 const countWarn = (works, phase) => works.reduce((s, w) => s + analyze(w, phase).count, 0);
 const stripTags = h => String(h).replace(/<[^>]+>/g, '');
 function warnList(works, phase){
@@ -825,7 +889,7 @@ function applyFacDefaults(prev, next){
     if (nd[nk]){ if (state[nk] !== nd[nk]){ set(nd[nk], nd[phk] || ''); changed.push(lab); } }
     else if (pd[nk] && state[nk] === pd[nk]) set('', '');
   });
-  if (changed.length) toast(`${next}공장 ${changed.join('·')}를 채웠어요.`);
+  if (changed.length) toast(`${facName(next)} ${changed.join('·')}를 채웠어요.`);
 }
 function renderDate(){
   const dw = dowOf(state.date);
@@ -837,7 +901,7 @@ function renderDate(){
   }).join('');
 }
 function updateTop(){
-  const parts = [`PC [${state.factory || '  '}]공장`, dateLabel(state.date), phaseOf(state.phase).full].filter(Boolean);
+  const parts = [state.factory && !FACTORIES.includes(state.factory) ? `PC [${state.factory}]` : `PC [${state.factory || '  '}]공장`, dateLabel(state.date), phaseOf(state.phase).full].filter(Boolean);
   el.topSub.textContent = parts.join(' · ');
 }
 const sortedNames = map => Object.keys(map).sort((a, b) => ((map[b].used || 0) - (map[a].used || 0)) || a.localeCompare(b, 'ko'));
@@ -1264,7 +1328,7 @@ function renderPick(){
   };
   const what = pickCtx.kind === 'co' ? '업체' : '사람';
   pk.list.innerHTML = (here.length && other.length)
-    ? `<li class="pgroup">${esc(fac)}공장에서 쓴 ${what}</li>${here.map(item).join('')}<li class="pgroup">다른 공장</li>${other.map(item).join('')}`
+    ? `<li class="pgroup">${esc(facName(fac))}에서 쓴 ${what}</li>${here.map(item).join('')}<li class="pgroup">다른 공장</li>${other.map(item).join('')}`
     : shown.map(item).join('');
   pk.empty.hidden = shown.length > 0;
   document.getElementById('pickHint').hidden = !shown.length;
@@ -1323,7 +1387,7 @@ $('#pCopy').addEventListener('click', () => {
   if (!Object.keys(people).length && !Object.keys(companies).length){ toast('복사할 목록이 아직 없어요.'); return; }
   const txt = exportText();
   const fallback = () => { pk.text.value = txt; pk.text.focus(); pk.text.select(); toast('아래 칸의 글을 길게 눌러 복사해 주세요.', 3600); };
-  try { navigator.clipboard.writeText(txt).then(() => toast('복사했어요. 카카오톡에 붙여넣어 보내세요.'), fallback); }
+  try { navigator.clipboard.writeText(txt).then(() => toast('복사했어요. 문자·메일·메신저에 붙여넣어 보내세요.'), fallback); }
   catch(e){ fallback(); }
 });
 $('#pImport').addEventListener('click', () => {
@@ -1421,11 +1485,11 @@ function makeDoc(st){
     }))
   };
 }
-const docTitle = d => `PC [ ${d.factory || '   '} ]공장 주말 외주업체 작업 보고`;
+const docTitle = d => (d.factory && !FACTORIES.includes(d.factory)) ? `PC [ ${d.factory} ] 주말 외주업체 작업 보고` : `PC [ ${d.factory || '   '} ]공장 주말 외주업체 작업 보고`;
 const docDateLine = d => [dateLabel(d.date), phaseOf(d.phase).full].filter(Boolean).join(' · ');
 function docFileBase(d){
   const dw = dowOf(d.date);
-  return `${d.factory || ''}공장_주말작업보고_${d.date}${dw >= 0 ? `(${DAYS[dw]})` : ''}_${phaseOf(d.phase).file}`;
+  return `${facName(d.factory) || '공장'}_주말작업보고_${d.date}${dw >= 0 ? `(${DAYS[dw]})` : ''}_${phaseOf(d.phase).file}`;
 }
 function stamp(t){ const n = t ? new Date(t) : new Date(); return `${fmtDate(n)} ${pad2(n.getHours())}:${pad2(n.getMinutes())}`; }
 
@@ -1991,7 +2055,7 @@ function renderHist(){
   <button type="button" class="hmain" data-act="hopen" aria-expanded="false">
     ${u ? `<img class="hthumb" src="${u}" alt="">` : '<span class="hthumb"></span>'}
     <span class="hinfo"><span class="ht">${esc(head)} · ${esc(phaseOf(r.phase).ui)}</span>
-      <span class="hs">${esc(r.factory || '')}공장 · 작업 ${(r.titles || []).length}건 · 사진 ${r.photoCount || 0}장${r.inspName ? ` · 관리자 ${esc(r.inspName)}` : ''}</span>
+      <span class="hs">${esc(facName(r.factory))} · 작업 ${(r.titles || []).length}건 · 사진 ${r.photoCount || 0}장${r.inspName ? ` · 관리자 ${esc(r.inspName)}` : ''}</span>
       <span class="hw">${esc((r.titles || []).join(', '))}</span>
       <span class="hd">${esc(stamp(r.updatedAt))} 저장 · ${fmtMB(r.image ? r.image.size : 0)}${syncLabel(r)}</span></span>
   </button>
@@ -2119,7 +2183,7 @@ async function uploadRecord(rec, onStep){
       inspName: d.inspName, inspPhone: d.inspPhone, pcName: d.pcName, workCount: d.works.length,
       titles: d.works.map(w => w.title), companies: [...new Set(d.works.map(w => w.company).filter(Boolean))],
       photoCount: d.works.reduce((s, w) => s + w.photos.length, 0), warnCount: countWarn(d.works, d.phase),
-      duty: [d.dutyName, d.dutyPhone].filter(Boolean).join(' ')
+      duty: [d.dutyName, d.dutyPhone].filter(Boolean).join(' '), facLabel: facName(d.factory)
     },
     files: {
       image: {name: rec.name + '.jpg', type: 'image/jpeg', b64: await blobToB64(rec.image)},
@@ -2214,7 +2278,7 @@ function renderTeam(){
   <span class="hd">${esc(r.updated)} 올림${r.warnCount ? ` · 안전조치 확인 필요 ${r.warnCount}건` : ''}</span></span></div>
   ${fl ? `<div class="hacts"><div class="hbtns">${fl}</div></div>` : ''}</article>`;
   });
-  sy.teamList.innerHTML = html || `<div class="pempty">${teamFac === 'all' ? '아직 팀 드라이브에 올라간 보고서가 없어요.' : esc(teamFac) + '공장 보고가 아직 없어요.'}</div>`;
+  sy.teamList.innerHTML = html || `<div class="pempty">${teamFac === 'all' ? '아직 팀 드라이브에 올라간 보고서가 없어요.' : esc(facName(teamFac)) + ' 보고가 아직 없어요.'}</div>`;
 }
 async function loadTeam(){
   sy.teamSum.textContent = '팀 보고를 불러오는 중…'; sy.teamList.innerHTML = ''; $('#wkBox').hidden = true; $('#teamFilter').hidden = true;
@@ -2314,10 +2378,10 @@ function canShareFile(f){ try { return !!(f && navigator.canShare && navigator.c
 const isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 function syncSaveUi(){
   const share = canShareFile(current && current.file);
-  el.btnSave.hidden = !share; el.btnSave.textContent = '공유하기 (카카오톡·문자 등)';
+  el.btnSave.hidden = !share; el.btnSave.textContent = '공유하기 (문자·메일·메신저)';
   el.btnDl.hidden = false; $('#fmtRow').hidden = false;
   el.saveHint.textContent = share
-    ? '공유 창에서 카카오톡을 고르거나, "이미지 저장"으로 사진첩에 넣을 수 있어요.'
+    ? '공유 창에서 보낼 앱을 고르거나, "이미지 저장"으로 사진첩에 넣을 수 있어요.'
     : '저장이 안 되면 이미지를 길게 눌러 저장하세요.';
 }
 async function deliver(blob, name, opts){
