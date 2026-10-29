@@ -167,10 +167,21 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 
 /* saved lists (people / companies) */
 .plist{list-style:none; margin:0; padding:0; display:grid; gap:8px}
-.plist li{display:flex; align-items:stretch; gap:8px}
+.plist li{display:flex; align-items:stretch; gap:8px; min-width:0}
 .pitem{flex:1; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:12px; text-align:left; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--surface)}
 .pitem .n{min-width:0; font-weight:600; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .pitem .p{flex:none; font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums}
+/* 공사일정 (팀 드라이브 연결 시) */
+.sched-link{display:none}
+.has-sync .sched-link{display:inline-flex}
+.pitem.two{display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; row-gap:2px; align-items:center}
+.pitem.two .h{grid-column:1 / -1; min-width:0; font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sitem{flex-direction:column; align-items:stretch; gap:3px}
+.sitem .n{white-space:normal; font-size:15px; line-height:1.4; word-break:keep-all; overflow-wrap:anywhere}
+.sitem .p, .sitem .s{font-size:13.5px; white-space:normal}
+.sitem .s{color:var(--muted)}
+.sbadge{display:inline-block; margin-left:6px; padding:0 6px; border-radius:6px; font-size:12px; font-weight:600; line-height:1.6; background:var(--warn-bg); color:var(--warn-ink); vertical-align:1px; white-space:nowrap}
+.snote{margin:0 2px 12px; padding:10px 12px; border-radius:10px; background:var(--info-bg); color:var(--info-ink); font-size:13.5px; line-height:1.5}
 .pdel{flex:none; padding:0 12px; border-radius:10px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:13px; white-space:nowrap}
 .pdel.arm{background:var(--danger); border-color:var(--danger); color:#fff}
 .pempty{padding:28px 8px; text-align:center; color:var(--muted); font-size:14px}
@@ -440,6 +451,7 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
           <li><b>점검일</b>: 토·일 버튼으로 바로 고를 수 있어요.</li>
           <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
           <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
+          <li data-sync-only>팀 드라이브에 연결돼 있으면 공사명 옆 <b>공사일정</b>을 눌러 점검일의 공사를 고를 수 있어요. 공사명·업체명·연락처가 한 번에 채워져요. 업체명 옆 '목록'에도 공사일정에 나온 업체가 함께 나오고, 같은 업체에 번호가 여러 개면 '번호 2개'처럼 표시돼요.</li>
           <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요. 산업안전보건기준에 관한 규칙의 해당 조문을 줄여 쓴 것이고, 조문 번호가 함께 붙어 있어요. 다 읽은 목록은 제목을 눌러 접을 수 있어요 (보고서에는 안 들어가요).</li>
           <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 '[1] 공사명-1', '[1] 공사명-2' 두 칸으로 나란히 들어가요. 특이사항은 두 칸 아래에 같은 내용으로 들어가요.</li>
           <li><b>점검 내용 / 특이사항</b>: 항목마다 ①, ②, ③으로 나뉘어 들어가요. 엔터를 누르면 다음 항목이 생기고, 보고서에서 노란 칸으로 강조돼요.</li>
@@ -568,6 +580,25 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
   </div>
 </div>
 
+<div class="sheet" id="sched" hidden role="dialog" aria-modal="true" aria-labelledby="schedTitle">
+  <div class="sheet-h">
+    <h2 id="schedTitle">공사일정에서 고르기</h2>
+    <button type="button" class="ghost" id="schedClose">닫기</button>
+  </div>
+  <div class="sheet-b">
+    <div class="fchips" id="schedFac" role="group" aria-label="공장"></div>
+    <input type="text" id="schedSearch" class="psearch" placeholder="공사명·업체·번호 검색 (전체 기간)" aria-label="공사일정 검색" autocomplete="off">
+    <div class="snote" id="schedNote" hidden></div>
+    <p class="phint" id="schedHint">누르면 공사명·업체명·연락처가 채워져요.</p>
+    <ul class="plist" id="schedList"></ul>
+    <div class="pempty" id="schedEmpty" hidden></div>
+  </div>
+  <div class="sheet-f">
+    <button type="button" class="ghost" id="schedReload">공사일정 새로 불러오기</button>
+    <div class="hint" id="schedMeta"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
 
 <script>
@@ -651,7 +682,7 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.28-16';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.10.29-17';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '대구', '원주'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 // 공장 버튼으로 고른 곳은 'OO공장', 기타로 직접 쓴 곳은 쓴 이름 그대로
@@ -915,7 +946,9 @@ function tagFac(e, fac, t){ if (fac) e.fac = Object.assign({}, e.fac, {[fac]: t 
 function renderCompanies(){
   const opt = n => `<option value="${esc(n)}"></option>`;
   const co = sortedFor(companies, state.factory), pe = sortedFor(people, state.factory);
-  el.coList.innerHTML = [...co.here, ...co.other].map(opt).join('');
+  const local = [...co.here, ...co.other];
+  const extra = [...new Set(schedCos(state.factory, '', companies).map(x => x.co))].filter(n => !companies[n]).slice(0, 200);
+  el.coList.innerHTML = [...local, ...extra].map(opt).join('');
   el.peopleList.innerHTML = [...pe.here, ...pe.other].map(opt).join('');
 }
 function saveLists(){ ls.set(LS_CO, companies); ls.set(LS_PEOPLE, people); renderCompanies(); }
@@ -983,7 +1016,7 @@ function cardHTML(w, i){
     </button>
   </div>
   <div class="w-body" id="body-${id}"${w.open ? '' : ' hidden'}>
-    <div><label class="lbl" for="w-${id}-title">공사명</label>
+    <div><div class="lbl-row"><label class="lbl" for="w-${id}-title">공사명</label><button type="button" class="pick-link sched-link" data-act="picksched"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>공사일정</button></div>
       <input type="text" id="w-${id}-title" data-f="title" value="${esc(w.title)}" placeholder="예: 나동 사일로 4번탱크 내부 청소" autocomplete="off"></div>
     <div class="grid-co">
       <div><div class="lbl-row"><label class="lbl" for="w-${id}-company">업체명</label><button type="button" class="pick-link" data-act="pickco"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록</button></div>
@@ -1100,6 +1133,7 @@ el.works.addEventListener('click', e => {
   const card = t.closest('.work'); const w = card && findWork(card.dataset.id); if (!w) return;
   const act = t.dataset.act;
   if (act === 'pickco'){ openPick('co', w.id); return; }
+  if (act === 'picksched'){ openSched(w.id); return; }
   if (act === 'toggle'){
     w.open = !w.open; t.setAttribute('aria-expanded', String(w.open));
     card.querySelector('.w-body').hidden = !w.open;
@@ -1187,6 +1221,11 @@ el.works.addEventListener('change', async e => {
       if (c.phone){ w.phone = c.phone; const p = card.querySelector('[data-f="phone"]'); if (p) p.value = c.phone; }
       if (!w.people && c.people){ w.people = c.people; const p = card.querySelector('[data-f="people"]'); if (p) p.value = c.people; }
       card.querySelector('.w-sum').textContent = summaryOf(w); save();
+    } else if (syncOn() && w.company.trim() && !w.phone){
+      const hits = schedCoByName(w.company.trim(), state.factory);
+      if (hits.length === 1 && hits[0].ph){
+        w.phone = hits[0].ph; const p = card.querySelector('[data-f="phone"]'); if (p) p.value = w.phone; save();
+      } else if (hits.length > 1) toast(`${w.company.trim()}: 공사일정에 번호가 ${hits.length}개예요. 업체명 옆 '목록'에서 맞는 번호를 골라 주세요.`, 3600);
     }
     return;
   }
@@ -1310,13 +1349,16 @@ function openPick(kind, target){
   pk.name.value = pk.phone.value = pk.people.value = ''; pk.name.classList.remove('bad');
   renderPick();
   pk.sheet.hidden = false; syncScrollLock();
+  if (co && syncOn()) loadSched().then(() => { if (pickCtx && pickCtx.kind === 'co') renderPick(); });
 }
 function closePick(){ pk.sheet.hidden = true; pickCtx = null; syncScrollLock(); }
 function renderPick(){
   if (!pickCtx) return;
   const map = listOf(pickCtx.kind), names = sortedNames(map), fac = state.factory;
-  pk.search.hidden = names.length < 7;
+  const isCo = pickCtx.kind === 'co';
   const q = pk.search.value.trim(), qd = q.replace(/\D/g, '');
+  const scAll = isCo ? schedCos(fac, '', map) : [], scs = isCo ? schedCos(fac, q, map) : [];
+  pk.search.hidden = names.length + scAll.length < 7;
   const match = n => !q || n.includes(q) || (qd && (map[n].phone || '').replace(/\D/g, '').includes(qd));
   const grp = sortedFor(map, fac), here = grp.here.filter(match), other = grp.other.filter(match);
   const shown = [...here, ...other];
@@ -1326,12 +1368,15 @@ function renderPick(){
       `<button type="button" class="pdel" data-del="${esc(n)}" aria-label="${esc(n)} 삭제">삭제</button></li>`;
   };
   const what = pickCtx.kind === 'co' ? '업체' : '사람';
-  pk.list.innerHTML = (here.length && other.length)
+  const scItem = x => `<li><button type="button" class="pitem two" data-sc="${x.i}"><span class="n">${esc(x.co)}${x.multi > 1 ? `<span class="sbadge">번호 ${x.multi}개</span>` : ''}</span>` +
+    `<span class="p">${esc(x.ph || '번호 없음')}</span><span class="h">최근 ${esc(mdLabel(x.last))}${x.facs && !(FACTORIES.includes(fac) && x.facs === fac) ? ' · ' + esc(x.facs) : ''} · ${esc(x.title)}</span></button></li>`;
+  const scHead = scs.length ? `<li class="pgroup">공사일정에 나온 업체${FACTORIES.includes(fac) && !q ? ' · ' + esc(fac) : ''}</li>` : '';
+  pk.list.innerHTML = ((here.length && other.length)
     ? `<li class="pgroup">${esc(facName(fac))}에서 쓴 ${what}</li>${here.map(item).join('')}<li class="pgroup">다른 공장</li>${other.map(item).join('')}`
-    : shown.map(item).join('');
-  pk.empty.hidden = shown.length > 0;
-  document.getElementById('pickHint').hidden = !shown.length;
-  pk.empty.textContent = names.length ? '검색 결과가 없어요.'
+    : (shown.length && scs.length ? `<li class="pgroup">저장한 ${what}</li>` : '') + shown.map(item).join('')) + scHead + scs.map(scItem).join('');
+  pk.empty.hidden = shown.length + scs.length > 0;
+  document.getElementById('pickHint').hidden = !(shown.length + scs.length);
+  pk.empty.textContent = names.length || scAll.length ? '검색 결과가 없어요.'
     : (pickCtx.kind === 'co' ? '아직 저장된 업체가 없어요. 아래에서 업체명과 담당자 번호를 추가하세요.' : '아직 저장된 연락처가 없어요. 아래에서 이름과 번호를 추가하세요.');
 }
 function applyPick(name){
@@ -1360,6 +1405,7 @@ pk.list.addEventListener('click', e => {
     }
     delete listOf(pickCtx.kind)[del.dataset.del]; saveLists(); renderPick(); return;
   }
+  const scb = e.target.closest('[data-sc]'); if (scb){ applySchedCo(Number(scb.dataset.sc)); return; }
   const it = e.target.closest('[data-n]'); if (it) applyPick(it.dataset.n);
 });
 pk.form.addEventListener('submit', e => {
@@ -2302,7 +2348,7 @@ $('#syncTest').addEventListener('click', async e => {
   btn.disabled = true; sy.state.textContent = '연결을 확인하는 중…';
   try {
     await syncCall({action: 'ping'});
-    syncUi(); sy.state.textContent = '연결됐어요. 이제 보고서를 만들면 팀 드라이브에 자동으로 올라가요.';
+    syncUi(); markSync(); sy.state.textContent = '연결됐어요. 이제 보고서를 만들면 팀 드라이브에 자동으로 올라가요.';
     renderHist(); refreshSum(); toast('팀 드라이브에 연결했어요.');
   } catch(err){ sy.state.textContent = syncErrText(err); sy.tabs.hidden = true; }
   finally { btn.disabled = false; }
@@ -2317,7 +2363,7 @@ $('#syncLink').addEventListener('click', () => {
 });
 $('#syncOff').addEventListener('click', () => {
   sync = {url: '', key: '', auto: true}; ls.set(LS_SYNC, sync);
-  syncUi(); showTab('local'); renderHist(); refreshSum();
+  syncUi(); showTab('local'); renderHist(); refreshSum(); markSync(); renderCompanies();
   toast('이 폰의 연결을 끊었어요. 드라이브에 올라간 자료는 그대로예요.');
 });
 function readConnectHash(){
@@ -2329,6 +2375,146 @@ function readConnectHash(){
   } catch(e){ toast('연결 링크를 읽지 못했어요. 받은 링크 전체를 다시 열어 주세요.', 3600); }
   try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
 }
+
+/* ---------- 공사일정 (Code.gs가 '안전보건팀 스케쥴'에서 읽어 줌) ---------- */
+const LS_SCHED = 'wkreport.schedule.v1', SCHED_TTL = 30 * 60 * 1000;
+let sched = ls.get(LS_SCHED);   // {at, updated, entries:[[날짜,시간,공장,공사명,업체,번호,비고]], cos:[[업체,번호,공장,최근일,최근 공사명,횟수,번호 수]], err}
+let schedBusy = null;
+function markSync(){
+  document.documentElement.classList.toggle('has-sync', syncOn());
+  if (syncOn()) loadSched();
+}
+function loadSched(force){
+  if (!syncOn()) return Promise.resolve(null);
+  if (!force && sched && sched.at && !sched.err && Date.now() - sched.at < SCHED_TTL) return Promise.resolve(sched);
+  if (schedBusy) return schedBusy;
+  schedBusy = (async () => {
+    try {
+      const j = await syncCall(force ? {action: 'schedule', refresh: '1'} : {action: 'schedule'});
+      sched = {at: Date.now(), updated: j.updated || '', entries: j.entries || [], cos: j.cos || []};
+    } catch(e){
+      sched = Object.assign({entries: [], cos: []}, sched || {}, {at: Date.now(), err: (e && e.message) || 'fail'});
+    }
+    ls.set(LS_SCHED, sched); schedBusy = null; renderCompanies();
+    return sched;
+  })();
+  return schedBusy;
+}
+const mdLabel = iso => {   // 10/31 (토), 올해가 아니면 25년 1/4 (토)
+  const d = parseISO(iso); if (!d) return iso || '';
+  const y = d.getFullYear() !== new Date().getFullYear() ? `${String(d.getFullYear()).slice(2)}년 ` : '';
+  return `${y}${d.getMonth() + 1}/${d.getDate()} (${DAYS[d.getDay()]})`;
+};
+const normCo = s => String(s || '').replace(/\(주\)|㈜|주식회사/g, '').replace(/[\s.,·\-_()]/g, '').toUpperCase();
+// 업체 목록에 붙일 공사일정 업체: 같은 업체라도 번호가 다르면 따로 나와요
+function schedCos(fac, q, localMap){
+  if (!syncOn() || !sched || !sched.cos) return [];
+  const qd = String(q || '').replace(/\D/g, ''), ql = String(q || '').trim().toLowerCase();
+  const known = localMap || {};
+  let rows = sched.cos.map((r, i) => ({i, co: r[0], ph: r[1], facs: r[2] || '', last: r[3], title: r[4] || '', n: r[5] || 0, multi: r[6] || 0}))
+    .filter(x => !(known[x.co] && x.ph && fmtPhone(known[x.co].phone) === fmtPhone(x.ph)));
+  if (ql) rows = rows.filter(x => x.co.toLowerCase().includes(ql) || (qd.length >= 3 && x.ph.replace(/\D/g, '').includes(qd)));
+  else if (FACTORIES.includes(fac)) rows = rows.filter(x => x.facs.split('·').includes(fac));
+  const lastBy = {};
+  rows.forEach(x => { if (!lastBy[x.co] || x.last > lastBy[x.co]) lastBy[x.co] = x.last; });
+  rows.sort((a, b) => (lastBy[b.co] || '').localeCompare(lastBy[a.co] || '') || a.co.localeCompare(b.co, 'ko') || (b.last || '').localeCompare(a.last || ''));
+  return rows.slice(0, ql ? 60 : 150);
+}
+function schedCoByName(name, fac){
+  if (!sched || !sched.cos) return [];
+  const k = normCo(name);
+  const all = sched.cos.map(r => ({co: r[0], ph: r[1], facs: r[2] || ''})).filter(x => x.ph && normCo(x.co) === k);
+  const here = all.filter(x => x.facs.split('·').includes(fac));
+  return here.length ? here : all;
+}
+function applySchedCo(i){
+  const r = sched && sched.cos && sched.cos[i]; if (!r || !pickCtx) return;
+  const w = findWork(pickCtx.target);
+  if (w){ w.company = r[0]; if (r[1]) w.phone = r[1]; w.open = true; rerenderCard(w); save(); }
+  closePick();
+  if ((r[6] || 0) > 1) toast(`${r[0]}: 번호 ${r[6]}개 중 ${r[1]}을(를) 넣었어요.`);
+}
+
+const sc = {sheet: $('#sched'), fac: $('#schedFac'), search: $('#schedSearch'), note: $('#schedNote'), hint: $('#schedHint'),
+  list: $('#schedList'), empty: $('#schedEmpty'), meta: $('#schedMeta'), reload: $('#schedReload')};
+let schedCtx = null;   // {target: 작업 id, fac}
+const SCHED_ERR = {
+  action: '웹 앱(Code.gs)이 예전 버전이에요. 관리자가 새 Code.gs를 붙여넣고 새 버전으로 배포하면 공사일정을 쓸 수 있어요.',
+  sched_auth: '관리자가 Code.gs 편집기에서 refreshSchedule을 한 번 실행해 권한을 허용해야 해요.',
+  sched_open: "공사일정 스프레드시트를 열지 못했어요. Code.gs의 SCHEDULE_ID와 시트 이름을 확인해 주세요."
+};
+function openSched(workId){
+  schedCtx = {target: workId, fac: FACTORIES.includes(state.factory) ? state.factory : '전체'};
+  sc.search.value = '';
+  renderSched();
+  sc.sheet.hidden = false; syncScrollLock(); sc.sheet.querySelector('.sheet-b').scrollTop = 0;
+  loadSched().then(() => { if (schedCtx) renderSched(); });
+}
+function closeSched(){ sc.sheet.hidden = true; schedCtx = null; syncScrollLock(); }
+function renderSched(){
+  if (!schedCtx) return;
+  const fac = schedCtx.fac;
+  sc.fac.innerHTML = ['전체', ...FACTORIES].map(f => `<button type="button" data-sf="${esc(f)}" aria-pressed="${fac === f}">${esc(f)}</button>`).join('');
+  const rows = ((sched && sched.entries) || []).map((r, i) => ({i, d: r[0], t: r[1], f: r[2], title: r[3], co: r[4], ph: r[5], note: r[6]}))
+    .filter(e => fac === '전체' || e.f === fac);
+  const err = sched && sched.err;
+  sc.note.hidden = !err;
+  if (err) sc.note.textContent = SCHED_ERR[err] || syncErrText({message: err}).replace('올리지 못했어요', '불러오지 못했어요');
+  sc.meta.textContent = sched && sched.updated ? `공사일정 기준: ${sched.updated}` : '';
+  const q = sc.search.value.trim().toLowerCase(), qd = q.replace(/\D/g, '');
+  const key = e => [e.title, e.co, e.ph].join('|');
+  const item = e => `<li><button type="button" class="pitem sitem" data-si="${e.i}"><span class="n">${esc(e.title)}${e.note ? `<span class="sbadge">${esc(e.note)}</span>` : ''}</span>` +
+    `<span class="p">${esc([e.co, e.ph].filter(Boolean).join(' · '))}</span>` +
+    `<span class="s">${esc(mdLabel(e.d))}${e.t ? ' ' + esc(e.t) : ''}${fac === '전체' ? ' · ' + esc(e.f) : ''}</span></button></li>`;
+  const uniq = list => { const seen = new Set(); return list.filter(e => { const k = key(e); if (seen.has(k)) return false; seen.add(k); return true; }); };
+  let html = '', count = 0;
+  if (q){
+    const hit = rows.filter(e => (e.title + ' ' + e.co).toLowerCase().includes(q) || (qd.length >= 3 && e.ph.replace(/\D/g, '').includes(qd)))
+      .sort((a, b) => b.d.localeCompare(a.d));
+    const list = uniq(hit).slice(0, 60); count = list.length;
+    html = list.map(item).join('');
+  } else {
+    const D = state.date || defaultDate(), d0 = parseISO(D) || new Date();
+    const sat = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + (d0.getDay() === 0 ? -1 : 6 - d0.getDay()));
+    const wk = [fmtDate(sat), fmtDate(new Date(sat.getFullYear(), sat.getMonth(), sat.getDate() + 1))];
+    const same = uniq(rows.filter(e => e.d === D));
+    const other = uniq(rows.filter(e => e.d !== D && wk.includes(e.d)));
+    const used = new Set([...same, ...other].map(key));
+    const dist = e => Math.abs((parseISO(e.d) - d0) / 86400000);
+    const near = uniq(rows.filter(e => !wk.includes(e.d) && e.d !== D && dist(e) <= 14)
+      .sort((a, b) => dist(a) - dist(b) || b.d.localeCompare(a.d))).filter(e => !used.has(key(e))).slice(0, 40);
+    const grp = (t, list) => list.length ? `<li class="pgroup">${esc(t)}</li>` + list.map(item).join('') : '';
+    html = grp(`점검일 · ${mdLabel(D)}`, same) + grp(`같은 주말 · ${mdLabel(wk.find(x => x !== D) || wk[1])}`, other) + grp('가까운 날짜 (앞뒤 2주)', near);
+    count = same.length + other.length + near.length;
+    if (!same.length && count) html = `<li class="pgroup">점검일 · ${esc(mdLabel(D))}</li><li class="pempty">이날 등록된 공사가 없어요.</li>` + html.replace(/^<li class="pgroup">점검일[^<]*<\/li>/, '');
+  }
+  sc.list.innerHTML = html;
+  sc.hint.hidden = !count;
+  sc.empty.hidden = !!count;
+  sc.empty.textContent = !sched ? '공사일정을 불러오는 중…'
+    : q ? '검색 결과가 없어요.'
+    : (rows.length ? '점검일 앞뒤 2주에 등록된 공사가 없어요. 위 검색 칸에서 찾아보세요.' : (err ? '' : '공사일정이 아직 없어요.'));
+}
+sc.fac.addEventListener('click', e => { const b = e.target.closest('[data-sf]'); if (b && schedCtx){ schedCtx.fac = b.dataset.sf; renderSched(); } });
+sc.search.addEventListener('input', renderSched);
+sc.list.addEventListener('click', e => {
+  const b = e.target.closest('[data-si]'); if (!b || !schedCtx) return;
+  const r = sched.entries[Number(b.dataset.si)], w = findWork(schedCtx.target);
+  if (r && w){
+    w.title = r[3]; w.company = r[4]; if (r[5]) w.phone = r[5]; w.open = true;
+    rerenderCard(w); save(); toast('공사명·업체명·연락처를 채웠어요.');
+  }
+  closeSched();
+});
+$('#schedClose').addEventListener('click', closeSched);
+sc.reload.addEventListener('click', async () => {
+  if (sc.reload.disabled) return;
+  sc.reload.disabled = true; const t = sc.reload.textContent; sc.reload.textContent = '불러오는 중…';
+  await loadSched(true);
+  sc.reload.disabled = false; sc.reload.textContent = t;
+  renderSched();
+  if (sched && !sched.err) toast('공사일정을 새로 불러왔어요.');
+});
 
 /* ---------- preview sheet ---------- */
 let current = null; // {blob, url, name, file, doc}
@@ -2464,6 +2650,7 @@ async function boot(){
   document.querySelectorAll('[data-ver]').forEach(n => { n.textContent = '앱 버전 ' + APP_VERSION; });
   readConnectHash();
   document.querySelectorAll('[data-sync-only]').forEach(n => { n.hidden = !CAN_SYNC; });
+  markSync();
   $('#helpTip').hidden = !!ls.get(LS_HELP) || !!state.example;
   renderBasic(); renderCompanies();
   // restore photos saved on this device
