@@ -682,7 +682,7 @@ const PHASES = [
 ];
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.29-17';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.10.31-18';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '대구', '원주'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 // 공장 버튼으로 고른 곳은 'OO공장', 기타로 직접 쓴 곳은 쓴 이름 그대로
@@ -1771,6 +1771,20 @@ function drawBlockRow(g, row, y){
       }
     });
   });
+  // 한 줄에 3칸이 안 차면 남은 칸은 빈 양식으로 (공백 대신)
+  const nh = row.h - BH_HEAD - CELL - 12;
+  for (let s = row.used || 0; s < 3; s++){
+    const x = RM + s * (BW + BG);
+    g.fillStyle = C.navy; g.fillRect(x, y, BW, BH_HEAD);
+    g.fillStyle = C.empty; g.fillRect(x, y + BH_HEAD, BW, CELL);
+    g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, y + BH_HEAD, BW, CELL);
+    g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
+    const ny = y + BH_HEAD + CELL + 12;
+    g.fillStyle = '#fff'; g.fillRect(x, ny, BW, nh);
+    g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, ny, BW, nh);
+    g.textAlign = 'left'; g.textBaseline = 'middle';
+    g.fillStyle = C.muted; setF(g, 500, 19); g.fillText('점검 내용 / 특이사항 :', x + 14, ny + (nh > 60 ? 23 : nh / 2));
+  }
   return row.h;
 }
 function drawFooter(g, H, text){
@@ -2038,6 +2052,14 @@ async function buildPpt(doc){
             slide.addText('점검 내용 / 특이사항 :', {x, y: ny, w: PBW, h: gp.noteH, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: gp.noteH > 0.5 ? 'top' : 'middle', fontFace: PF, margin: 5});
           }
         }
+      }
+      // 한 줄에 3칸이 안 차면 남은 칸은 빈 양식으로 (공백 대신, PPT에서 바로 채워 쓸 수 있게)
+      const nh = r.h - PHEAD - PCH - NGAP;
+      for (let s = r.used || 0; s < 3; s++){
+        const x = M + s * (PBW + PBG);
+        slide.addText('', {x, y, w: PBW, h: PHEAD, fill: {color: '1F3864'}, color: 'FFFFFF', bold: true, fontSize: 11, align: 'center', valign: 'middle', fontFace: PF, margin: 3});
+        for (let q = 0; q < 2; q++) slide.addText('', {x: x + q * PCW, y: y + PHEAD, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, fontSize: 10, fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
+        slide.addText('점검 내용 / 특이사항 :', {x, y: y + PHEAD + PCH + NGAP, w: PBW, h: nh, fill: {color: 'FFFFFF'}, line: {color: 'B9C3D3', width: 0.75}, color: '5B6780', fontSize: 9, valign: nh > 0.5 ? 'top' : 'middle', fontFace: PF, margin: 5});
       }
       y += r.h + PBG;
     }
