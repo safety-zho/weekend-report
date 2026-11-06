@@ -114,6 +114,15 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
 .seg{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; padding:4px; background:var(--sunk); border:1px solid var(--line); border-radius:10px}
 .seg button{border:0; background:transparent; border-radius:7px; padding:10px 4px; font-size:15px; font-weight:500; color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--navy); color:var(--on-navy)}
+#phase{grid-template-columns:1.1fr repeat(3,1fr)}
+#phase button[data-ph="plan"][aria-pressed="true"]{background:var(--slate, #4D6390)}
+.ph-hint{margin:6px 2px 0; font-size:13px; line-height:1.5; color:var(--muted)}
+.ph-hint.warn{color:var(--danger); font-weight:600}
+.panel.ph-ask{margin-top:10px; border-color:var(--navy)}
+.panel.ph-ask p{color:var(--ink)}
+.panel.ph-ask ul{margin:0; padding-left:18px; font-size:13.5px; color:var(--muted); line-height:1.6}
+.panel.ph-ask .acts button.primary{background:var(--navy); color:var(--on-navy); border-color:var(--navy)}
+.panel.ph-ask .acts button.primary small{color:inherit; opacity:.85}
 .fac-seg{grid-template-columns:repeat(4,1fr)}
 .fac-seg.bad{border-color:var(--danger); box-shadow:0 0 0 1px var(--danger)}
 #facOther{margin-top:8px}
@@ -331,8 +340,10 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
     <div class="acts">
       <button type="button" id="resetBlank">빈 양식으로 새로 쓰기<small>모든 칸을 비워요. 공장을 누르면 그 공장 담당자는 자동으로 채워져요.</small></button>
       <button type="button" id="resetLoad" aria-expanded="false" aria-controls="prevList">이전 점검 불러오기<small>보관함의 보고서에서 작업 목록을 가져와요. 사진·특이사항은 비워요.</small></button>
+      <button type="button" id="resetPlan" aria-expanded="false" aria-controls="planList" hidden>사전 보고 불러오기<small>안전관리자가 팀 드라이브에 올린 사전 보고에서 작업 목록을 가져와요. 점검구분은 직접 골라요.</small></button>
     </div>
     <div class="prev-list" id="prevList" hidden></div>
+    <div class="prev-list" id="planList" hidden></div>
     <div class="row-btn"><button type="button" id="resetCancel">취소</button></div>
   </div>
 
@@ -365,6 +376,16 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
       <div>
         <span class="lbl" id="phaseLbl">점검구분</span>
         <div class="seg" role="group" aria-labelledby="phaseLbl" id="phase"></div>
+        <p class="ph-hint" id="phaseHint" hidden></p>
+        <div class="panel ph-ask" id="phaseAsk" hidden role="alertdialog" aria-labelledby="phaseAskT">
+          <p id="phaseAskT"></p>
+          <ul id="phaseAskList"></ul>
+          <div class="acts">
+            <button type="button" class="primary" id="phaseAskClear"></button>
+            <button type="button" id="phaseAskKeep">그대로 두고 바꾸기<small>점검구분만 잘못 고른 경우</small></button>
+          </div>
+          <div class="row-btn"><button type="button" id="phaseAskCancel">취소</button></div>
+        </div>
       </div>
       <div class="who">
         <div class="lbl-row"><span class="lbl">관리자</span><button type="button" class="pick-link" data-pick="people" data-target="insp"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h8M5 8h8M5 12h8"/><circle cx="2.3" cy="4" r=".8" fill="currentColor"/><circle cx="2.3" cy="8" r=".8" fill="currentColor"/><circle cx="2.3" cy="12" r=".8" fill="currentColor"/></svg>목록에서 선택</button></div>
@@ -451,6 +472,8 @@ input::placeholder, textarea::placeholder{color:var(--muted); opacity:.75}
           <li><b>점검일</b>: 토·일 버튼으로 바로 고를 수 있어요.</li>
           <li><b>점검구분</b>: 작업 전 / 작업 중 / 작업 후.</li>
           <li><b>작업마다</b>: 공사명 → 업체(목록) → 인원·연락처 → 공사내용.</li>
+          <li><b>사전 보고</b>: 안전관리자가 주말 작업 예정을 미리 올릴 때는 점검구분에서 '사전 보고'를 고르세요. 사진은 없어도 돼요.</li>
+          <li data-sync-only>점검자는 <b>새로 작성 → 사전 보고 불러오기</b>로 안전관리자가 올린 작업 목록을 가져와 점검구분(작업 전·중·후)을 고르고, 사진·특이사항을 넣어 만들면 돼요.</li>
           <li data-sync-only>팀 드라이브에 연결돼 있으면 공사명 옆 <b>공사일정</b>을 눌러 점검일의 공사를 고를 수 있어요. 공사명·업체명·연락처가 한 번에 채워져요. 업체명 옆 '목록'에도 공사일정에 나온 업체가 함께 나오고, 같은 업체에 번호가 여러 개면 '번호 2개'처럼 표시돼요.</li>
           <li><b>작업구분·주요 안전조치</b>를 누릅니다. 작업구분을 고르면 그 작업에서 <b>확인할 것</b>이 목록으로 나와요. 산업안전보건기준에 관한 규칙의 해당 조문을 줄여 쓴 것이고, 조문 번호가 함께 붙어 있어요. 다 읽은 목록은 제목을 눌러 접을 수 있어요 (보고서에는 안 들어가요).</li>
           <li><b>사진</b>: 작업당 4장까지. 2장까지는 한 칸, 3~4장이면 '[1] 공사명-1', '[1] 공사명-2' 두 칸으로 나란히 들어가요. 특이사항은 두 칸 아래에 같은 내용으로 들어가요.</li>
@@ -680,9 +703,12 @@ const PHASES = [
   {k:'during', ui:'작업 중', full:'작업 중 점검', file:'작업중'},
   {k:'after',  ui:'작업 후', full:'작업 후 점검', file:'작업후'}
 ];
+// 사전 보고: 안전관리자가 점검 전에 주말 작업 예정을 올리는 보고 (점검구분 없음)
+const PLAN = {k:'plan', ui:'사전 보고', full:'작업 사전 보고', file:'사전보고'};
+const NO_PHASE = {k:'', ui:'선택 안 함', full:'', file:''};
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.10.31-18';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.11.06-20';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '대구', '원주'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 // 공장 버튼으로 고른 곳은 'OO공장', 기타로 직접 쓴 곳은 쓴 이름 그대로
@@ -736,7 +762,7 @@ function fmtPhone(v){
 }
 const typeUi = k => (TYPES.find(t => t.k === k) || {}).ui || k;
 const measUi = k => (MEASURES.find(t => t.k === k) || {}).ui || k;
-const phaseOf = k => PHASES.find(p => p.k === k) || PHASES[0];
+const phaseOf = k => k === 'plan' ? PLAN : k === '' ? NO_PHASE : (PHASES.find(p => p.k === k) || PHASES[0]);
 
 /* ---------- photo store (IndexedDB, per device) ---------- */
 const idb = (() => {
@@ -824,7 +850,7 @@ function normalize(s){
     types: Array.isArray(w.types) ? w.types.filter(k => TYPES.some(t => t.k === k)) : [], measures: Array.isArray(w.measures) ? w.measures : [],
     photos: Array.isArray(w.photos) ? w.photos : []
   })));
-  if (!PHASES.some(p => p.k === st.phase)) st.phase = 'before';
+  if (!(st.phase === '' || st.phase === 'plan' || PHASES.some(p => p.k === st.phase))) st.phase = 'before';
   if (!st.draftId) st.draftId = newDraftId();
   return st;
 }
@@ -844,7 +870,7 @@ function analyze(w, phase){
   phase = phase || state.phase;
   const issues = [];   // {lv: 'w' 경고 | 'i' 안내, t: html}
   const hasContent = (w.title || '').trim() || (w.company || '').trim();
-  if (hasContent && !(w.photos || []).length)
+  if (hasContent && !(w.photos || []).length && phase !== 'plan')
     issues.push({lv: 'w', t: phase === 'after' ? '<b>완료 사진</b>이 없어요. 작업 후 점검은 작업마다 완료 상태 사진을 넣어 주세요.' : '<b>작업 사진</b>이 없어요.'});
   if (hasContent && !(w.desc || '').trim()) issues.push({lv: 'i', t: '공사내용이 비어 있어요.'});
   return {miss: new Map(), lines: [], issues, count: issues.filter(x => x.lv === 'w').length};
@@ -892,7 +918,8 @@ const BASIC = ['factory', 'date', 'inspName', 'inspPhone', 'dutyName', 'dutyPhon
 
 function renderBasic(){
   BASIC.forEach(k => { $('#' + k).value = state[k] || ''; });
-  el.phase.innerHTML = PHASES.map(p => `<button type="button" data-ph="${p.k}" aria-pressed="${state.phase === p.k}">${p.ui}</button>`).join('');
+  el.phase.innerHTML = [PLAN, ...PHASES].map(p => `<button type="button" data-ph="${p.k}" aria-pressed="${state.phase === p.k}">${p.ui}</button>`).join('');
+  renderPhaseHint();
   el.exBanner.hidden = !state.example;
   renderFac(); renderDate(); updateTop(); renderCompanies();
 }
@@ -1120,12 +1147,59 @@ el.quickDates.addEventListener('click', e => {
   state.date = b.dataset.date; $('#date').value = state.date; $('#date').classList.remove('bad');
   renderDate(); updateTop(); save();
 });
-el.phase.addEventListener('click', e => {
-  const b = e.target.closest('[data-ph]'); if (!b) return;
-  state.phase = b.dataset.ph;
-  el.phase.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+function renderPhaseHint(){
+  const h = $('#phaseHint'); if (!h) return;
+  const plan = state.phase === 'plan', none = !state.phase;
+  h.hidden = !(plan || none);
+  h.classList.toggle('warn', none);
+  h.textContent = none ? '사전 보고에서 가져왔어요. 이번 점검이 작업 전·중·후 중 무엇인지 골라 주세요.'
+    : '사전 보고: 점검 전에 주말 작업 예정을 미리 올리는 보고예요. 사진은 없어도 돼요. 점검자는 새로 작성 → 사전 보고 불러오기로 가져가요.';
+  const dl = document.querySelector('label[for="date"]'); if (dl) dl.textContent = plan ? '작업일' : '점검일';
+}
+// 보고서 한 장에는 그 점검구분의 사진·특이사항만: 이미 만든 보고서의 점검구분을 바꾸면 비울지 물어봐요
+function setPhase(next, clear){
+  if (clear){
+    state.works.forEach(w => { (w.photos || []).forEach(dropPhoto); w.photos = []; w.note = ''; });
+    renderWorks();
+  }
+  state.phase = next;
+  el.phase.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.ph === next)));
+  el.phase.classList.remove('bad');
+  $('#phaseAsk').hidden = true;
+  renderPhaseHint();
+  state.works.forEach(w => { const card = document.getElementById('card-' + w.id); if (card) refreshChecks(card, w); });
   updateTop(); save();
+}
+let phaseAskNext = null;
+el.phase.addEventListener('click', async e => {
+  const b = e.target.closest('[data-ph]'); if (!b) return;
+  const next = b.dataset.ph;
+  if (next === state.phase){ $('#phaseAsk').hidden = true; return; }
+  const filled = state.works.filter(w => (w.photos || []).length || (w.note || '').trim());
+  let made = null;
+  if (state.phase && filled.length){ try { made = await idb.get('h', histIdOf(state)); } catch(err){} }
+  if (!made){ setPhase(next); return; }
+  // 지금 점검구분의 보고서를 이미 만들었고 사진·특이사항이 남아 있음 → 물어봄
+  phaseAskNext = next;
+  const cur = phaseOf(state.phase), nx = phaseOf(next);
+  const nPh = filled.reduce((n, w) => n + (w.photos || []).length, 0);
+  $('#phaseAskT').innerHTML = `<b>${esc(cur.full)}</b> 보고서는 이미 보관함에 저장돼 있어요. <b>${esc(nx.ui)}</b> 보고에는 ${esc(nx.ui)} 사진·특이사항만 들어가도록, 지금 들어 있는 것을 비울까요?`;
+  $('#phaseAskList').innerHTML = filled.map(w => {
+    const i = state.works.indexOf(w) + 1, k = [(w.photos || []).length ? `사진 ${w.photos.length}장` : '', (w.note || '').trim() ? '특이사항' : ''].filter(Boolean).join('·');
+    return `<li>[${i}] ${esc(w.title || '공사명 없음')} — ${k}</li>`;
+  }).join('');
+  $('#phaseAskClear').innerHTML = `비우고 ${esc(nx.ui)} 보고 쓰기<small>사진 ${nPh}장·특이사항을 비워요. 작업 목록은 그대로예요.</small>`;
+  $('#phaseAsk').hidden = false;
+  $('#phaseAsk').scrollIntoView({block: 'nearest', behavior: 'smooth'});
 });
+$('#phaseAskClear').addEventListener('click', () => {
+  if (!phaseAskNext) return;
+  const was = phaseOf(state.phase).full, nx = phaseOf(phaseAskNext).ui;
+  setPhase(phaseAskNext, true); phaseAskNext = null;
+  toast(`${nx} 보고로 바꾸고 사진·특이사항을 비웠어요. ${was} 보고서는 보관함에 그대로 있어요.`, 4200);
+});
+$('#phaseAskKeep').addEventListener('click', () => { if (phaseAskNext){ setPhase(phaseAskNext); phaseAskNext = null; } });
+$('#phaseAskCancel').addEventListener('click', () => { phaseAskNext = null; $('#phaseAsk').hidden = true; });
 
 /* ---------- events: work cards ---------- */
 el.works.addEventListener('click', e => {
@@ -1277,6 +1351,7 @@ const blankState = () => ({
 function closeReset(){
   el.resetPanel.hidden = true; el.btnReset.setAttribute('aria-expanded', 'false');
   $('#prevList').hidden = true; $('#resetLoad').setAttribute('aria-expanded', 'false');
+  $('#planList').hidden = true; $('#resetPlan').setAttribute('aria-expanded', 'false');
 }
 function applyNewState(nu){
   state.works.forEach(w => w.photos.forEach(dropPhoto));
@@ -1287,13 +1362,16 @@ function applyNewState(nu){
 // 빈 양식
 function startBlank(){ applyNewState(blankState()); }
 // 이전 점검에서 작업 목록만 가져오기: 같은 주말이면 점검구분을 다음 단계로, 아니면 이번 주말 '작업 전'으로
-function startFrom(rec){
-  const d = rec.doc, wk = weekendDates().map(fmtDate), same = wk.includes(d.date);
-  const phase = same ? (d.phase === 'before' ? 'during' : 'after') : 'before';
+function startFrom(rec){ startFromDoc(rec.doc, 'local'); }
+function startFromDoc(d, src){
+  const wk = weekendDates().map(fmtDate), same = wk.includes(d.date), isPlan = d.phase === 'plan';
+  const phase = isPlan ? '' : same ? (d.phase === 'before' ? 'during' : 'after') : 'before';
+  // 다른 사람이 올린 보고(팀)에서 가져오면 관리자·당직자는 이 폰에 저장된 그 공장 담당자로
+  const fd = src === 'team' ? (facDefaults[d.factory] || {}) : d;
   const nu = Object.assign(blankState(), {
-    factory: d.factory || '', date: same ? d.date : defaultDate(), phase,
-    inspName: d.inspName || '', inspPhone: d.inspPhone || '', dutyName: d.dutyName || '', dutyPhone: d.dutyPhone || '',
-    pcName: d.pcName || '', pcPhone: d.pcPhone || '',
+    factory: d.factory || '', date: (same || isPlan) ? (d.date || defaultDate()) : defaultDate(), phase,
+    inspName: fd.inspName || '', inspPhone: fd.inspPhone || '', dutyName: fd.dutyName || '', dutyPhone: fd.dutyPhone || '',
+    pcName: (src === 'team' && fd.pcName) || d.pcName || '', pcPhone: (src === 'team' && fd.pcName) ? (fd.pcPhone || '') : (d.pcPhone || ''),
     works: (d.works || []).map(w => newWork({
       title: w.title || '', company: w.company || '', people: w.people || '', phone: w.phone || '', desc: w.desc || '',
       types: [...(w.types || [])].filter(k => TYPES.some(t => t.k === k)), measures: [...(w.measures || [])], open: false
@@ -1302,7 +1380,11 @@ function startFrom(rec){
   if (!nu.works.length) nu.works.push(newWork());
   nu.works[0].open = true;
   applyNewState(nu);
-  toast(`작업 ${d.works.length}건을 가져왔어요. 점검구분: ${phaseOf(phase).ui}${same ? '' : ' (다른 주말 보고라 날짜를 이번 주말로 바꿨어요)'}`, 4200);
+  if (isPlan){
+    toast(`사전 보고에서 작업 ${d.works.length}건을 가져왔어요. 점검구분(작업 전·중·후)을 골라 주세요.`, 4600);
+    setTimeout(() => { el.phase.classList.add('bad'); el.phase.scrollIntoView({block: 'center', behavior: 'smooth'}); }, 350);
+  }
+  else toast(`작업 ${d.works.length}건을 가져왔어요. 점검구분: ${phaseOf(phase).ui}${same ? '' : ' (다른 주말 보고라 날짜를 이번 주말로 바꿨어요)'}`, 4200);
 }
 let prevRecs = [];
 async function showPrev(){
@@ -1319,6 +1401,44 @@ async function showPrev(){
   }).join('');
 }
 $('#prevList').addEventListener('click', e => { const b = e.target.closest('[data-prev]'); if (b && prevRecs[+b.dataset.prev]) startFrom(prevRecs[+b.dataset.prev]); });
+// 팀 드라이브의 사전 보고 목록 (이 공장 것 먼저, 최근 순)
+let planRows = [];
+async function showPlans(){
+  const box = $('#planList');
+  box.hidden = false; $('#resetPlan').setAttribute('aria-expanded', 'true');
+  $('#prevList').hidden = true; $('#resetLoad').setAttribute('aria-expanded', 'false');
+  box.innerHTML = '<p class="panel-note">팀 드라이브에서 불러오는 중…</p>';
+  try {
+    const j = await syncCall({action: 'list', limit: 300});
+    const fac = state.factory;
+    planRows = (j.rows || []).filter(r => r.phase === PLAN.full)
+      .sort((a, b) => ((b.factory === fac) - (a.factory === fac)) || b.date.localeCompare(a.date) || (b.updated || '').localeCompare(a.updated || ''))
+      .slice(0, 12);
+  } catch(e){
+    box.innerHTML = `<p class="panel-note">${esc(e.message === 'action' ? '웹 앱(Code.gs)이 예전 버전이에요. 관리자가 새 Code.gs로 배포하면 쓸 수 있어요.' : syncErrText(e).replace('올리지 못했어요', '불러오지 못했어요'))}</p>`;
+    return;
+  }
+  if (!planRows.length){ box.innerHTML = '<p class="panel-note">팀 드라이브에 올라온 사전 보고가 아직 없어요.</p>'; return; }
+  box.innerHTML = planRows.map((r, i) => {
+    const pd = parseISO(r.date), when = pd ? `${pd.getMonth() + 1}월 ${pd.getDate()}일${r.dow ? ` (${r.dow})` : ''}` : r.date;
+    return `<button type="button" data-plan="${i}"${r.hasData ? '' : ' disabled'}><b>${esc(r.factory || '')} · ${esc(when)} · 사전 보고</b>` +
+      `<small>${r.hasData ? `작업 ${r.workCount}건 · ${esc(r.titles)}${r.inspName ? ` · ${esc(r.inspName)}` : ''}` : '예전 버전으로 올려서 내용을 가져올 수 없어요'}</small></button>`;
+  }).join('');
+}
+$('#planList').addEventListener('click', async e => {
+  const b = e.target.closest('[data-plan]'); if (!b || b.disabled) return;
+  const r = planRows[+b.dataset.plan]; if (!r) return;
+  b.disabled = true; const small = b.querySelector('small'), old = small.textContent; small.textContent = '가져오는 중…';
+  try {
+    const j = await syncCall({action: 'get', id: r.id});
+    if (!j.data || !Array.isArray(j.data.works)) throw new Error('nodata');
+    startFromDoc(Object.assign({}, j.data, {phase: 'plan'}), 'team');
+  } catch(err){
+    small.textContent = old; b.disabled = false;
+    toast(err.message === 'nodata' ? '이 사전 보고는 내용을 가져올 수 없어요.' : syncErrText(err).replace('올리지 못했어요', '불러오지 못했어요'), 3600);
+  }
+});
+$('#resetPlan').addEventListener('click', () => { if ($('#planList').hidden) showPlans(); else { $('#planList').hidden = true; $('#resetPlan').setAttribute('aria-expanded', 'false'); } });
 el.btnReset.addEventListener('click', () => {
   const open = el.resetPanel.hidden;
   if (!open){ closeReset(); return; }
@@ -1326,7 +1446,7 @@ el.btnReset.addEventListener('click', () => {
 });
 $('#resetCancel').addEventListener('click', closeReset);
 $('#resetBlank').addEventListener('click', () => { startBlank(); toast('빈 양식으로 시작했어요.'); });
-$('#resetLoad').addEventListener('click', () => { if ($('#prevList').hidden) showPrev(); else { $('#prevList').hidden = true; $('#resetLoad').setAttribute('aria-expanded', 'false'); } });
+$('#resetLoad').addEventListener('click', () => { if ($('#prevList').hidden){ $('#planList').hidden = true; $('#resetPlan').setAttribute('aria-expanded', 'false'); showPrev(); } else { $('#prevList').hidden = true; $('#resetLoad').setAttribute('aria-expanded', 'false'); } });
 $('#exClear').addEventListener('click', () => { startBlank(); });
 $('#exKeep').addEventListener('click', () => { state.example = false; el.exBanner.hidden = true; save(); });
 
@@ -1455,7 +1575,8 @@ $('#pImport').addEventListener('click', () => {
 /* ---------- validation ---------- */
 function validate(){
   if (!state.factory.trim()) return {msg: '공장을 골라 주세요.', id: el.facOther.hidden ? 'facSeg' : 'factory'};
-  if (!state.date) return {msg: '점검일을 입력해 주세요.', id: 'date'};
+  if (!state.date) return {msg: state.phase === 'plan' ? '작업일을 입력해 주세요.' : '점검일을 입력해 주세요.', id: 'date'};
+  if (!state.phase) return {msg: '점검구분(작업 전·중·후)을 골라 주세요.', id: 'phase'};
   if (!state.inspName.trim()) return {msg: '관리자 이름을 입력해 주세요.', id: 'inspName'};
   const filled = state.works.filter(w => !isEmptyWork(w));
   if (!filled.length) return {msg: '작업을 하나 이상 입력해 주세요.', id: `w-${state.works[0].id}-title`, work: state.works[0]};
@@ -1530,7 +1651,10 @@ function makeDoc(st){
     }))
   };
 }
-const docTitle = d => (d.factory && !FACTORIES.includes(d.factory)) ? `PC [ ${d.factory} ] 주말 외주업체 작업 보고` : `PC [ ${d.factory || '   '} ]공장 주말 외주업체 작업 보고`;
+const docTitle = d => {
+  const kind = d.phase === 'plan' ? '작업 사전 보고' : '작업 보고';
+  return (d.factory && !FACTORIES.includes(d.factory)) ? `PC [ ${d.factory} ] 주말 외주업체 ${kind}` : `PC [ ${d.factory || '   '} ]공장 주말 외주업체 ${kind}`;
+};
 const docDateLine = d => [dateLabel(d.date), phaseOf(d.phase).full].filter(Boolean).join(' · ');
 function docFileBase(d){
   const dw = dowOf(d.date);
@@ -1628,7 +1752,7 @@ function drawTop(g, R){
   // info row
   const hasDuty = !!String(st.dutyName || '').trim();
   const info = [
-    {w:150, lab:true, t:'점검일'}, {w:290, t:dateLabel(st.date)}, {w:190, lab:true, t:'점검구분 (■)'}, {w:720, phase:true},
+    {w:150, lab:true, t: st.phase === 'plan' ? '작업일' : '점검일'}, {w:290, t:dateLabel(st.date)}, {w:190, lab:true, t: st.phase === 'plan' ? '보고 구분' : '점검구분 (■)'}, {w:720, phase:true},
     {w:140, lab:true, t: hasDuty ? '관리자\n당직자' : '관리자'}, {w:490, who:true}
   ];
   let ix = RM;
@@ -1637,6 +1761,16 @@ function drawTop(g, R){
     g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(ix, Y_INFO, c.w, INFO_H);
     const mid = Y_INFO + INFO_H / 2;
     if (c.lab){ const tl2 = c.t.split('\n'); g.fillStyle = C.navy; setF(g, 600, tl2.length > 1 ? 22 : 24); lines(g, tl2, ix + c.w / 2, mid, 30); }
+    else if (c.phase && st.phase === 'plan'){
+      // 사전 보고: 점검구분 대신 '사전 보고 (주말 작업 예정)'
+      setF(g, 700, 25); const t1 = '사전 보고', w1 = g.measureText(t1).width;
+      setF(g, 500, 22); const t2 = '   주말 작업 예정 (점검 전)', w2 = g.measureText(t2).width;
+      let px = ix + (c.w - 36 - w1 - w2) / 2;
+      box(g, px, mid - 12, 24, true);
+      g.textAlign = 'left'; g.textBaseline = 'middle';
+      g.fillStyle = C.ink; setF(g, 700, 25); g.fillText(t1, px + 36, mid + 1);
+      g.fillStyle = C.muted; setF(g, 500, 22); g.fillText(t2, px + 36 + w1, mid + 1);
+    }
     else if (c.phase){
       setF(g, 500, 25);
       const items = PHASES.map(p => ({p, tw: g.measureText(p.full).width}));
@@ -1982,7 +2116,9 @@ async function buildPpt(doc){
         let who = '';
         if (ppl.length === 2) who = ppl.flatMap((x, k) => [{text: x.n, options: {bold: true}}, {text: x.p ? '   ☎ ' + x.p : '', options: Object.assign({fontSize: 8.5, color: '5B6780'}, k === 0 ? {breakLine: true} : {})}]);
         else if (ppl.length === 1) who = ppl[0].p ? [{text: ppl[0].n, options: {bold: true, breakLine: true}}, {text: '☎ ' + ppl[0].p, options: {fontSize: 8.5, color: '5B6780'}}] : ppl[0].n;
-        slide.addTable([[lab('점검일'), val(dateLabel(doc.date), {bold: true}), lab('점검구분 (■)'), val(phaseRuns), lab(ppl.length === 2 ? '관리자\n당직자' : '관리자'), val(who)]],
+        const isPlan = doc.phase === 'plan';
+        const phaseCell = isPlan ? [{text: '■ 사전 보고', options: {bold: true, color: '16213A'}}, {text: '   주말 작업 예정 (점검 전)', options: {color: '5B6780'}}] : phaseRuns;
+        slide.addTable([[lab(isPlan ? '작업일' : '점검일'), val(dateLabel(doc.date), {bold: true}), lab(isPlan ? '보고 구분' : '점검구분 (■)'), val(phaseCell), lab(ppl.length === 2 ? '관리자\n당직자' : '관리자'), val(who)]],
           {x: M, y: 0.98, w: IW, colW: [150, 290, 190, 720, 140, 490].map(w => +(w * K).toFixed(3)), rowH: [0.44], fontFace: PF});
         y0 = 1.52;
       } else {
@@ -2072,8 +2208,9 @@ const hs = {
   sheet: $('#hist'), list: $('#histList'), empty: $('#histEmpty'), sum: $('#histSum'), search: $('#histSearch')
 };
 let histUrls = [], histRecs = [];
+const histIdOf = d => `${d.draftId}-${d.factory || '공장'}-${d.date || '날짜'}-${d.phase}`;
 async function saveHistory(doc, out){
-  const id = `${doc.draftId}-${doc.factory || '공장'}-${doc.date || '날짜'}-${doc.phase}`;   // 공장·점검일·점검구분이 다르면 다른 보고서로 남깁니다 (같으면 고친 내용으로 바꿈)
+  const id = histIdOf(doc);   // 공장·점검일·점검구분이 다르면 다른 보고서로 남깁니다 (같으면 고친 내용으로 바꿈)
   const prev = await idb.get('h', id);
   const now = Date.now();
   const rec = {
@@ -2236,6 +2373,14 @@ async function syncCall(params, body){
   if (!j || !j.ok) throw new Error((j && j.error) || 'fail');
   return j;
 }
+// 다른 폰에서 불러올 수 있게 보내는 보고 내용 (사진·특이사항 제외)
+function docData(d){
+  return {v: 1, factory: d.factory || '', date: d.date || '', phase: d.phase || '',
+    inspName: d.inspName || '', inspPhone: d.inspPhone || '', dutyName: d.dutyName || '', dutyPhone: d.dutyPhone || '',
+    pcName: d.pcName || '', pcPhone: d.pcPhone || '',
+    works: (d.works || []).map(w => ({title: w.title || '', company: w.company || '', people: w.people || '', phone: w.phone || '', desc: w.desc || '',
+      types: [...(w.types || [])], measures: [...(w.measures || [])]}))};
+}
 async function uploadRecord(rec, onStep){
   if (!syncOn()) throw new Error('url');
   const step = t => onStep && onStep(t);
@@ -2252,6 +2397,7 @@ async function uploadRecord(rec, onStep){
       photoCount: d.works.reduce((s, w) => s + w.photos.length, 0), warnCount: countWarn(d.works, d.phase),
       duty: [d.dutyName, d.dutyPhone].filter(Boolean).join(' '), facLabel: facName(d.factory)
     },
+    data: docData(d),
     files: {
       image: {name: rec.name + '.jpg', type: 'image/jpeg', b64: await blobToB64(rec.image)},
       pdf: {name: rec.name + '.pdf', type: 'application/pdf', b64: await blobToB64(pdf)},
@@ -2301,7 +2447,7 @@ function renderWeekend(){
   const [sat, sun] = weekendFor(wkOffset), days = [fmtDate(sat), fmtDate(sun)];
   const wk = teamData.rows.filter(r => days.includes(r.date));
   const facs = [...FACTORIES, ...[...new Set(wk.map(r => r.factory).filter(f => f && !FACTORIES.includes(f)))]];
-  const cols = [PHASES[0], ...(wk.some(r => r.phase === PHASES[1].full) ? [PHASES[1]] : []), PHASES[2]];
+  const cols = [...(wk.some(r => r.phase === PLAN.full) ? [PLAN] : []), PHASES[0], ...(wk.some(r => r.phase === PHASES[1].full) ? [PHASES[1]] : []), PHASES[2]];
   const cell = (f, ph) => {
     const rs = wk.filter(r => r.factory === f && r.phase === ph.full);
     return rs.length ? `<td><span class="wk-ok">✓ ${rs.reduce((s, r) => s + (r.workCount || 0), 0)}건</span></td>` : '<td><span class="wk-no">미제출</span></td>';
@@ -2404,6 +2550,7 @@ let sched = ls.get(LS_SCHED);   // {at, updated, entries:[[날짜,시간,공장,
 let schedBusy = null;
 function markSync(){
   document.documentElement.classList.toggle('has-sync', syncOn());
+  $('#resetPlan').hidden = !syncOn();
   if (syncOn()) loadSched();
 }
 function loadSched(force){
