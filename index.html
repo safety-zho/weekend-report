@@ -710,7 +710,7 @@ const PLAN = {k:'plan', ui:'사전 보고', full:'작업 사전 보고', file:'�
 const NO_PHASE = {k:'', ui:'선택 안 함', full:'', file:''};
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.11.13-23';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.11.13-24';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '대구', '원주'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 // 공장 버튼으로 고른 곳은 'OO공장', 기타로 직접 쓴 곳은 쓴 이름 그대로
@@ -1714,10 +1714,11 @@ async function prepare(doc){
   // 사진 묶음: 2장까지 한 칸, 3~4장은 '공사명-1'·'공사명-2' 두 칸을 나란히. 특이사항은 칸마다 같은 내용
   const groups = [];
   works.forEach((w, i) => {
-    if (!w.imgs.length && !w.note.trim()) return;
+    const plan = doc.phase === 'plan';
+    if (!w.imgs.length && !w.note.trim() && !plan) return;   // 사전 보고는 사진이 없어도 공사마다 공사명이 붙은 사진 칸을 둠
     const chunks = []; for (let j = 0; j < w.imgs.length; j += 2) chunks.push(w.imgs.slice(j, j + 2));
     if (!chunks.length) chunks.push([]);
-    groups.push({no: i + 1, title: w.title, chunks, span: Math.min(chunks.length, 3), note: w.note});
+    groups.push({no: i + 1, title: w.title, chunks, span: Math.min(chunks.length, 3), note: w.note, blank: plan && !w.imgs.length});
   });
   setF(m, 600, 23);
   groups.forEach(gp => {
@@ -1890,7 +1891,7 @@ function drawBlockRow(g, row, y){
       for (let q = 0; q < 2; q++){
         const px = x + q * CELL, py = y + BH_HEAD, img = imgs[q];
         if (img) cover(g, img, px, py, CELL, CELL);
-        else { g.fillStyle = C.empty; g.fillRect(px, py, CELL, CELL); g.fillStyle = '#98A3B6'; setF(g, 500, 22); lines(g, ['사진 없음'], px + CELL / 2, py + CELL / 2, 28); }
+        else { g.fillStyle = C.empty; g.fillRect(px, py, CELL, CELL); if (!gp.blank){ g.fillStyle = '#98A3B6'; setF(g, 500, 22); lines(g, ['사진 없음'], px + CELL / 2, py + CELL / 2, 28); } }
       }
       g.strokeStyle = C.line; g.lineWidth = 1.5; g.strokeRect(x, y + BH_HEAD, BW, CELL);
       g.fillStyle = '#fff'; g.fillRect(x + CELL - 1, y + BH_HEAD, 2, CELL);
@@ -2144,7 +2145,8 @@ async function buildPpt(doc){
         const u = URL.createObjectURL(b); urls.push(u);
         try { imgs.push(await loadImg(u)); } catch(e){}
       }
-      if (!imgs.length && !w.note.trim()) continue;
+      const plan = doc.phase === 'plan';
+      if (!imgs.length && !w.note.trim() && !plan) continue;   // 사전 보고는 사진이 없어도 공사마다 공사명이 붙은 사진 칸을 둠
       const chunks = []; for (let j = 0; j < imgs.length; j += 2) chunks.push(imgs.slice(j, j + 2));
       if (!chunks.length) chunks.push([]);
       const span = Math.min(chunks.length, 3);
@@ -2153,7 +2155,7 @@ async function buildPpt(doc){
       const lineCount = c => c.reduce((s2, t) => s2 + estLines(t, PBW - 0.42, 10.5), 0);
       const maxL = Math.max(0, ...cols.map(lineCount));
       const noteH = maxL ? Math.max(0.56, 0.3 + maxL * 0.2) : 0.32;
-      groups.push({no: i + 1, title: w.title, chunks, span, cols, noteH, h: PHEAD + PCH + NGAP + noteH});
+      groups.push({no: i + 1, title: w.title, chunks, span, cols, noteH, h: PHEAD + PCH + NGAP + noteH, blank: plan && !imgs.length});
     }
     const bRows = []; let prow = null;
     groups.forEach(gp => {
@@ -2179,7 +2181,7 @@ async function buildPpt(doc){
           for (let q = 0; q < 2; q++){
             const px = x + q * PCW, py = y + PHEAD;
             if (imgs[q]) slide.addImage({data: await cropForPpt(imgs[q], PCW / PCH), x: px, y: py, w: PCW, h: PCH});
-            else slide.addText('사진 없음', {x: px, y: py, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, color: '98A3B6', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
+            else slide.addText(gp.blank ? '' : '사진 없음', {x: px, y: py, w: PCW, h: PCH, fill: {color: 'EEF1F6'}, color: '98A3B6', fontSize: 10, align: 'center', valign: 'middle', fontFace: PF, line: {color: 'B9C3D3', width: 0.75}});
           }
           const ny = y + PHEAD + PCH + NGAP, col = gp.cols[k] || [];
           if (col.length){
