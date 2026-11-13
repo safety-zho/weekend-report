@@ -710,7 +710,7 @@ const PLAN = {k:'plan', ui:'사전 보고', full:'작업 사전 보고', file:'�
 const NO_PHASE = {k:'', ui:'선택 안 함', full:'', file:''};
 const DAYS = ['일','월','화','수','목','금','토'];
 const DAYS_FULL = DAYS.map(d => d + '요일');
-const APP_VERSION = '2026.11.13-21';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
+const APP_VERSION = '2026.11.13-23';   // 고칠 때마다 올립니다 (폰에 새 버전이 들어왔는지 확인용)
 const MAX_WORKS = 10, MAX_PHOTOS = 4;
 const FACTORIES = ['성남', '대구', '원주'];   // 공장 버튼 (공장이 늘면 여기에 추가)
 // 공장 버튼으로 고른 곳은 'OO공장', 기타로 직접 쓴 곳은 쓴 이름 그대로
@@ -1742,6 +1742,8 @@ async function prepare(doc){
     r.groups.forEach(gp => { gp.noteH = nh; gp.h = BH_HEAD + CELL + nh; });
     r.h = BH_HEAD + CELL + nh;
   });
+  // 사전 보고에 사진·특이사항이 하나도 없으면 사진 칸은 빈 양식 3칸으로 (제목 없이)
+  if (!bRows.length && doc.phase === 'plan') bRows.push({groups: [], used: 0, h: BH_HEAD + CELL + 12 + 46});
   const bodyH = rows.reduce((s, r) => s + r.h, 0);
   return {doc, cols, col, rows, bRows, bodyH, topH: Y_TABLE + HEAD1 + HEAD2 + bodyH, release: () => urls.forEach(u => URL.revokeObjectURL(u))};
 }
@@ -2159,6 +2161,7 @@ async function buildPpt(doc){
       gp.slot = prow.used; prow.used += gp.span; prow.groups.push(gp); prow.h = Math.max(prow.h, gp.h);
     });
     bRows.forEach(r => { const nh = Math.max(...r.groups.map(gp => gp.noteH)); r.groups.forEach(gp => { gp.noteH = nh; }); r.h = PHEAD + PCH + NGAP + nh; });
+    if (!bRows.length && doc.phase === 'plan') bRows.push({groups: [], used: 0, h: PHEAD + PCH + NGAP + 0.32});   // 사전 보고: 빈 양식 3칸
     let y = yAfter + 0.25;
     for (const r of bRows){
       if (y + r.h > BOTTOM){
